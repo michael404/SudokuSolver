@@ -14,14 +14,6 @@ var sb = SudokuBoard([
     
     ])
 
-//sb[0, 0] = .s1
-//sb[0, 1] = .s2
-//sb[1, 0] = .s4
-//sb[0, 2] = .s3
-//sb[0, 3] = .s4
-//sb[8, 8] = .s9
-//sb[4, 4] = .s9
-
 print(sb)
 
 print("Board is valid: \(sb.isValid())")
