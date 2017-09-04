@@ -88,15 +88,11 @@ extension SudokuBoard: RandomAccessCollection, MutableCollection {
 extension SudokuBoard: CustomStringConvertible {
     
     var description: String {
-        var iterator = self.board.makeIterator()
+        var i = self.board.makeIterator()
         var description = "+-----+-----+-----+\n"
         for _ in 1...3 {
             for _ in 1...3 {
-                description += "|"
-                for _ in 1...3 {
-                    description += "\(iterator.next()!) \(iterator.next()!) \(iterator.next()!)|"
-                }
-                description += "\n"
+                description += "|\(i.next()!) \(i.next()!) \(i.next()!)|\(i.next()!) \(i.next()!) \(i.next()!)|\(i.next()!) \(i.next()!) \(i.next()!)|\n"
             }
             description += "+-----+-----+-----+\n"
         }
