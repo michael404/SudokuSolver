@@ -133,28 +133,23 @@ private extension SudokuBoard {
     }
     
     func validateColumns() -> Bool {
-        for columnIndex in 0...8 {
-            var column: [SudokuCell] = []
-            for rowIndex in 0...8 {
-                column.append(self[rowIndex, columnIndex])
-            }
-            guard validate(column) else { return false }
+        // Iterate over column offsets
+        for o in 0...8 {
+            let valid = validate([board[o+0 ], board[o+9 ], board[o+18],
+                                  board[o+27], board[o+36], board[o+45],
+                                  board[o+54], board[o+63], board[o+72]])
+            guard valid else { return false }
         }
         return true
     }
     
     func validateBlocks() -> Bool {
-        //TODO: Implement this with a fixed array of [0,1,2,9,10,11,...] and a fixed offet at this start using a stride
-        for rowBaseIndex in stride(from: 0, to: 8, by: 3) {
-            for columnBaseIndex in stride(from: 0, to: 8, by: 3) {
-                var block: [SudokuCell] = []
-                for rowIndex in rowBaseIndex...(rowBaseIndex + 2) {
-                    for columnIndex in columnBaseIndex...(columnBaseIndex + 2) {
-                        block.append(self[rowIndex, columnIndex])
-                    }
-                }
-                guard validate(block) else { return false }
-            }
+        // Iterate over block offsets
+        for o in [0, 3, 6, 27, 30, 33, 54, 57, 60] {
+            let valid = validate([board[o+0 ], board[o+1 ], board[o+2 ],
+                                  board[o+9 ], board[o+10], board[o+11],
+                                  board[o+18], board[o+19], board[o+20]])
+            guard valid else { return false }
         }
         return true
     }
