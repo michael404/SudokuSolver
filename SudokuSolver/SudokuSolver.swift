@@ -10,32 +10,29 @@ struct SudokuSolver {
     
     func solve() throws -> SudokuBoard {
         var board = self.initialBoard
-        let modifiableIndicies = board.indices.filter { board[$0] == .empty }
-        guard solve(board: &board, modifiableIndicies: modifiableIndicies, startAt: 0) else {
+        let indiciesIterator = board.indices.filter { board[$0] == .empty }.makeIterator()
+        guard solve(board: &board, indiciesIterator: indiciesIterator) else {
             throw SudokuSolverError.unsolvable
         }
         return board
     }
     
     // returns true if it found a valid board in this recursive branch, false otherwise
-    func solve(board: inout SudokuBoard, modifiableIndicies: [Int], startAt index: Int) -> Bool {
+    private func solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator) -> Bool {
+        var indiciesIterator = indiciesIterator
         
-        // Reached end
-        if index == modifiableIndicies.endIndex { return true }
+        // Check if we reached the end
+        guard let index = indiciesIterator.next() else { return true }
         
         for cell in SudokuCell.allNonEmpyValues {
-            board[modifiableIndicies[index]] = cell
-            if board.isValid() {
-                if solve(board: &board, modifiableIndicies: modifiableIndicies, startAt: index + 1) {
-                    return true
-                }
+            board[index] = cell
+            if board.isValid() && solve(board: &board, indiciesIterator: indiciesIterator) {
+                return true
             }
         }
         // Tried all possible values for this cell without finding a valid one, so returning false
-        board[modifiableIndicies[index]] = .empty
+        board[index] = .empty
         return false
-        
-        
     }
     
 }
