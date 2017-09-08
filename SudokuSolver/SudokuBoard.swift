@@ -8,34 +8,37 @@ struct SudokuBoard {
         self.board = board
     }
     
+    init(_ board: SudokuCell...) {
+        self.init(board)
+    }
+    
     init() {
         self.board = Array(repeating: .empty, count: 81)
     }
     
     subscript(row: Int, column: Int) -> SudokuCell {
         get {
-            precondition(row >= 0)
-            precondition(row <= 8)
-            precondition(column >= 0)
-            precondition(column <= 8)
+            precondition(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
+            precondition(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
             return self.board[indexFor(row: row, column: column)]
         }
         set(newValue) {
-            precondition(row >= 0)
-            precondition(row <= 8)
-            precondition(column >= 0)
-            precondition(column <= 8)
+            precondition(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
+            precondition(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
             self.board[indexFor(row: row, column: column)] = newValue
         }
     }
     
     func isValid() -> Bool {
-        return validateRows() && validateColumns() && validateBlocks()
+        // Due to the way the SudokuBorad is indexed row by row,
+        // this order is optimized to perform the validations in the
+        // order that they are most likely to fail.
+        return validateRows() && validateBlocks() && validateColumns()
     }
     
     func isFullyFilled() -> Bool {
-        for cell in self.board {
-            if cell == .empty { return false }
+        for cell in self.board where cell == .empty {
+            return false
         }
         return true
     }
@@ -92,7 +95,11 @@ extension SudokuBoard: CustomStringConvertible {
         var description = "+-----+-----+-----+\n"
         for _ in 1...3 {
             for _ in 1...3 {
-                description += "|\(i.next()!) \(i.next()!) \(i.next()!)|\(i.next()!) \(i.next()!) \(i.next()!)|\(i.next()!) \(i.next()!) \(i.next()!)|\n"
+                description += """
+                               |\(i.next()!) \(i.next()!) \(i.next()!)|\
+                               \(i.next()!) \(i.next()!) \(i.next()!)|\
+                               \(i.next()!) \(i.next()!) \(i.next()!)|\n
+                               """
             }
             description += "+-----+-----+-----+\n"
         }
@@ -121,8 +128,7 @@ private extension SudokuBoard {
     
     func validateRows() -> Bool {
         for start in stride(from: 0, to: 80, by: 9) {
-            let end = start + 8
-            let row = self.board[start...end]
+            let row = self.board[start...(start + 8)]
             guard validate(row) else { return false }
         }
         return true

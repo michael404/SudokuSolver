@@ -13,6 +13,17 @@ enum SudokuCell: Int {
     
 }
 
+extension SudokuCell: ExpressibleByIntegerLiteral {
+    
+    init(integerLiteral value: Int) {
+        guard let cell = SudokuCell(rawValue: value) else {
+            fatalError("A SudokuCell can only be initialized with a value between 0 and 9")
+        }
+        self = cell
+    }
+    
+}
+
 extension SudokuCell: CustomStringConvertible {
     
     var description: String {
@@ -28,8 +39,6 @@ extension SudokuCell: CustomStringConvertible {
 
 extension SudokuCell {
     
-    static var allNonEmpyValues: [SudokuCell] {
-        return [.s1, .s2, .s3, .s4, .s5, .s6, .s7, .s8, .s9]
-    }
+    static let allNonEmpyValues: [SudokuCell] = [.s1, .s2, .s3, .s4, .s5, .s6, .s7, .s8, .s9]
     
 }

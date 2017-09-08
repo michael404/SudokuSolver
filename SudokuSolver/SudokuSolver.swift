@@ -11,14 +11,14 @@ struct SudokuSolver {
     func solve() throws -> SudokuBoard {
         var board = self.initialBoard
         let indiciesIterator = board.indices.filter { board[$0] == .empty }.makeIterator()
-        guard solve(board: &board, indiciesIterator: indiciesIterator) else {
+        guard _solve(board: &board, indiciesIterator: indiciesIterator) else {
             throw SudokuSolverError.unsolvable
         }
         return board
     }
     
     // returns true if it found a valid board in this recursive branch, false otherwise
-    private func solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator) -> Bool {
+    private func _solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator) -> Bool {
         var indiciesIterator = indiciesIterator
         
         // Check if we reached the end
@@ -26,7 +26,7 @@ struct SudokuSolver {
         
         for cell in SudokuCell.allNonEmpyValues {
             board[index] = cell
-            if board.isValid() && solve(board: &board, indiciesIterator: indiciesIterator) {
+            if board.isValid() && _solve(board: &board, indiciesIterator: indiciesIterator) {
                 return true
             }
         }

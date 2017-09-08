@@ -2,36 +2,35 @@ import XCTest
 
 class SudokuTests: XCTestCase {
     
-    let board1 = SudokuBoard([
-        .empty, .s9,    .empty, .empty, .empty, .empty, .s5,    .empty, .empty,
-        .empty, .empty, .s1,    .s8,    .s9,    .empty, .empty, .s2,    .s4,
-        .empty, .empty, .empty, .empty, .empty, .empty, .s7,    .empty, .s9,
+    let board1 = SudokuBoard(
+        0, 9, 0,   0, 0, 0,   5, 0, 0,
+        0, 0, 1,   8, 9, 0,   0, 2, 4,
+        0, 0, 0,   0, 0, 0,   7, 0, 9,
         
-        .empty, .empty, .s4,    .empty, .s8,    .s2,    .empty, .empty, .empty,
-        .s8,    .empty, .empty, .empty, .s6,    .empty, .empty, .empty, .s3,
-        .empty, .empty, .empty,  .s3,   .s5,    .empty, .s2,    .empty, .empty,
+        0, 0, 4,   0, 8, 2,   0, 0, 0,
+        8, 0, 0,   0, 6, 0,   0, 0, 3,
+        0, 0, 0,   3, 5, 0,   2, 0, 0,
         
-        .s5,    .empty, .s9,    .empty, .empty, .empty, .empty, .empty, .empty,
-        .s7,    .s4,    .empty, .empty, .s2,    .s5,    .s1,    .empty, .empty,
-        .empty, .empty, .s2,    .empty, .empty, .empty, .empty, .s7,    .empty
-        ])
+        5, 0, 9,   0, 0, 0,   0, 0, 0,
+        7, 4, 0,   0, 2, 5,   1, 0, 0,
+        0, 0, 2,   0, 0, 0,   0, 7, 0)
     
     let expectedSolution1 = """
-            +-----+-----+-----+
-            |4 9 7|2 3 6|5 8 1|
-            |6 5 1|8 9 7|3 2 4|
-            |2 8 3|5 4 1|7 6 9|
-            +-----+-----+-----+
-            |9 3 4|1 8 2|6 5 7|
-            |8 2 5|7 6 9|4 1 3|
-            |1 7 6|3 5 4|2 9 8|
-            +-----+-----+-----+
-            |5 1 9|6 7 3|8 4 2|
-            |7 4 8|9 2 5|1 3 6|
-            |3 6 2|4 1 8|9 7 5|
-            +-----+-----+-----+
-            
-            """
+                            +-----+-----+-----+
+                            |4 9 7|2 3 6|5 8 1|
+                            |6 5 1|8 9 7|3 2 4|
+                            |2 8 3|5 4 1|7 6 9|
+                            +-----+-----+-----+
+                            |9 3 4|1 8 2|6 5 7|
+                            |8 2 5|7 6 9|4 1 3|
+                            |1 7 6|3 5 4|2 9 8|
+                            +-----+-----+-----+
+                            |5 1 9|6 7 3|8 4 2|
+                            |7 4 8|9 2 5|1 3 6|
+                            |3 6 2|4 1 8|9 7 5|
+                            +-----+-----+-----+
+                            
+                            """
     
     func testSudokuSolverIntegration() {
         XCTAssertFalse(board1.isFullyFilled())
