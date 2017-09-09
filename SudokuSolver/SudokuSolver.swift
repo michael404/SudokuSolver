@@ -17,7 +17,18 @@ struct SudokuSolver {
         return board
     }
     
-    // returns true if it found a valid board in this recursive branch, false otherwise
+    //todo: Only validate current row!
+    
+    
+    /// Private solving method
+    ///
+    /// - Parameters:
+    ///   - board: The board that we are trying to solve. This is passed as an
+    ///            inout parameter and needs to be reset if a branch does not find
+    ///            any valid solutions
+    ///   - indiciesIterator: An iterator over the indicies on the board that can be filled,
+    ///                       i.e. that are not filled in the initial board
+    /// - Returns: true if a valid fully filled solution was found, false otherwise.
     private func _solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator) -> Bool {
         var indiciesIterator = indiciesIterator
         
