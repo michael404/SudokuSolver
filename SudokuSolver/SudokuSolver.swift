@@ -37,7 +37,7 @@ struct SudokuSolver {
         
         for cell in SudokuCell.allNonEmpyValues {
             board[index] = cell
-            if board.isValid() && _solve(board: &board, indiciesIterator: indiciesIterator) {
+            if board.isValid(for: index) && _solve(board: &board, indiciesIterator: indiciesIterator) {
                 return true
             }
         }

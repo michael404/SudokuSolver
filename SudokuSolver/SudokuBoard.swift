@@ -30,10 +30,13 @@ struct SudokuBoard {
     }
     
     func isValid() -> Bool {
-        // Due to the way the SudokuBorad is indexed row by row,
-        // this order is optimized to perform the validations in the
-        // order that they are most likely to fail.
-        return validateRows() && validateBlocks() && validateColumns()
+        return validateAllRows() && validateAllBlocks() && validateAllColumns()
+    }
+    
+    func isValid(for index: Int) -> Bool {
+        return validateRow(for: index) &&
+               validateBlock(for: index) &&
+               validateColumn(for: index)
     }
     
     func isFullyFilled() -> Bool {
@@ -126,7 +129,7 @@ private extension SudokuBoard {
 
 private extension SudokuBoard {
     
-    func validateRows() -> Bool {
+    func validateAllRows() -> Bool {
         for start in stride(from: 0, to: 80, by: 9) {
             let row = self.board[start...(start + 8)]
             guard validate(row) else { return false }
@@ -134,26 +137,46 @@ private extension SudokuBoard {
         return true
     }
     
-    func validateColumns() -> Bool {
-        // Iterate over column offsets
-        for o in 0...8 {
-            let valid = validate([board[o+0 ], board[o+9 ], board[o+18],
-                                  board[o+27], board[o+36], board[o+45],
-                                  board[o+54], board[o+63], board[o+72]])
+    func validateRow(for index: Int) -> Bool {
+        let start = row(for: index) * 9
+        return validate(self.board[start...(start + 8)])
+    }
+    
+    func validateAllBlocks() -> Bool {
+        // Iterate over block offsets
+        for b in [0, 3, 6, 27, 30, 33, 54, 57, 60] {
+            let valid = validate([board[b+0 ], board[b+1 ], board[b+2 ],
+                                  board[b+9 ], board[b+10], board[b+11],
+                                  board[b+18], board[b+19], board[b+20]])
             guard valid else { return false }
         }
         return true
     }
     
-    func validateBlocks() -> Bool {
-        // Iterate over block offsets
-        for o in [0, 3, 6, 27, 30, 33, 54, 57, 60] {
-            let valid = validate([board[o+0 ], board[o+1 ], board[o+2 ],
-                                  board[o+9 ], board[o+10], board[o+11],
-                                  board[o+18], board[o+19], board[o+20]])
+    func validateBlock(for index: Int) -> Bool {
+        let baseRow = (row(for: index) / 3) * 3
+        let baseColumn = (column(for: index) / 3) * 3
+        let b = indexFor(row: baseRow, column: baseColumn)
+        return validate([board[b+0 ], board[b+1 ], board[b+2 ],
+                         board[b+9 ], board[b+10], board[b+11],
+                         board[b+18], board[b+19], board[b+20]])
+    }
+    
+    func validateAllColumns() -> Bool {
+        for c in 0...8 {
+            let valid = validate([board[c+0 ], board[c+9 ], board[c+18],
+                                  board[c+27], board[c+36], board[c+45],
+                                  board[c+54], board[c+63], board[c+72]])
             guard valid else { return false }
         }
         return true
+    }
+    
+    func validateColumn(for index: Int) -> Bool {
+        let c = column(for: index)
+        return validate([board[c+0 ], board[c+9 ], board[c+18],
+                         board[c+27], board[c+36], board[c+45],
+                         board[c+54], board[c+63], board[c+72]])
     }
     
     func validate<S: Sequence>(_ cells: S) -> Bool where S.Element == SudokuCell {
