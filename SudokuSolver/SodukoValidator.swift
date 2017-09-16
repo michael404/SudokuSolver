@@ -13,9 +13,9 @@ struct SodukoValidator {
     }
     
     func validate(_ cell: SudokuCell, for coordinate: SodukoCoordinate) -> Bool {
-        guard !self.rows[coordinate.row][cell.rawValue] else { return false }
-        guard !self.columns[coordinate.column][cell.rawValue] else { return false }
-        guard !self.blocks[coordinate.block][cell.rawValue] else { return false }
+        if self.rows[coordinate.row][cell.rawValue] { return false }
+        if self.columns[coordinate.column][cell.rawValue] { return false }
+        if self.blocks[coordinate.block][cell.rawValue] { return false }
         return true
     }
     
