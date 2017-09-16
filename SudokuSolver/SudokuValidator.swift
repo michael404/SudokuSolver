@@ -1,8 +1,8 @@
 struct SudokuValidator {
     
-    var rows = Array(repeating: Array(repeating: false, count: 10), count: 9)
-    var columns = Array(repeating: Array(repeating: false, count: 10), count: 9)
-    var blocks = Array(repeating: Array(repeating: false, count: 10), count: 9)
+    private var rows = Array(repeating: Array(repeating: false, count: 10), count: 9)
+    private var columns = Array(repeating: Array(repeating: false, count: 10), count: 9)
+    private var blocks = Array(repeating: Array(repeating: false, count: 10), count: 9)
     
     init() { }
     
