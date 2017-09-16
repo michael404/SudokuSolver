@@ -40,9 +40,7 @@ struct SudokuBoard {
     }
     
     func isFullyFilled() -> Bool {
-        for cell in self.board where cell == .empty {
-            return false
-        }
+        for cell in self.board where cell == .empty { return false }
         return true
     }
     
@@ -57,12 +55,8 @@ extension SudokuBoard: RandomAccessCollection, MutableCollection {
     typealias Element = SudokuCell
     
     subscript(index: Int) -> SudokuCell {
-        get {
-            return self.board[index]
-        }
-        set(newValue) {
-            self.board[index] = newValue
-        }
+        get { return self.board[index] }
+        set { self.board[index] = newValue }
     }
     
     var count: Int {
