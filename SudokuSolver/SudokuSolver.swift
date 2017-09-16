@@ -11,14 +11,14 @@ struct SudokuSolver {
     func solve() throws -> SudokuBoard {
         var board = self.initialBoard
         let indiciesIterator = board.indices.filter { board[$0] == .empty }.makeIterator()
-        var validator = SodukoValidator(board)
+        var validator = SudokuValidator(board)
         guard _solve(board: &board, indiciesIterator: indiciesIterator, validator: &validator) else {
             throw SudokuSolverError.unsolvable
         }
         return board
     }
     
-    private func _solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator, validator: inout SodukoValidator) -> Bool {
+    private func _solve(board: inout SudokuBoard, indiciesIterator: Array<Int>.Iterator, validator: inout SudokuValidator) -> Bool {
         var indiciesIterator = indiciesIterator
         
         // Check if we reached the end
@@ -26,7 +26,7 @@ struct SudokuSolver {
         
         for cell in SudokuCell.allNonEmpyValues {
             board[index] = cell
-            let coordinate = SodukoCoordinate(index)
+            let coordinate = SudokuCoordinate(index)
             if validator.validate(cell, for: coordinate) {
                 validator.set(cell, for: coordinate)
                 if _solve(board: &board, indiciesIterator: indiciesIterator, validator: &validator) {

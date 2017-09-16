@@ -5,7 +5,7 @@ enum SudokuSolverError: Error {
     
 }
 
-struct SodukoCoordinate {
+struct SudokuCoordinate {
     
     let row: Int
     let column: Int
