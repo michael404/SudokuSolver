@@ -4,7 +4,7 @@ struct SudokuSolver {
     
     init(_ board: SudokuBoard) throws {
         guard board.isValid() else { throw SudokuSolverError.unsolvable }
-        guard !board.isFullyFilled() else { throw SudokuSolverError.boardAllreadyFilled }
+        guard !board.isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
         self.initialBoard = board
     }
     
