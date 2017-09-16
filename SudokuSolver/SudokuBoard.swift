@@ -108,5 +108,3 @@ extension SudokuBoard: CustomStringConvertible {
     }
     
 }
-
-
