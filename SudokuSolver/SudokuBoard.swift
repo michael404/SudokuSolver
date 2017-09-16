@@ -30,7 +30,13 @@ struct SudokuBoard {
     }
     
     func isValid() -> Bool {
-        return validateAllRows() && validateAllBlocks() && validateAllColumns()
+        var validator = SodukoValidator()
+        for i in self.indices {
+            let coordinate = SodukoCoordinate(i)
+            guard validator.validate(self[i], for: coordinate) else { return false }
+            if self[i] != .empty { validator.set(self[i], for: coordinate) }
+        }
+        return true
     }
     
     func isFullyFilled() -> Bool {
@@ -109,50 +115,4 @@ extension SudokuBoard: CustomStringConvertible {
     
 }
 
-private extension SudokuBoard {
-    
-    func validateAllRows() -> Bool {
-        for start in stride(from: 0, to: 80, by: 9) {
-            let row = self.board[start...(start + 8)]
-            guard validate(row) else { return false }
-        }
-        return true
-    }
-    
-    func validateAllBlocks() -> Bool {
-        for b in [0, 3, 6, 27, 30, 33, 54, 57, 60] {
-            let valid = validate([board[b+0 ], board[b+1 ], board[b+2 ],
-                                  board[b+9 ], board[b+10], board[b+11],
-                                  board[b+18], board[b+19], board[b+20]])
-            guard valid else { return false }
-        }
-        return true
-    }
-    
-    func validateAllColumns() -> Bool {
-        for c in 0...8 {
-            let valid = validate([board[c+0 ], board[c+9 ], board[c+18],
-                                  board[c+27], board[c+36], board[c+45],
-                                  board[c+54], board[c+63], board[c+72]])
-            guard valid else { return false }
-        }
-        return true
-    }
-    
-    func validate<S: Sequence>(_ cells: S) -> Bool where S.Element == SudokuCell {
-        var validationArray = Array(repeating: false, count: 10)
-        for cell in cells {
-            switch (cell, validationArray[cell.rawValue]) {
-            case (.empty, _):
-                continue
-            case (_, false):
-                validationArray[cell.rawValue] = true
-            case (_, true):
-                return false
-            }
-        }
-        return true
-    }
-    
-}
 

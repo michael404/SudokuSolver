@@ -42,6 +42,24 @@ class SudokuTests: XCTestCase {
         XCTAssertEqual(solution.description, expectedSolution1)
     }
     
+    func testIsValid() {
+        XCTAssertTrue(board1.isValid())
+        
+        var board1NonValid = board1
+        board1NonValid[0, 0] = 9
+        XCTAssertFalse(board1NonValid.isValid())
+        
+        board1NonValid = board1
+        board1NonValid[8, 6] = 5
+        XCTAssertFalse(board1NonValid.isValid())
+        
+        board1NonValid = board1
+        board1NonValid[6, 7] = 1
+        XCTAssertFalse(board1NonValid.isValid())
+        
+        
+    }
+    
     func testPerformanceExample() {
         
         var solution = SudokuBoard()
