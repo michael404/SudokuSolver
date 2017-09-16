@@ -1,9 +1,8 @@
 struct SudokuBoard {
     
-    typealias Board = [SudokuCell]
-    private var board: Board
+    private var board: [SudokuCell]
     
-    init(_ board: Board) {
+    init(_ board: [SudokuCell]) {
         precondition(board.count == 81)
         self.board = board
     }
