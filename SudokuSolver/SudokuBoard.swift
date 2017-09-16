@@ -107,3 +107,12 @@ extension SudokuBoard: CustomStringConvertible {
     }
     
 }
+
+extension SudokuBoard: Equatable {
+    
+    // Can be deleted once equatable is auto-generated
+    static func ==(lhs: SudokuBoard, rhs: SudokuBoard) -> Bool {
+        return lhs.board == rhs.board
+    }
+
+}
