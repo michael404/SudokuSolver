@@ -78,14 +78,6 @@ extension SudokuBoard: RandomAccessCollection, MutableCollection {
         return self.board.index(before: index)
     }
     
-    func index(_ index: Index, offsetBy n: Int) -> Index {
-        return self.board.index(index, offsetBy: n)
-    }
-    
-    func distance(from start: Index, to end: Index) -> Int {
-        return self.board.distance(from: start, to: end)
-    }
-    
 }
 
 extension SudokuBoard: CustomStringConvertible {
