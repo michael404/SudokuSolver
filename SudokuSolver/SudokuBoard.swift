@@ -32,8 +32,8 @@ struct SudokuBoard {
         var validator = SudokuValidator()
         for i in self.indices {
             let coordinate = SudokuCoordinate(i)
-            guard validator.validate(self[i], for: coordinate) else { return false }
-            if self[i] != .empty { validator.set(self[i], for: coordinate) }
+            guard validator.validate(self[i], at: coordinate) else { return false }
+            if self[i] != .empty { validator.set(self[i], at: coordinate) }
         }
         return true
     }
