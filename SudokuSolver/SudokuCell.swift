@@ -28,10 +28,8 @@ extension SudokuCell: CustomStringConvertible {
     
     var description: String {
         switch  self {
-        case .empty:
-            return " "
-        default:
-            return String(self.rawValue)
+        case .empty: return " "
+        default: return String(self.rawValue)
         }
     }
     

@@ -1,4 +1,4 @@
-struct SudokuBoard {
+struct SudokuBoard: Equatable {
     
     private var board: [SudokuCell]
     
@@ -98,13 +98,4 @@ extension SudokuBoard: CustomStringConvertible {
         return description
     }
     
-}
-
-extension SudokuBoard: Equatable {
-    
-    // Can be deleted once equatable is auto-generated
-    static func ==(lhs: SudokuBoard, rhs: SudokuBoard) -> Bool {
-        return lhs.board == rhs.board
-    }
-
 }
