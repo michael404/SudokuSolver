@@ -17,13 +17,13 @@ struct SudokuBoard: Equatable {
     
     subscript(row: Int, column: Int) -> SudokuCell {
         get {
-            precondition(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
-            precondition(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
+            assert(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
+            assert(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
             return self.board[indexFor(row: row, column: column)]
         }
         set(newValue) {
-            precondition(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
-            precondition(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
+            assert(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
+            assert(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
             self.board[indexFor(row: row, column: column)] = newValue
         }
     }
