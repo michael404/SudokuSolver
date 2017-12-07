@@ -7,7 +7,7 @@ struct SudokuValidator {
     init() { }
     
     init(_ board: SudokuBoard) {
-        for i in board.indices.filter({ board[$0] != .empty }) {
+        for i in board.indices where board[i] != .empty {
             set(board[i], at: SudokuCoordinate(i))
         }
     }
