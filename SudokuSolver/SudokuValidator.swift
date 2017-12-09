@@ -11,7 +11,6 @@ struct SudokuValidator {
             if let cell = board[i].cell {
                 set(cell, at: SudokuCoordinate(i))
             }
-            
         }
     }
     
