@@ -10,7 +10,7 @@ struct SudokuSolver {
     
     func solve() throws -> SudokuBoard {
         var board = self.initialBoard
-        let indiciesIterator = board.indices.filter { board[$0] == .empty }.makeIterator()
+        let indiciesIterator = board.indices.filter { board[$0] == nil }.makeIterator()
         var validator = SudokuValidator(board)
         guard _solve(board: &board, indiciesIterator: indiciesIterator, validator: &validator) else {
             throw SudokuSolverError.unsolvable
@@ -24,8 +24,8 @@ struct SudokuSolver {
         // Check if we reached the end
         guard let index = indiciesIterator.next() else { return true }
         
-        for cell in SudokuCell.allNonEmpyValues {
-            board[index] = cell
+        for cell in (1...9) {
+            board[index] = SudokuCell(cell)
             let coordinate = SudokuCoordinate(index)
             if validator.validate(cell, at: coordinate) {
                 validator.set(cell, at: coordinate)
@@ -37,7 +37,7 @@ struct SudokuSolver {
             }
         }
         // Tried all possible values for this cell without finding a valid one, so returning false
-        board[index] = .empty
+        board[index] = nil
         return false
     }
     

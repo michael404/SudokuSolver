@@ -7,28 +7,31 @@ struct SudokuValidator {
     init() { }
     
     init(_ board: SudokuBoard) {
-        for i in board.indices where board[i] != .empty {
-            set(board[i], at: SudokuCoordinate(i))
+        for i in board.indices {
+            if let cell = board[i].cell {
+                set(cell, at: SudokuCoordinate(i))
+            }
+            
         }
     }
     
-    func validate(_ cell: SudokuCell, at coordinate: SudokuCoordinate) -> Bool {
-        if self.rows[coordinate.row][cell.rawValue] { return false }
-        if self.columns[coordinate.column][cell.rawValue] { return false }
-        if self.blocks[coordinate.block][cell.rawValue] { return false }
+    func validate(_ cell: Int, at coordinate: SudokuCoordinate) -> Bool {
+        if self.rows[coordinate.row][cell] { return false }
+        if self.columns[coordinate.column][cell] { return false }
+        if self.blocks[coordinate.block][cell] { return false }
         return true
     }
     
-    mutating func set(_ cell: SudokuCell, at coordinate: SudokuCoordinate) {
-        self.rows[coordinate.row][cell.rawValue] = true
-        self.columns[coordinate.column][cell.rawValue] = true
-        self.blocks[coordinate.block][cell.rawValue] = true
+    mutating func set(_ cell: Int, at coordinate: SudokuCoordinate) {
+        self.rows[coordinate.row][cell] = true
+        self.columns[coordinate.column][cell] = true
+        self.blocks[coordinate.block][cell] = true
     }
     
-    mutating func unset(_ cell: SudokuCell, at coordinate: SudokuCoordinate) {
-        rows[coordinate.row][cell.rawValue] = false
-        columns[coordinate.column][cell.rawValue] = false
-        blocks[coordinate.block][cell.rawValue] = false
+    mutating func unset(_ cell: Int, at coordinate: SudokuCoordinate) {
+        rows[coordinate.row][cell] = false
+        columns[coordinate.column][cell] = false
+        blocks[coordinate.block][cell] = false
     }
     
 }

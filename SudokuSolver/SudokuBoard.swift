@@ -12,7 +12,7 @@ struct SudokuBoard: Equatable {
     }
     
     init() {
-        self.board = Array(repeating: .empty, count: 81)
+        self.board = Array(repeating: nil, count: 81)
     }
     
     subscript(row: Int, column: Int) -> SudokuCell {
@@ -31,15 +31,17 @@ struct SudokuBoard: Equatable {
     func isValid() -> Bool {
         var validator = SudokuValidator()
         for i in self.indices {
-            let coordinate = SudokuCoordinate(i)
-            guard validator.validate(self[i], at: coordinate) else { return false }
-            if self[i] != .empty { validator.set(self[i], at: coordinate) }
+            if let cell = self[i].cell {
+                let coordinate = SudokuCoordinate(i)
+                guard validator.validate(cell, at: coordinate) else { return false }
+                validator.set(cell, at: coordinate)
+            }
         }
         return true
     }
     
     func isFullyFilled() -> Bool {
-        for cell in self.board where cell == .empty { return false }
+        for cell in self.board where cell == nil { return false }
         return true
     }
     
