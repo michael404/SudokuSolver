@@ -7,10 +7,8 @@ struct SudokuValidator {
     init() { }
     
     init(_ board: SudokuBoard) {
-        for i in board.indices {
-            if let cell = board[i].cell {
-                set(cell, at: SudokuCoordinate(i))
-            }
+        for i in board.indices where board[i] != nil {
+            set(board[i].cell, at: SudokuCoordinate(i))
         }
     }
     

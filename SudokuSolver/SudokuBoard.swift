@@ -30,12 +30,10 @@ struct SudokuBoard: Equatable {
     
     func isValid() -> Bool {
         var validator = SudokuValidator()
-        for i in self.indices {
-            if let cell = self[i].cell {
-                let coordinate = SudokuCoordinate(i)
-                guard validator.validate(cell, at: coordinate) else { return false }
-                validator.set(cell, at: coordinate)
-            }
+        for i in self.indices where self[i] != nil {
+            let coordinate = SudokuCoordinate(i)
+            guard validator.validate(self[i].cell, at: coordinate) else { return false }
+            validator.set(self[i].cell, at: coordinate)
         }
         return true
     }
