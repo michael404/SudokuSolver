@@ -28,11 +28,11 @@ struct SudokuSolver {
             board[index] = SudokuCell(cell)
             let coordinate = SudokuCoordinate(index)
             if validator.validate(cell, at: coordinate) {
-                validator.set(cell, at: coordinate)
+                validator.set(cell, to: true, at: coordinate)
                 if _solve(board: &board, indiciesIterator: indiciesIterator, validator: &validator) {
                     return true
                 } else {
-                    validator.unset(cell, at: coordinate)
+                    validator.set(cell, to: false, at: coordinate)
                 }
             }
         }

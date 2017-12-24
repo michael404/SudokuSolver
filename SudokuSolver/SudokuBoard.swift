@@ -33,7 +33,7 @@ struct SudokuBoard: Equatable {
         for i in self.indices where self[i] != nil {
             let coordinate = SudokuCoordinate(i)
             guard validator.validate(self[i].cell, at: coordinate) else { return false }
-            validator.set(self[i].cell, at: coordinate)
+            validator.set(self[i].cell, to: true, at: coordinate)
         }
         return true
     }
