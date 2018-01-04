@@ -1,24 +1,26 @@
-let sb = SudokuBoard(
-    0, 9, 0,   0, 0, 0,   5, 0, 0,
-    0, 0, 1,   8, 9, 0,   0, 2, 4,
-    0, 0, 0,   0, 0, 0,   7, 0, 9,
+import Foundation
 
-    0, 0, 4,   0, 8, 2,   0, 0, 0,
-    8, 0, 0,   0, 6, 0,   0, 0, 3,
-    0, 0, 0,   3, 5, 0,   2, 0, 0,
+extension Int {
+    static func random(_ from: Int, _ to: Int) -> Int {
+        return from + numericCast(arc4random_uniform(numericCast(to - from)))
+    }
+}
 
-    5, 0, 9,   0, 0, 0,   0, 0, 0,
-    7, 4, 0,   0, 2, 5,   1, 0, 0,
-    0, 0, 2,   0, 0, 0,   0, 7, 0)
+var validStartingBoards: [SudokuBoard] = []
 
-print(sb)
+for _ in 0..<1000 {
+    var board = SudokuBoard()
+    for _ in 0..<Int.random(8, 25) {
+        board[Int.random(0,8), Int.random(0,8)] = SudokuCell(Int.random(1,9))
+    }
+    do {
+        let solver = try SudokuSolver(board)
+        _ = try solver.solve()
+        validStartingBoards.append(board)
+    } catch _ {
+        continue
+    }
+}
 
-print("Board is valid: \(sb.isValid())")
-print("Board is filled: \(sb.isFullyFilled())")
-print()
-
-var solver = try! SudokuSolver(sb)
-let solution = try! solver.solve()
-print("Found solution!")
-print(solution)
-
+print(validStartingBoards.count)
+print(validStartingBoards)
