@@ -28,8 +28,7 @@ extension SudokuCell: ExpressibleByNilLiteral {
 extension SudokuCell: CustomStringConvertible {
     
     var description: String {
-        if self.cell == 0 { return " " }
-        return cell.description
+        return cell == 0 ? " " : cell.description
     }
     
 }

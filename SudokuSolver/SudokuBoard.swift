@@ -99,3 +99,16 @@ extension SudokuBoard: CustomStringConvertible {
     }
     
 }
+
+extension SudokuBoard: CustomDebugStringConvertible {
+    
+    var debugDescription: String {
+        return self.board.reduce(into: "") { result, cell in
+            switch cell {
+            case nil: result.append("_")
+            default: result.append(cell.description)
+            }
+        }
+    }
+    
+}
