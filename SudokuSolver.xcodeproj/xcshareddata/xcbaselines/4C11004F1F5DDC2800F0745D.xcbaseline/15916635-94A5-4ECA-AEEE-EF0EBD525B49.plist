@@ -31,9 +31,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.026071</real>
+					<real>0.030289</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>3 Feb 2018 at 21:16:58</string>
+					<string>4 Feb 2018 at 16:29:48</string>
 				</dict>
 			</dict>
 			<key>testPerfHardToBruteForceFromStart()</key>
@@ -41,9 +41,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>9.3678</real>
+					<real>10.585</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>3 Feb 2018 at 21:16:58</string>
+					<string>4 Feb 2018 at 16:29:48</string>
 				</dict>
 			</dict>
 			<key>testPerfHardToBruteForceMRVR()</key>
@@ -61,9 +61,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.0026692</real>
+					<real>0.0034511</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>3 Feb 2018 at 21:16:58</string>
+					<string>4 Feb 2018 at 16:29:48</string>
 				</dict>
 			</dict>
 			<key>testPerfNormalSudokus()</key>
@@ -91,9 +91,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.35483</real>
+					<real>0.39365</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>3 Feb 2018 at 21:16:58</string>
+					<string>4 Feb 2018 at 16:29:48</string>
 				</dict>
 			</dict>
 			<key>testPerfNormalSudokusFromStart()</key>
@@ -101,9 +101,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.009582</real>
+					<real>0.0096917</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>3 Feb 2018 at 21:16:58</string>
+					<string>4 Feb 2018 at 16:29:48</string>
 				</dict>
 			</dict>
 			<key>testPerfNormalSudokusMRVR()</key>
