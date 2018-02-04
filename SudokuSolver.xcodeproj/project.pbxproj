@@ -23,6 +23,7 @@
 		4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
 		4CD2143D202618D300018125 /* RandomSudokuBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143C202618D300018125 /* RandomSudokuBoard.swift */; };
 		4CD2143E202653FF00018125 /* RandomSudokuBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143C202618D300018125 /* RandomSudokuBoard.swift */; };
+		4CEEB9F62027805C007B1017 /* SudokuCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEEB9F52027805C007B1017 /* SudokuCoordinate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +52,7 @@
 		4CD214382025EF5C00018125 /* SudokuPerfTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuPerfTests.swift; sourceTree = "<group>"; };
 		4CD2143A2025EF8100018125 /* SudokuTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTestData.swift; sourceTree = "<group>"; };
 		4CD2143C202618D300018125 /* RandomSudokuBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomSudokuBoard.swift; sourceTree = "<group>"; };
+		4CEEB9F52027805C007B1017 /* SudokuCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCoordinate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				4CB2B9441F6D22F6004E461B /* SudokuValidator.swift */,
 				4C1100441F5C29CD00F0745D /* SudokuCell.swift */,
 				4C11004A1F5DCE5D00F0745D /* Utils.swift */,
+				4CEEB9F52027805C007B1017 /* SudokuCoordinate.swift */,
 			);
 			path = SudokuSolver;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				4C1100411F588ACB00F0745D /* SudokuBoard.swift in Sources */,
 				4CD2143D202618D300018125 /* RandomSudokuBoard.swift in Sources */,
 				4C1100471F5C570000F0745D /* SudokuSolver.swift in Sources */,
+				4CEEB9F62027805C007B1017 /* SudokuCoordinate.swift in Sources */,
 				4CB2B9451F6D22F6004E461B /* SudokuValidator.swift in Sources */,
 				4C1100451F5C29CD00F0745D /* SudokuCell.swift in Sources */,
 				4C11004B1F5DCE5D00F0745D /* Utils.swift in Sources */,
