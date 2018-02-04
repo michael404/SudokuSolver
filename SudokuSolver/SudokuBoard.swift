@@ -1,9 +1,9 @@
-struct SudokuBoard: Equatable {
+public struct SudokuBoard: Equatable {
     
-    private var board: [SudokuCell]
+    internal var board: [SudokuCell]
     
     init(_ board: [SudokuCell]) {
-        precondition(board.count == 81)
+        precondition(board.count == 81, "Must pass in 81 SudokuCell elements")
         self.board = board
     }
     
@@ -13,6 +13,17 @@ struct SudokuBoard: Equatable {
     
     init() {
         self.board = Array(repeating: nil, count: 81)
+    }
+    
+    init<S: StringProtocol>(_ board: S) {
+        self.board = board.map { character in
+            switch character {
+            case ".": return nil
+            case "1"..."9": return SudokuCell(Int(String(character))!)
+            default: preconditionFailure("Unexpected character in string sequence")
+            }
+        }
+        precondition(self.board.count == 81, "Must pass in 81 SudokuCell elements")
     }
     
     subscript(row: Int, column: Int) -> SudokuCell {
@@ -32,8 +43,8 @@ struct SudokuBoard: Equatable {
         var validator = SudokuValidator()
         for i in self.indices where self[i] != nil {
             let coordinate = SudokuCoordinate(i)
-            guard validator.validate(self[i].cell, at: coordinate) else { return false }
-            validator.set(self[i].cell, to: true, at: coordinate)
+            guard validator.validate(self[i].value, at: coordinate) else { return false }
+            validator.set(self[i].value, to: true, at: coordinate)
         }
         return true
     }
@@ -41,6 +52,10 @@ struct SudokuBoard: Equatable {
     func isFullyFilled() -> Bool {
         for cell in self.board where cell == nil { return false }
         return true
+    }
+    
+    var filledCells: Int {
+        return lazy.filter({ $0 != nil }).count
     }
     
     func indexFor(row: Int, column: Int) -> Int {
@@ -51,30 +66,30 @@ struct SudokuBoard: Equatable {
 
 extension SudokuBoard: RandomAccessCollection, MutableCollection {
     
-    typealias Element = SudokuCell
+    public typealias Element = SudokuCell
     
-    subscript(index: Int) -> SudokuCell {
+    public subscript(index: Int) -> SudokuCell {
         get { return self.board[index] }
         set { self.board[index] = newValue }
     }
     
-    var count: Int {
+    public var count: Int {
         return self.board.count
     }
     
-    var startIndex: Int {
+    public var startIndex: Int {
         return self.board.startIndex
     }
     
-    var endIndex: Int {
+    public var endIndex: Int {
         return self.board.endIndex
     }
     
-    func index(after index: Int) -> Int {
+    public func index(after index: Int) -> Int {
         return self.board.index(after: index)
     }
     
-    func index(before index: Int) -> Int {
+    public func index(before index: Int) -> Int {
         return self.board.index(before: index)
     }
     
@@ -82,7 +97,7 @@ extension SudokuBoard: RandomAccessCollection, MutableCollection {
 
 extension SudokuBoard: CustomStringConvertible {
     
-    var description: String {
+    public var description: String {
         var i = self.board.makeIterator()
         var description = "+-----+-----+-----+\n"
         for _ in 1...3 {
@@ -102,10 +117,10 @@ extension SudokuBoard: CustomStringConvertible {
 
 extension SudokuBoard: CustomDebugStringConvertible {
     
-    var debugDescription: String {
+    public var debugDescription: String {
         return self.board.reduce(into: "") { result, cell in
             switch cell {
-            case nil: result.append("_")
+            case nil: result.append(".")
             default: result.append(cell.description)
             }
         }

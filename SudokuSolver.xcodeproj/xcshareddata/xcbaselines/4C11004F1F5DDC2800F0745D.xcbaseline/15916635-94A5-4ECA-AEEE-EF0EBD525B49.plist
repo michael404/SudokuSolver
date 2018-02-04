@@ -4,6 +4,119 @@
 <dict>
 	<key>classNames</key>
 	<dict>
+		<key>SudokuPerfTests</key>
+		<dict>
+			<key>testPerfHardToBruteForce()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>12.325</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+			<key>testPerfHardToBruteForceDOF()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.17454</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+			<key>testPerfHardToBruteForceFromRowWithMostFilledValues()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.026071</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 21:16:58</string>
+				</dict>
+			</dict>
+			<key>testPerfHardToBruteForceFromStart()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>9.3678</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 21:16:58</string>
+				</dict>
+			</dict>
+			<key>testPerfHardToBruteForceMRVR()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.035126</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+			<key>testPerfMultipleSolutions()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.0026692</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 21:16:58</string>
+				</dict>
+			</dict>
+			<key>testPerfNormalSudokus()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.011912</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+			<key>testPerfNormalSudokusDOF()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>9.53</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+			<key>testPerfNormalSudokusFromRowWithMostFilledValues()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.35483</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 21:16:58</string>
+				</dict>
+			</dict>
+			<key>testPerfNormalSudokusFromStart()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.009582</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 21:16:58</string>
+				</dict>
+			</dict>
+			<key>testPerfNormalSudokusMRVR()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.44028</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>3 Feb 2018 at 14:37:35</string>
+				</dict>
+			</dict>
+		</dict>
 		<key>SudokuTests</key>
 		<dict>
 			<key>testBitArrayPerformance()</key>
@@ -21,7 +134,27 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.00216</real>
+					<real>0.017</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
+			<key>testPerformanceHardToBruteForce()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>11.436</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
+			<key>testPerformanceNormalSudokus()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.013526</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>Local Baseline</string>
 				</dict>

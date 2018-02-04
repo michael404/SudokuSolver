@@ -2,75 +2,108 @@ import XCTest
 
 class SudokuTests: XCTestCase {
     
-    let board1 = SudokuBoard(
-        0, 9, 0,   0, 0, 0,   5, 0, 0,
-        0, 0, 1,   8, 9, 0,   0, 2, 4,
-        0, 0, 0,   0, 0, 0,   7, 0, 9,
-        
-        0, 0, 4,   0, 8, 2,   0, 0, 0,
-        8, 0, 0,   0, 6, 0,   0, 0, 3,
-        0, 0, 0,   3, 5, 0,   2, 0, 0,
-        
-        5, 0, 9,   0, 0, 0,   0, 0, 0,
-        7, 4, 0,   0, 2, 5,   1, 0, 0,
-        0, 0, 2,   0, 0, 0,   0, 7, 0)
-    
-    let expectedSolution1 = """
-        +-----+-----+-----+
-        |4 9 7|2 3 6|5 8 1|
-        |6 5 1|8 9 7|3 2 4|
-        |2 8 3|5 4 1|7 6 9|
-        +-----+-----+-----+
-        |9 3 4|1 8 2|6 5 7|
-        |8 2 5|7 6 9|4 1 3|
-        |1 7 6|3 5 4|2 9 8|
-        +-----+-----+-----+
-        |5 1 9|6 7 3|8 4 2|
-        |7 4 8|9 2 5|1 3 6|
-        |3 6 2|4 1 8|9 7 5|
-        +-----+-----+-----+
-        
-        """
-    
     func testSudokuSolverIntegration() {
-        XCTAssertFalse(board1.isFullyFilled())
-        XCTAssertTrue(board1.isValid())
-        let solver = try! SudokuSolver(board1)
-        let solution = try! solver.solve()
-        XCTAssertTrue(solution.isValid())
-        XCTAssertTrue(solution.isFullyFilled())
-        XCTAssertEqual(solution.description, expectedSolution1)
+        XCTAssertFalse(TestData.board1.isFullyFilled())
+        XCTAssertTrue(TestData.board1.isValid())
+        
+        // Default solving method
+        do {
+            let solution = try! TestData.board1.findFirstSolution()
+            XCTAssertTrue(solution.isValid())
+            XCTAssertTrue(solution.isFullyFilled())
+            XCTAssertEqual(solution.description, TestData.expectedSolution1)
+        }
+        
+        // "From Start" solving method
+        do {
+            let solution = try! TestData.board1.findFirstSolution(method: .fromStart)
+            XCTAssertTrue(solution.isValid())
+            XCTAssertTrue(solution.isFullyFilled())
+            XCTAssertEqual(solution.description, TestData.expectedSolution1)
+        }
+    }
+    
+    func testInitFromString() {
+        let board = SudokuBoard(TestData.board1String)
+        XCTAssertEqual(board, TestData.board1)
+        XCTAssertEqual(board.debugDescription, TestData.board1String)
     }
     
     func testIsValid() {
-        XCTAssertTrue(board1.isValid())
+        XCTAssertTrue(TestData.board1.isValid())
         
-        var board1NonValid = board1
+        var board1NonValid = TestData.board1
         board1NonValid[0, 0] = 9
         XCTAssertFalse(board1NonValid.isValid())
         
-        board1NonValid = board1
+        board1NonValid = TestData.board1
         board1NonValid[8, 6] = 5
         XCTAssertFalse(board1NonValid.isValid())
         
-        board1NonValid = board1
+        board1NonValid = TestData.board1
         board1NonValid[6, 7] = 1
         XCTAssertFalse(board1NonValid.isValid())
-        
-        
     }
     
-    func testPerformanceExample() {
-        
-        var solution = SudokuBoard()
-        
-        self.measure {
-            let solver = try! SudokuSolver(board1)
-            solution = try! solver.solve()
+    func testFailingBoard() {
+        XCTAssertFalse(TestData.invalidBoard.isValid())
+        XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution())
+        XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution(method: .fromRowWithMostFilledValues))
+    
+    }
+    
+    func testFindAllSolutions() {
+        do {
+            let solutions = try! TestData.board1.findAllSolutions()
+            XCTAssertEqual(solutions.count, 1)
+            XCTAssertEqual(solutions[0].description, TestData.expectedSolution1)
         }
         
-        XCTAssertEqual(solution.description, expectedSolution1)
+        do {
+            // Too many solutions both with default and non-default maxSolutions
+            XCTAssertThrowsError(try TestData.emptyBoard.findAllSolutions())
+            XCTAssertThrowsError(try TestData.emptyBoard.findAllSolutions(maxSolutions: 50))
+        }
         
+        do {
+            let solutions = try! TestData.multipleSolutionsBoard.findAllSolutions()
+            XCTAssertEqual(solutions.count, 9)
+            for solution in solutions {
+                XCTAssertTrue(solution.isValid())
+                XCTAssertTrue(solution.isFullyFilled())
+            }
+        }
+    }
+    
+    func testTooManySolutions() {
+        
+        //Should throw
+        XCTAssertThrowsError(try TestData.multipleSolutionsBoard.findAllSolutions(maxSolutions: 3))
+        
+        // Should only find 1 solution
+        do {
+            let solution = try! TestData.board1.findAllSolutions(maxSolutions: 1)
+            XCTAssertEqual(solution.count, 1)
+            XCTAssertTrue(solution[0].isValid())
+            XCTAssertTrue(solution[0].isFullyFilled())
+            XCTAssertEqual(solution[0].description, TestData.expectedSolution1)
+        }
+    }
+    
+    func testRandomFullyFilledBoard() {
+        let board = SudokuBoard.randomFullyFilledBoard()
+        XCTAssertTrue(board.isValid())
+        XCTAssertTrue(board.isFullyFilled())
+        XCTAssertEqual(board.filledCells, 81)
+        
+        // Two random boards should (usually) not be equal
+        XCTAssertNotEqual(board, SudokuBoard.randomFullyFilledBoard())
+    }
+    
+    func testFilledCells() {
+        XCTAssertEqual(TestData.board1.filledCells, 27)
+        XCTAssertEqual(TestData.board2.filledCells, 21)
+        XCTAssertEqual(TestData.emptyBoard.filledCells, 0)
     }
     
     func testBitMask() {

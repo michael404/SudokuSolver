@@ -1,4 +1,4 @@
-struct SudokuValidator {
+internal struct SudokuValidator {
 
     struct Mask {
         private var _storage: DoubleWidth<UInt64> = 0
@@ -12,7 +12,7 @@ struct SudokuValidator {
     
     init(_ board: SudokuBoard) {
         for i in board.indices where board[i] != nil {
-            set(board[i].cell, to: true, at: SudokuCoordinate(i))
+            set(board[i].value, to: true, at: SudokuCoordinate(i))
         }
     }
     

@@ -1,46 +1,100 @@
-struct SudokuSolver {
+public extension SudokuBoard {
     
-    let initialBoard: SudokuBoard
-    
-    init(_ board: SudokuBoard) throws {
-        guard board.isValid() else { throw SudokuSolverError.unsolvable }
-        guard !board.isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
-        self.initialBoard = board
+    enum SolvingMethod {
+        case fromStart
+        case fromRowWithMostFilledValues
+    }
+
+    func findFirstSolution(method: SolvingMethod = .fromRowWithMostFilledValues) throws -> SudokuBoard {
+        guard isValid() else { throw SudokuSolverError.unsolvable }
+        guard !isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
+        guard let solution = try _solutions(method: method).first else {
+            throw SudokuSolverError.unsolvable
+        }
+        return solution
     }
     
-    func solve() throws -> SudokuBoard {
+    func findAllSolutions(maxSolutions: Int = 1000) throws -> [SudokuBoard] {
+        guard isValid() else { throw SudokuSolverError.unsolvable }
+        guard !isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
+        precondition(maxSolutions >= 1, "maxSolutions must be 1 or above")
+        return try _solutions(mode: .findAll(maxSolutions: maxSolutions))
+    }
+}
+
+internal extension SudokuBoard {
+    
+    enum FindMode {
+        case findFirst
+        case findAll(maxSolutions: Int)
+    }
+    
+    func _solutions(mode: FindMode = .findFirst, method: SolvingMethod = .fromStart, randomizedCellValues: Bool = false) throws -> [SudokuBoard] {
         
-        var board = self.initialBoard
-        let indiciesIterator = board.indices.filter { board[$0] == nil }.makeIterator()
+        var allSolutions: [SudokuBoard] = []
+        var board = self
         var validator = SudokuValidator(board)
+        var cellValues = Array(1...9)
         
-        func _solve(_ indiciesIterator: Array<Int>.Iterator) -> Bool {
-            var indiciesIterator = indiciesIterator
+        let coordinateIterator: Array<SudokuCoordinate>.Iterator
+        switch method {
+        case .fromStart:
+            coordinateIterator = board.indices.filter({ board[$0] == nil }).map(SudokuCoordinate.init).makeIterator()
+        case .fromRowWithMostFilledValues:
+            coordinateIterator = coordinatesSortedByRowWithMostFilledValues().makeIterator()
+        }
+        
+        // Returns true once the function is done, depending on the parameters passed to the function
+        func _solve(_ coordinateIterator: Array<SudokuCoordinate>.Iterator) throws -> Bool {
+            var coordinateIterator = coordinateIterator
             
-            // Check if we reached the end
-            guard let index = indiciesIterator.next() else { return true }
+            // If we are at the end of the indicies, we need to take different
+            // actions, based on the parameters passed to the function
+            guard let coordinate = coordinateIterator.next() else {
+                allSolutions.append(board)
+                switch mode {
+                case .findFirst:
+                    return true
+                case .findAll(let maxSolutions) where allSolutions.count > maxSolutions:
+                    throw SudokuSolverError.tooManySolutions
+                case .findAll:
+                    return false
+                }
+            }
             
-            for cell in (1...9) {
-                board[index] = SudokuCell(cell)
-                let coordinate = SudokuCoordinate(index)
-                if validator.validate(cell, at: coordinate) {
-                    validator.set(cell, to: true, at: coordinate)
-                    if _solve(indiciesIterator) {
+            if randomizedCellValues { cellValues.shuffle() }
+            
+            // Test out all cellValues, and recurse
+            // Reset shared state if branch returned false
+            for cellValue in cellValues {
+                if validator.validate(cellValue, at: coordinate) {
+                    board[coordinate.index] = SudokuCell(unchecked: cellValue)
+                    validator.set(cellValue, to: true, at: coordinate)
+                    if try _solve(coordinateIterator) {
                         return true
                     } else {
-                        validator.set(cell, to: false, at: coordinate)
+                        validator.set(cellValue, to: false, at: coordinate)
                     }
                 }
             }
-            // Tried all possible values for this cell without finding a valid one, so returning false
-            board[index] = nil
+            board[coordinate.index] = nil
             return false
         }
         
-        guard _solve(indiciesIterator) else {
-            throw SudokuSolverError.unsolvable
+        _ = try _solve(coordinateIterator)
+        return allSolutions
+    }
+    
+    private func coordinatesSortedByRowWithMostFilledValues() -> [SudokuCoordinate] {
+        
+        var unnfilledCellIndiciesPerRow: [[Int]] = (0...8).map { rowIndex in
+            let startIndex = rowIndex * 9
+            let endIndex = startIndex + 9
+            let unfilledCellIndices = self[startIndex..<endIndex].indices.filter { self[$0] == nil }
+            return unfilledCellIndices
         }
-        return board
+        unnfilledCellIndiciesPerRow.sort { $0.count < $1.count }
+        return unnfilledCellIndiciesPerRow.flatMap({ $0.map(SudokuCoordinate.init) })
     }
     
 }

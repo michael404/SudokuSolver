@@ -1,34 +1,34 @@
-struct SudokuCell: Equatable {
+public struct SudokuCell: Equatable {
     
-    let cell: Int
+    internal let value: Int
     
     init(_ value: Int) {
         guard case 0...9 = value else {
             fatalError("A SudokuCell can only be initialized with a value between 0 and 9")
         }
-        self.cell = value
+        self.value = value
+    }
+    
+    internal init(unchecked value: Int) {
+        self.value = value
     }
     
 }
 
 extension SudokuCell: ExpressibleByIntegerLiteral {
-    
-    init(integerLiteral value: Int) {
+    public init(integerLiteral value: Int) {
         self.init(value)
     }
-    
 }
 
 extension SudokuCell: ExpressibleByNilLiteral {
-    init(nilLiteral: ()) {
-        self.cell = 0
+    public init(nilLiteral: ()) {
+        self.value = 0
     }
 }
 
 extension SudokuCell: CustomStringConvertible {
-    
-    var description: String {
-        return cell == 0 ? " " : cell.description
+    public var description: String {
+        return value == 0 ? " " : value.description
     }
-    
 }
