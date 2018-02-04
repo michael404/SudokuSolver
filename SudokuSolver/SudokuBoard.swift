@@ -39,7 +39,7 @@ public struct SudokuBoard: Equatable {
         }
     }
     
-    func isValid() -> Bool {
+    var isValid: Bool {
         var validator = SudokuValidator()
         for i in self.indices where self[i] != nil {
             let coordinate = SudokuCoordinate(i)
@@ -49,12 +49,12 @@ public struct SudokuBoard: Equatable {
         return true
     }
     
-    func isFullyFilled() -> Bool {
+    var isFullyFilled: Bool {
         for cell in self.board where cell == nil { return false }
         return true
     }
     
-    var filledCells: Int {
+    var clues: Int {
         return lazy.filter({ $0 != nil }).count
     }
     

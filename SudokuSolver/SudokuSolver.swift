@@ -6,8 +6,8 @@ public extension SudokuBoard {
     }
 
     func findFirstSolution(method: SolvingMethod = .fromRowWithMostFilledValues) throws -> SudokuBoard {
-        guard isValid() else { throw SudokuSolverError.unsolvable }
-        guard !isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
+        guard isValid else { throw SudokuSolverError.unsolvable }
+        guard !isFullyFilled else { throw SudokuSolverError.boardAlreadyFilled }
         guard let solution = try _solutions(method: method).first else {
             throw SudokuSolverError.unsolvable
         }
@@ -15,8 +15,8 @@ public extension SudokuBoard {
     }
     
     func findAllSolutions(maxSolutions: Int = 1000) throws -> [SudokuBoard] {
-        guard isValid() else { throw SudokuSolverError.unsolvable }
-        guard !isFullyFilled() else { throw SudokuSolverError.boardAlreadyFilled }
+        guard isValid else { throw SudokuSolverError.unsolvable }
+        guard !isFullyFilled else { throw SudokuSolverError.boardAlreadyFilled }
         precondition(maxSolutions >= 1, "maxSolutions must be 1 or above")
         return try _solutions(mode: .findAll(maxSolutions: maxSolutions))
     }
@@ -65,7 +65,6 @@ internal extension SudokuBoard {
             if randomizedCellValues { cellValues.shuffle() }
             
             // Test out all cellValues, and recurse
-            // Reset shared state if branch returned false
             for cellValue in cellValues {
                 if validator.validate(cellValue, at: coordinate) {
                     board[coordinate.index] = SudokuCell(unchecked: cellValue)
@@ -77,6 +76,7 @@ internal extension SudokuBoard {
                     }
                 }
             }
+            // Reset shared state if branch returned false
             board[coordinate.index] = nil
             return false
         }

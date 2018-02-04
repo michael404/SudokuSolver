@@ -3,22 +3,22 @@ import XCTest
 class SudokuTests: XCTestCase {
     
     func testSudokuSolverIntegration() {
-        XCTAssertFalse(TestData.board1.isFullyFilled())
-        XCTAssertTrue(TestData.board1.isValid())
+        XCTAssertFalse(TestData.board1.isFullyFilled)
+        XCTAssertTrue(TestData.board1.isValid)
         
         // Default solving method
         do {
             let solution = try! TestData.board1.findFirstSolution()
-            XCTAssertTrue(solution.isValid())
-            XCTAssertTrue(solution.isFullyFilled())
+            XCTAssertTrue(solution.isValid)
+            XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData.expectedSolution1)
         }
         
         // "From Start" solving method
         do {
             let solution = try! TestData.board1.findFirstSolution(method: .fromStart)
-            XCTAssertTrue(solution.isValid())
-            XCTAssertTrue(solution.isFullyFilled())
+            XCTAssertTrue(solution.isValid)
+            XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData.expectedSolution1)
         }
     }
@@ -30,23 +30,23 @@ class SudokuTests: XCTestCase {
     }
     
     func testIsValid() {
-        XCTAssertTrue(TestData.board1.isValid())
+        XCTAssertTrue(TestData.board1.isValid)
         
         var board1NonValid = TestData.board1
         board1NonValid[0, 0] = 9
-        XCTAssertFalse(board1NonValid.isValid())
+        XCTAssertFalse(board1NonValid.isValid)
         
         board1NonValid = TestData.board1
         board1NonValid[8, 6] = 5
-        XCTAssertFalse(board1NonValid.isValid())
+        XCTAssertFalse(board1NonValid.isValid)
         
         board1NonValid = TestData.board1
         board1NonValid[6, 7] = 1
-        XCTAssertFalse(board1NonValid.isValid())
+        XCTAssertFalse(board1NonValid.isValid)
     }
     
     func testFailingBoard() {
-        XCTAssertFalse(TestData.invalidBoard.isValid())
+        XCTAssertFalse(TestData.invalidBoard.isValid)
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution())
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution(method: .fromRowWithMostFilledValues))
     
@@ -69,8 +69,8 @@ class SudokuTests: XCTestCase {
             let solutions = try! TestData.multipleSolutionsBoard.findAllSolutions()
             XCTAssertEqual(solutions.count, 9)
             for solution in solutions {
-                XCTAssertTrue(solution.isValid())
-                XCTAssertTrue(solution.isFullyFilled())
+                XCTAssertTrue(solution.isValid)
+                XCTAssertTrue(solution.isFullyFilled)
             }
         }
     }
@@ -84,26 +84,26 @@ class SudokuTests: XCTestCase {
         do {
             let solution = try! TestData.board1.findAllSolutions(maxSolutions: 1)
             XCTAssertEqual(solution.count, 1)
-            XCTAssertTrue(solution[0].isValid())
-            XCTAssertTrue(solution[0].isFullyFilled())
+            XCTAssertTrue(solution[0].isValid)
+            XCTAssertTrue(solution[0].isFullyFilled)
             XCTAssertEqual(solution[0].description, TestData.expectedSolution1)
         }
     }
     
     func testRandomFullyFilledBoard() {
         let board = SudokuBoard.randomFullyFilledBoard()
-        XCTAssertTrue(board.isValid())
-        XCTAssertTrue(board.isFullyFilled())
-        XCTAssertEqual(board.filledCells, 81)
+        XCTAssertTrue(board.isValid)
+        XCTAssertTrue(board.isFullyFilled)
+        XCTAssertEqual(board.clues, 81)
         
         // Two random boards should (usually) not be equal
         XCTAssertNotEqual(board, SudokuBoard.randomFullyFilledBoard())
     }
     
     func testFilledCells() {
-        XCTAssertEqual(TestData.board1.filledCells, 27)
-        XCTAssertEqual(TestData.board2.filledCells, 21)
-        XCTAssertEqual(TestData.emptyBoard.filledCells, 0)
+        XCTAssertEqual(TestData.board1.clues, 27)
+        XCTAssertEqual(TestData.board2.clues, 21)
+        XCTAssertEqual(TestData.emptyBoard.clues, 0)
     }
     
     func testBitMask() {
