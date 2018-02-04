@@ -6,14 +6,10 @@ public extension SudokuBoard {
     
     static func randomFullyFilledBoard() -> SudokuBoard {
         let board = SudokuBoard()
-        do {
-            guard let filledBoard = try board._solutions(randomizedCellValues: true).first else {
-                fatalError("Could not construct random board. This should not be possible.")
-            }
-            return filledBoard
-        } catch {
+        guard let filledBoards = try? board._solutions(randomizedCellValues: true), let filledBoard = filledBoards.first else {
             fatalError("Could not construct random board. This should not be possible.")
         }
+        return filledBoard
     }
     
 }
