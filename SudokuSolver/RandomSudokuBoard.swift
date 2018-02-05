@@ -1,22 +1,7 @@
 public extension SudokuBoard {
     
-    // TODO: Hack to get around that generic parameters cannot be defaulted (?)
     static func randomStartingBoard() -> SudokuBoard {
-        return randomStartingBoard(clues: (17..<81))
-    }
-    
-    // TODO: This is extreamly inefficient when searching for boards with <25 clues
-    static func randomStartingBoard<R: RangeExpression>(clues: R) -> SudokuBoard where R.Bound == Int {
-        let clues = clues.relative(to: (17..<81))
-        precondition(clues.lowerBound >= 17, "Lower bound of clues must be 17 or above")
-        precondition(clues.upperBound <= 81, "Upper bound of clues must be under 81")
-        
-        let solvedBoard = randomFullyFilledBoard()
-        var board: SudokuBoard
-        repeat {
-            board = solvedBoard.randomStartingPositionFromFullyFilledBoard()
-        } while !clues.contains(board.clues)
-        return board
+        return randomFullyFilledBoard().randomStartingPositionFromFullyFilledBoard()
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
@@ -43,9 +28,9 @@ internal extension SudokuBoard {
                     fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
                 }
             } catch {
-                // too many solutions - reset last removal and break
+                // too many solutions - reset last removal
+                // and move on
                 board[index] = cellAtIndex
-                break
             }
         }
         return board

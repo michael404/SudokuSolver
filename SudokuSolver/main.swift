@@ -4,7 +4,7 @@ print("Starting...")
 
 var longestSolvingTimeInNanoseconds = 2_000_000
 for _ in 0..<10_000 {
-    let board = SudokuBoard.randomStartingBoard(clues: (17...25))
+    let board = SudokuBoard.randomStartingBoard()
     //print("  Testing: \(board.debugDescription)")
     do {
         let startTime = Date()
