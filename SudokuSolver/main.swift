@@ -3,8 +3,8 @@ import Foundation
 print("Starting...")
 
 var longestSolvingTimeInNanoseconds = 2_000_000
-for _ in 0..<1_000_000 {
-    let board = SudokuBoard.randomStartingBoard(clues (17...25))
+for _ in 0..<10_000 {
+    let board = SudokuBoard.randomStartingBoard(clues: (17...25))
     //print("  Testing: \(board.debugDescription)")
     do {
         let startTime = Date()
