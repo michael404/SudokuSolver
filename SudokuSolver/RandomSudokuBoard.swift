@@ -7,7 +7,7 @@ public extension SudokuBoard {
     
     // TODO: This is extreamly inefficient when searching for boards with <25 clues
     static func randomStartingBoard<R: RangeExpression>(clues: R) -> SudokuBoard where R.Bound == Int {
-        let clues = clues.relative(to: (0..<81))
+        let clues = clues.relative(to: (17..<81))
         precondition(clues.lowerBound >= 17, "Lower bound of clues must be 17 or above")
         precondition(clues.upperBound <= 81, "Upper bound of clues must be under 81")
         
