@@ -108,10 +108,11 @@ class SudokuTests: XCTestCase {
         }
         
         do {
-            let board = SudokuBoard.randomStartingBoard(maximumNumberOfClues: 25)
+            let board = SudokuBoard.randomStartingBoard(clues: (17...30))
             XCTAssertTrue(board.isValid)
             XCTAssertFalse(board.isFullyFilled)
-            XCTAssert(board.clues <= 25)
+            XCTAssert(board.clues <= 30)
+            XCTAssert(board.clues >= 17)
         }
         
         // Two random starting boards should (usually) not be equal

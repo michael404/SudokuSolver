@@ -1,8 +1,10 @@
 import Foundation
 
+print("Starting...")
+
 var longestSolvingTimeInNanoseconds = 2_000_000
 for _ in 0..<1_000_000 {
-    let board = SudokuBoard.randomStartingBoard(maximumNumberOfClues: 25)
+    let board = SudokuBoard.randomStartingBoard(clues (17...25))
     //print("  Testing: \(board.debugDescription)")
     do {
         let startTime = Date()
@@ -10,7 +12,7 @@ for _ in 0..<1_000_000 {
         let endTime = Date()
         let nanoseconds = Calendar.current.dateComponents([.nanosecond], from: startTime, to: endTime).nanosecond!
         if nanoseconds > longestSolvingTimeInNanoseconds {
-            print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds")
+            print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
             longestSolvingTimeInNanoseconds = nanoseconds
         }
     } catch {

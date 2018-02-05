@@ -1,13 +1,21 @@
 public extension SudokuBoard {
     
-    // TODO: Look for ways to make this more efficient for small maximumNumberOfClues
-    static func randomStartingBoard(maximumNumberOfClues: Int = 81) -> SudokuBoard {
-        precondition((17...81).contains(maximumNumberOfClues), "Maximum number of clues must be between 17 and 81")
+    // TODO: Hack to get around that generic parameters cannot be defaulted (?)
+    static func randomStartingBoard() -> SudokuBoard {
+        return randomStartingBoard(clues: (17..<81))
+    }
+    
+    // TODO: This is extreamly inefficient when searching for boards with <25 clues
+    static func randomStartingBoard<R: RangeExpression>(clues: R) -> SudokuBoard where R.Bound == Int {
+        let clues = clues.relative(to: (0..<81))
+        precondition(clues.lowerBound >= 17, "Lower bound of clues must be 17 or above")
+        precondition(clues.upperBound <= 81, "Upper bound of clues must be under 81")
+        
         let solvedBoard = randomFullyFilledBoard()
         var board: SudokuBoard
         repeat {
             board = solvedBoard.randomStartingPositionFromFullyFilledBoard()
-        } while board.clues > maximumNumberOfClues
+        } while !clues.contains(board.clues)
         return board
     }
     
