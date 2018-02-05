@@ -1,5 +1,6 @@
 public extension SudokuBoard {
     
+    // TODO: Look for ways to make this more efficient for small maximumNumberOfClues
     static func randomStartingBoard(maximumNumberOfClues: Int = 81) -> SudokuBoard {
         precondition((17...81).contains(maximumNumberOfClues), "Maximum number of clues must be between 17 and 81")
         let solvedBoard = randomFullyFilledBoard()
