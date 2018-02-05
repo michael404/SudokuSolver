@@ -1,7 +1,13 @@
 public extension SudokuBoard {
     
-    static func randomStartingBoard() -> SudokuBoard {
-        return randomFullyFilledBoard().randomStartingPositionFromFullyFilledBoard()
+    static func randomStartingBoard(maximumNumberOfClues: Int = 81) -> SudokuBoard {
+        precondition((17...81).contains(maximumNumberOfClues), "Maximum number of clues must be between 17 and 81")
+        let solvedBoard = randomFullyFilledBoard()
+        var board: SudokuBoard
+        repeat {
+            board = solvedBoard.randomStartingPositionFromFullyFilledBoard()
+        } while board.clues > maximumNumberOfClues
+        return board
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {

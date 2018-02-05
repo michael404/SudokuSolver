@@ -96,8 +96,26 @@ class SudokuTests: XCTestCase {
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
         
-        // Two random boards should (usually) not be equal
+        // Two random filled boards should (usually) not be equal
         XCTAssertNotEqual(board, SudokuBoard.randomFullyFilledBoard())
+    }
+    
+    func testRandomStartingBoard() {
+        do {
+            let board = SudokuBoard.randomStartingBoard()
+            XCTAssertTrue(board.isValid)
+            XCTAssertFalse(board.isFullyFilled)
+        }
+        
+        do {
+            let board = SudokuBoard.randomStartingBoard(maximumNumberOfClues: 25)
+            XCTAssertTrue(board.isValid)
+            XCTAssertFalse(board.isFullyFilled)
+            XCTAssert(board.clues <= 25)
+        }
+        
+        // Two random starting boards should (usually) not be equal
+        XCTAssertNotEqual(SudokuBoard.randomStartingBoard(), SudokuBoard.randomStartingBoard())
     }
     
     func testFilledCells() {
