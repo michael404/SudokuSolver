@@ -32,8 +32,9 @@ internal extension SudokuBoard {
     func _solutions(mode: FindMode = .findFirst, method: SolvingMethod = .fromStart, randomizedCellValues: Bool = false) throws -> [SudokuBoard] {
         
         var allSolutions: [SudokuBoard] = []
-        var board = self
-        var validator = SudokuValidator(board)
+        var board = UnsafeMutableBufferPointer<SudokuCell>.allocate(capacity: 81)
+        _ = board.initialize(from: self.board)
+        var validator = SudokuValidator(self)
         var cellValues = Array(1...9)
         
         let coordinateIterator: Array<SudokuCoordinate>.Iterator
@@ -51,7 +52,7 @@ internal extension SudokuBoard {
             // If we are at the end of the indicies, we need to take different
             // actions, based on the parameters passed to the function
             guard let coordinate = coordinateIterator.next() else {
-                allSolutions.append(board)
+                allSolutions.append(SudokuBoard(board))
                 switch mode {
                 case .findFirst:
                     return true
@@ -82,6 +83,7 @@ internal extension SudokuBoard {
         }
         
         _ = try _solve(coordinateIterator)
+        board.deallocate()
         return allSolutions
     }
     

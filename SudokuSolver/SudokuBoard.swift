@@ -2,9 +2,9 @@ public struct SudokuBoard: Equatable {
     
     internal var board: [SudokuCell]
     
-    init(_ board: [SudokuCell]) {
+    init<C: Collection>(_ board: C) where C.Element == SudokuCell {
         precondition(board.count == 81, "Must pass in 81 SudokuCell elements")
-        self.board = board
+        self.board = Array(board)
     }
     
     init(_ board: SudokuCell...) {
