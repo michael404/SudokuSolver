@@ -116,6 +116,26 @@
 					<string>3 Feb 2018 at 14:37:35</string>
 				</dict>
 			</dict>
+			<key>testPerfRandomFullyFilledBoard()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.00018269</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>10 Feb 2018 at 10:09:12</string>
+				</dict>
+			</dict>
+			<key>testPerfRandomStartingBoard()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.25996</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>10 Feb 2018 at 10:09:58</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>SudokuTests</key>
 		<dict>
