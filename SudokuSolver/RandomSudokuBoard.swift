@@ -1,6 +1,7 @@
 public extension SudokuBoard {
     
     static func randomStartingBoard() -> SudokuBoard {
+        //TODO: check if it is more effective to not generate a full filled board first
         return randomFullyFilledBoard().randomStartingPositionFromFullyFilledBoard()
     }
     
@@ -16,6 +17,8 @@ public extension SudokuBoard {
 
 internal extension SudokuBoard {
     
+    //TODO: Can we remove the first 41 (?) cells without any checks?
+    // Maximum minimal board should be 40 cells according to wikipedia
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
         var board = self
         let shuffledIndicies = board.indices.shuffled()
