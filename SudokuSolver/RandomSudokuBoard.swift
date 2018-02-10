@@ -17,22 +17,29 @@ public extension SudokuBoard {
 
 internal extension SudokuBoard {
     
-    //TODO: Can we remove the first 41 (?) cells without any checks?
-    // Maximum minimal board should be 40 cells according to wikipedia
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
         var board = self
-        let shuffledIndicies = board.indices.shuffled()
-        for index in shuffledIndicies {
+        var shuffledIndiciesIterator = board.indices.shuffled().makeIterator()
+        
+        // Since the maximum number of clues in a minimal Sudoku is 40
+        // (https://en.wikipedia.org/wiki/Mathematics_of_Sudoku#Maximum_number_of_givens)
+        // we can safely set the first 41 random cells to nil without any checks
+        for _ in 0..<41 {
+            board[shuffledIndiciesIterator.next()!] = nil
+        }
+        
+        // Try to set the last 40 indicies to nil, while checking that it is stil valid
+        // and only has one solution
+        for index in shuffledIndiciesIterator {
             let cellAtIndex = board[index]
             board[index] = nil
             do {
                 guard try board._solutions(mode: .findAll(maxSolutions: 1)).count == 1 else {
-                    // no valid solution - this should not happen
+                    // No valid solution - this should not happen
                     fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
                 }
             } catch {
-                // too many solutions - reset last removal
-                // and move on
+                // Too many solutions. Add back last cell set to nil and move on whith next index
                 board[index] = cellAtIndex
             }
         }
