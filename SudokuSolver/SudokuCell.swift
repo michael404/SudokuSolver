@@ -17,7 +17,7 @@ public struct SudokuCell: Equatable {
 
 extension SudokuCell: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
-        self.init(value)
+        self.init(unchecked: value)
     }
 }
 
