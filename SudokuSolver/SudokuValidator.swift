@@ -1,8 +1,4 @@
 internal struct SudokuValidator {
-
-    struct Mask {
-        private var _storage: DoubleWidth<UInt64> = 0
-    }
     
     private var rows = Mask()
     private var columns = Mask()
@@ -31,21 +27,29 @@ internal struct SudokuValidator {
     
 }
 
-extension SudokuValidator.Mask {
+
+
+extension SudokuValidator {
     
-    subscript(part: Int, cellValue: Int) -> Bool {
-        get {
-            let index = part * 10 + cellValue
-            return ((_storage >> index) & 1) == 1
-        }
-        set {
-            let index = part * 10 + cellValue
-            let oldValue = ((_storage >> index) & 1) == 1
-            switch oldValue {
-            case newValue: return
-            case true: _storage = 1 << index ^ _storage
-            case false: _storage = 1 << index | _storage
+    struct Mask {
+        
+        private var _storage: DoubleWidth<UInt64> = 0
+        
+        subscript(part: Int, cellValue: Int) -> Bool {
+            get {
+                let index = part * 10 + cellValue
+                return ((_storage >> index) & 1) == 1
+            }
+            set {
+                let index = part * 10 + cellValue
+                let oldValue = ((_storage >> index) & 1) == 1
+                switch oldValue {
+                case newValue: return
+                case true: _storage = 1 << index ^ _storage
+                case false: _storage = 1 << index | _storage
+                }
             }
         }
     }
+    
 }
