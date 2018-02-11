@@ -51,7 +51,9 @@ class SudokuPerfTests: XCTestCase {
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard()
         self.measure {
-            board = SudokuBoard.randomFullyFilledBoard()
+            for _ in 0..<10 {
+                board = SudokuBoard.randomFullyFilledBoard()
+            }
         }
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
@@ -61,7 +63,9 @@ class SudokuPerfTests: XCTestCase {
     func testPerfRandomStartingBoard() {
         var board = SudokuBoard()
         self.measure {
-            board = SudokuBoard.randomStartingBoard()
+            for _ in 0..<10 {
+                board = SudokuBoard.randomStartingBoard()
+            }
         }
         XCTAssertTrue(board.isValid)
         XCTAssertFalse(board.isFullyFilled)
