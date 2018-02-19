@@ -7,7 +7,7 @@ public extension SudokuBoard {
     
     static func randomFullyFilledBoard() -> SudokuBoard {
         let board = SudokuBoard()
-        guard let filledBoards = try? board._solutions(randomizedCellValues: true), let filledBoard = filledBoards.first else {
+        guard let filledBoard = try? board.findFirstSolution(method: .fromStart,randomizedCellValues: true) else {
             fatalError("Could not construct random board. This should not be possible.")
         }
         return filledBoard
@@ -33,12 +33,13 @@ internal extension SudokuBoard {
         for index in shuffledIndiciesIterator {
             let cellAtIndex = board[index]
             board[index] = nil
-            do {
-                guard try board._solutions(mode: .findAll(maxSolutions: 1)).count == 1 else {
-                    // No valid solution - this should not happen
-                    fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
-                }
-            } catch {
+            switch board.numberOfSolutions() {
+            case .none:
+                fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
+            case .one:
+                // Do nothing
+                break
+            case .multiple:
                 // Too many solutions. Add back last cell set to nil and move on whith next index
                 board[index] = cellAtIndex
             }

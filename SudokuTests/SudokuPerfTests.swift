@@ -63,7 +63,7 @@ class SudokuPerfTests: XCTestCase {
     func testPerfRandomStartingBoard() {
         var board = SudokuBoard()
         self.measure {
-            for _ in 0..<10 {
+            for _ in 0..<50 {
                 board = SudokuBoard.randomStartingBoard()
             }
         }

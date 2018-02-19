@@ -45,11 +45,19 @@ class SudokuTests: XCTestCase {
         XCTAssertFalse(board1NonValid.isValid)
     }
     
+    func testFullyFilled() {
+        let filledBoard = TestData.filledboard
+        XCTAssertEqual(filledBoard.clues, 81)
+        XCTAssertTrue(filledBoard.isFullyFilled)
+        // A filled board should return itself as a solution
+        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
+
+    }
+    
     func testFailingBoard() {
         XCTAssertFalse(TestData.invalidBoard.isValid)
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution())
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution(method: .fromRowWithMostFilledValues))
-    
     }
     
     func testFindAllSolutions() {
@@ -75,7 +83,7 @@ class SudokuTests: XCTestCase {
         }
     }
     
-    func testTooManySolutions() {
+    func testManySolutions() {
         
         //Should throw
         XCTAssertThrowsError(try TestData.multipleSolutionsBoard.findAllSolutions(maxSolutions: 3))
@@ -88,6 +96,16 @@ class SudokuTests: XCTestCase {
             XCTAssertTrue(solution[0].isFullyFilled)
             XCTAssertEqual(solution[0].description, TestData.expectedSolution1)
         }
+        
+    }
+    
+    func testNumberOfSolutions() {
+        XCTAssertEqual(TestData.board1.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData.board2.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData.multipleSolutionsBoard.numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData.invalidBoard.numberOfSolutions(), .none)
+
+
     }
     
     func testRandomFullyFilledBoard() {
@@ -95,6 +113,7 @@ class SudokuTests: XCTestCase {
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
+
         
         // Two random filled boards should (usually) not be equal
         XCTAssertNotEqual(board, SudokuBoard.randomFullyFilledBoard())

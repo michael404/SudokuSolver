@@ -3,7 +3,6 @@ import Foundation
 public enum SudokuSolverError: Error {
     
     case unsolvable
-    case boardAlreadyFilled
     case tooManySolutions
     
 }
