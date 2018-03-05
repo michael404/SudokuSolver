@@ -22,8 +22,8 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
         let board = SudokuBoard.randomStartingBoard()
         let nanoseconds = countNanoseconds {
-            guard let _ = try? board.findFirstSolution() else {
-                fatalError("Not solvable. This should not happen.")
+            guard board.numberOfSolutions() == .one else {
+                fatalError("Not solvable or multiple solutions. This should not happen.")
             }
         }
         guard nanoseconds >= maxTimeNanoseconds else { return }
@@ -37,7 +37,7 @@ generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 21) { board in
     print("--> \(board.debugDescription) <-- \(board.clues) clues")
 }
 
-generateHardToBruteForceSudokusAsync(iterations: 10000) { board, nanoseconds in
-    print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
-}
+//generateHardToBruteForceSudokusAsync(iterations: 10000) { board, nanoseconds in
+//    print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
+//}
 
