@@ -1,33 +1,33 @@
 extension SudokuBoard {
     
     func findFirstSolutionAlt() throws -> SudokuBoard {
-        
-        var board = CellOptionBoard(self)
-        
-        try board.eliminatePossibilities()
 
         // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard) throws -> CellOptionBoard {
+        func _solve(_ board: CellOptionBoard, _ indicies: [Int]) throws -> CellOptionBoard {
 
             var board = board
             //TODO: The first run of this could be triggered for one cell only, since we have only changed one value
             try board.eliminatePossibilities()
             
-            //TODO: Generate a cell iterator outside and send it to the function. Consider if it needs to resorted (only first item)
-            guard let index = board.index(where: { $0.onlyValue == nil }) else { return board }
+            guard !indicies.isEmpty else { return board }
+            let index = indicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
             
             // Test out all cellValues, and recurse
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board)
+                    return try _solve(board, indicies.filter(board.hasSingleValueAtIndex))
                 } catch {
                     continue
                 }
             }
             throw SudokuSolverError.unsolvable
         }
-        let result = try _solve(board)
+        
+        var board = CellOptionBoard(self)
+        try board.eliminatePossibilities()
+        let solvableCellIndicies = board.indices.filter(board.hasSingleValueAtIndex)
+        let result = try _solve(board, solvableCellIndicies)
         return SudokuBoard(result)
         
 
@@ -64,6 +64,10 @@ fileprivate struct CellOptionBoard {
                 }
             }
         } while valuesWereRemoved
+    }
+    
+    func hasSingleValueAtIndex(_ index: Int) -> Bool {
+        return self[index].onlyValue == nil
     }
 }
 
@@ -141,6 +145,7 @@ extension CellOptionBoard: MutableCollection, RandomAccessCollection {
 
 fileprivate struct _Cell {
     
+    //TODO: Replace this with a bitmask or bool array
     var possibleValues: Set<Int>
     
     init() {
@@ -157,6 +162,10 @@ fileprivate struct _Cell {
             return possibleValues.first!
         }
         return nil
+    }
+    
+    var numberOfPossibleValues: Int {
+        return possibleValues.count
     }
     
     // Throws if it is not possible
