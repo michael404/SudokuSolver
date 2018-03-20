@@ -1,4 +1,4 @@
-public struct SudokuCell: Equatable {
+public struct SudokuCell: Hashable {
     
     internal let value: Int
     
