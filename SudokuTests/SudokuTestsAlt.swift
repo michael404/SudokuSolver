@@ -96,5 +96,45 @@ class SudokuTestsAlt: XCTestCase {
 //        XCTAssertNotEqual(SudokuBoard.randomStartingBoard(), SudokuBoard.randomStartingBoard())
 //    }
     
+    func testOneToNine() {
+        let allTrue = OneToNineSet(allTrue: ())
+        XCTAssertEqual(allTrue.count, 9)
+        for i in 1...9 {
+            XCTAssertTrue(allTrue[value: i])
+        }
+        
+        var someFalse = allTrue
+        someFalse[value: 1] = false
+        someFalse[value: 7] = false
+        XCTAssertEqual(someFalse.count, 7)
+        XCTAssertFalse(someFalse.hasSingeValue)
+        XCTAssertNil(someFalse.onlyValue)
+        XCTAssertFalse(someFalse[value: 1])
+        XCTAssertFalse(someFalse[value: 7])
+
+        someFalse[value: 1] = true
+        someFalse[value: 3] = true //no change
+        XCTAssertEqual(someFalse.count, 8)
+        XCTAssertFalse(someFalse.hasSingeValue)
+        XCTAssertNil(someFalse.onlyValue)
+        XCTAssertTrue(someFalse[value: 1])
+        XCTAssertTrue(someFalse[value: 3])
+        
+        let oneValue = OneToNineSet(5)
+        XCTAssertEqual(oneValue.count, 1)
+        XCTAssertTrue(oneValue.hasSingeValue)
+        XCTAssertEqual(oneValue.onlyValue, 5)
+        XCTAssertFalse(oneValue[value: 1])
+        XCTAssertFalse(oneValue[value: 2])
+        XCTAssertFalse(oneValue[value: 3])
+        XCTAssertFalse(oneValue[value: 4])
+        XCTAssertTrue(oneValue[value: 5])
+        XCTAssertFalse(oneValue[value: 6])
+        XCTAssertFalse(oneValue[value: 7])
+        XCTAssertFalse(oneValue[value: 8])
+        XCTAssertFalse(oneValue[value: 9])
+
+    }
+    
 }
 

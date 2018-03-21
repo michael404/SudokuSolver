@@ -145,23 +145,19 @@ extension CellOptionBoard: MutableCollection, RandomAccessCollection {
 
 fileprivate struct _Cell {
     
-    //TODO: Replace this with a bitmask or bool array
-    var possibleValues: Set<Int>
+    var possibleValues: OneToNineSet
     
     init() {
-        possibleValues = Set(1...9)
+        possibleValues = OneToNineSet(allTrue: ())
     }
     
     init(_ value: Int) {
         assert((1...9).contains(value))
-        self.possibleValues = Set(CollectionOfOne(value))
+        self.possibleValues = OneToNineSet(value)
     }
     
     var onlyValue: Int? {
-        if possibleValues.count == 1 {
-            return possibleValues.first!
-        }
-        return nil
+        return possibleValues.onlyValue
     }
     
     var numberOfPossibleValues: Int {
@@ -170,14 +166,15 @@ fileprivate struct _Cell {
     
     // Throws if it is not possible
     // Returns true if values were removed
-    //TODO: Make this throw instead and propagate up?
     mutating func remove(value: Int) throws -> Bool {
         if onlyValue == value {
             //Tried to remove the value that was filled
            throw SudokuSolverError.unsolvable
         }
-        let removedValue = possibleValues.remove(value)
-        return removedValue != nil
+        //TODO: Can this be optimized with a function instead of subscipt?
+        let didRemovedValue = possibleValues[value: value]
+        possibleValues[value: value] = false
+        return didRemovedValue
     }
     
 }
@@ -187,7 +184,7 @@ extension _Cell: CustomStringConvertible {
         if let value = onlyValue {
             return "<\(value)>"
         }
-        return possibleValues.description
+        return Array(possibleValues).description
     }
     
     
@@ -207,30 +204,87 @@ fileprivate extension SudokuBoard {
 }
 
 
-//fileprivate struct BitMask10 {
-//
-//    private var _storage: UInt16
-//
-//    init(allTrue: ()) {
-//        self._storage = 0x1111111110
-//    }
-//
-//    subscript(index: Int) -> Bool {
-//        get {
-//            return ((_storage >> index) & 1) == 1
-//        }
-//        set {
-//            let oldValue = ((_storage >> index) & 1) == 1
-//            switch oldValue {
-//            case newValue: return
-//            case true: _storage = 1 << index ^ _storage
-//            case false: _storage = 1 << index | _storage
-//            }
-//        }
-//    }
-//
-//    func isFinalized() -> Int? {
-//        guard _storage && !(_storage & (_storage - 1)) else { return nil }
-//    }
-//}
+struct OneToNineSet: Sequence {
+    
+    typealias Element = Int
+    
+    private var _storage: Int16
+    private var _count: Int8
 
+    var count: Int {
+        return numericCast(_count)
+    }
+    
+    init(allTrue: ()) {
+        self._storage = 0b1111111110
+        self._count = 9
+    }
+    
+    init(_ value: Int) {
+        assert((1...9).contains(value))
+        self._storage = 0x0
+        self._count = 0 //will be increased in subscript
+        //TODO: Can this be made more efficient, since we do not need to increase the count and check the last value?
+        self[value: value] = true
+    }
+
+    subscript(value value: Int) -> Bool {
+        get {
+            assert((1...9).contains(value))
+            return ((_storage >> value) & 1) == 1
+        }
+        set {
+            assert((1...9).contains(value))
+            let oldValue = ((_storage >> value) & 1) == 1
+            switch oldValue {
+            case newValue: return
+            case true:
+                _storage = 1 << value ^ _storage
+                _count -= 1
+            case false:
+                _storage = 1 << value | _storage
+                _count += 1
+            }
+        }
+    }
+
+    var hasSingeValue: Bool {
+//        return _storage == (_storage & -_storage)
+        return _count == 1
+    }
+    
+    var onlyValue: Int? {
+        guard hasSingeValue else { return nil }
+        //TODO: Better way to do this?
+        for value in 1...9 where self[value: value] == true {
+            return value
+        }
+        fatalError()
+    }
+    
+    func makeIterator() -> OneToNineIterator {
+        return OneToNineIterator(self)
+    }
+}
+
+struct OneToNineIterator: IteratorProtocol {
+    
+    typealias Element = Int
+    
+    var base: OneToNineSet
+    var index = 0
+    init(_ base: OneToNineSet) {
+        self.base = base
+    }
+    
+    mutating func next() -> Int? {
+        while index < 10 {
+            index += 1
+            if base[value: index] == true {
+                return index
+            }
+        }
+        return nil
+    }
+    
+}
