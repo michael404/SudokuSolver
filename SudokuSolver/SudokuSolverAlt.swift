@@ -3,20 +3,25 @@ extension SudokuBoard {
     func findFirstSolutionAlt() throws -> SudokuBoard {
 
         // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard, _ indicies: [Int]) throws -> CellOptionBoard {
+        func _solve(_ board: CellOptionBoard, _ indicies: [Int], _ lastChangedIndex: Int = 0) throws -> CellOptionBoard {
 
             var board = board
-            //TODO: The first run of this could be triggered for one cell only, since we have only changed one value
-            try board.eliminatePossibilities()
+            
+            //TODO: figure out why this does not improve performance
+            if lastChangedIndex == 0 {
+                try board.eliminatePossibilities(for: CollectionOfOne(lastChangedIndex))
+            } else {
+                try board.eliminatePossibilities(for: 0..<81)
+            }
             
             guard !indicies.isEmpty else { return board }
             let index = indicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
             
-            // Test out all cellValues, and recurse
+            // Test out possible cell values, and recurse
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board, indicies.filter(board.hasSingleValueAtIndex))
+                    return try _solve(board, indicies.filter(board.hasSingleValueAtIndex), index)
                 } catch {
                     continue
                 }
@@ -24,8 +29,7 @@ extension SudokuBoard {
             throw SudokuSolverError.unsolvable
         }
         
-        var board = CellOptionBoard(self)
-        try board.eliminatePossibilities()
+        let board = CellOptionBoard(self)
         let solvableCellIndicies = board.indices.filter(board.hasSingleValueAtIndex)
         let result = try _solve(board, solvableCellIndicies)
         return SudokuBoard(result)
@@ -41,31 +45,29 @@ fileprivate struct CellOptionBoard {
     var board: [_Cell]
     
     init(_ board: SudokuBoard) {
-        self.board = Array(repeating: _Cell(), count: 81)
-        for index in board.indices where board[index] != nil {
-            self.board[index] = _Cell(board[index].value)
+        self.board = board.map { cell in
+            return cell == nil ? _Cell() : _Cell(cell.value)
         }
+        
     }
     
     // Throws if we are in an impossible situation
-    mutating func eliminatePossibilities() throws {
+    mutating func eliminatePossibilities<C: Collection>(for indicies: C) throws {
         
-        var valuesWereRemoved: Bool
-        repeat {
-            valuesWereRemoved = false
-            for index in board.indices {
-                if let valueToRemove = board[index].onlyValue {
-                    
-                    for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
-                        if try board[indexToRemoveFrom].remove(value: valueToRemove) {
-                            valuesWereRemoved = true
-                        }
+        var updatedIndicies = Set<Int>()
+        for index in indices {
+            if let valueToRemove = board[index].onlyValue {
+                for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
+                    if try board[indexToRemoveFrom].remove(value: valueToRemove) {
+                        updatedIndicies.insert(indexToRemoveFrom)
                     }
                 }
             }
-        } while valuesWereRemoved
+        }
+        guard !updatedIndicies.isEmpty else { return }
+        try eliminatePossibilities(for: updatedIndicies)
     }
-    
+
     func hasSingleValueAtIndex(_ index: Int) -> Bool {
         return self[index].onlyValue == nil
     }
@@ -171,10 +173,7 @@ fileprivate struct _Cell {
             //Tried to remove the value that was filled
            throw SudokuSolverError.unsolvable
         }
-        //TODO: Can this be optimized with a function instead of subscipt?
-        let didRemovedValue = possibleValues[value: value]
-        possibleValues[value: value] = false
-        return didRemovedValue
+        return possibleValues.remove(value)
     }
     
 }
@@ -206,60 +205,60 @@ fileprivate extension SudokuBoard {
 
 struct OneToNineSet: Sequence {
     
-    typealias Element = Int
+    private var _storage: UInt16
     
-    private var _storage: Int16
-    private var _count: Int8
-
-    var count: Int {
-        return numericCast(_count)
-    }
+    private var _count: UInt8
+    
+    //TODO: Evaluate if this cache is necessary after other performance optimizations
+    /// The only value if there is only one value. 0 otherwise
+    fileprivate var _onlyValue: UInt8
     
     init(allTrue: ()) {
         self._storage = 0b1111111110
         self._count = 9
+        self._onlyValue = 0
     }
     
     init(_ value: Int) {
         assert((1...9).contains(value))
-        self._storage = 0x0
-        self._count = 0 //will be increased in subscript
-        //TODO: Can this be made more efficient, since we do not need to increase the count and check the last value?
-        self[value: value] = true
+        self._storage = 1 << value ^ 0
+        self._count = 1
+        self._onlyValue = numericCast(value)
     }
 
-    subscript(value value: Int) -> Bool {
-        get {
-            assert((1...9).contains(value))
-            return ((_storage >> value) & 1) == 1
-        }
-        set {
-            assert((1...9).contains(value))
-            let oldValue = ((_storage >> value) & 1) == 1
-            switch oldValue {
-            case newValue: return
-            case true:
-                _storage = 1 << value ^ _storage
-                _count -= 1
-            case false:
-                _storage = 1 << value | _storage
-                _count += 1
+    func contains(_ value: Int) -> Bool {
+        assert((1...9).contains(value))
+        return ((_storage >> value) & 1) == 1
+    }
+    
+    //Returns true if a value was removed
+    mutating func remove(_ value: Int) -> Bool {
+        assert((1...9).contains(value))
+        let oldValue = ((_storage >> value) & 1) == 1
+        if oldValue {
+            _storage = 1 << value ^ _storage
+            _count = _count &- 1
+            if _count == 1 {
+                for index in 1...9 where contains(index) {
+                    _onlyValue = numericCast(index)
+                }
             }
+            return true
         }
+        return false
+    }
+    
+    var count: Int {
+        return numericCast(_count)
     }
 
     var hasSingeValue: Bool {
-//        return _storage == (_storage & -_storage)
         return _count == 1
     }
     
     var onlyValue: Int? {
-        guard hasSingeValue else { return nil }
-        //TODO: Better way to do this?
-        for value in 1...9 where self[value: value] == true {
-            return value
-        }
-        fatalError()
+        guard _onlyValue != 0 else { return nil }
+        return numericCast(_onlyValue)
     }
     
     func makeIterator() -> OneToNineIterator {
@@ -268,22 +267,26 @@ struct OneToNineSet: Sequence {
 }
 
 struct OneToNineIterator: IteratorProtocol {
-    
-    typealias Element = Int
-    
+        
     var base: OneToNineSet
-    var index = 0
-    init(_ base: OneToNineSet) {
-        self.base = base
-    }
+    private var index = 1
+    
+    init(_ base: OneToNineSet) { self.base = base }
     
     mutating func next() -> Int? {
-        while index < 10 {
-            index += 1
-            if base[value: index] == true {
-                return index
-            }
+        
+        guard index < 10 else { return nil }
+        
+        if base.hasSingeValue {
+            index = 10
+            return numericCast(base._onlyValue)
         }
+        
+        repeat {
+            defer { index = index &+ 1 }
+            if base.contains(index) { return index }
+        } while index < 10
+        
         return nil
     }
     
