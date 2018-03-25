@@ -42,6 +42,7 @@ extension SudokuBoard {
 
 fileprivate struct CellOptionBoard {
     
+    //TODO: Try replacing this with a FixedCellArray81
     var board: [_Cell]
     
     init(_ board: SudokuBoard) {
