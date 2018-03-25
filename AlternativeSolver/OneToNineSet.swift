@@ -18,7 +18,7 @@ struct OneToNineSet: Sequence {
         assert((1...9).contains(value))
         self._storage = 1 << value ^ 0
         self._count = 1
-        self._onlyValue = numericCast(value)
+        self._onlyValue = UInt8(truncatingIfNeeded: value)
     }
     
     func contains(_ value: Int) -> Bool {
@@ -35,7 +35,7 @@ struct OneToNineSet: Sequence {
             _count = _count &- 1
             if _count == 1 {
                 for index in 1...9 where contains(index) {
-                    _onlyValue = numericCast(index)
+                    _onlyValue = UInt8(truncatingIfNeeded: index)
                 }
             }
             return true
@@ -44,7 +44,7 @@ struct OneToNineSet: Sequence {
     }
     
     var count: Int {
-        return numericCast(_count)
+        return Int(truncatingIfNeeded: _count)
     }
     
     var hasSingeValue: Bool {
@@ -53,7 +53,7 @@ struct OneToNineSet: Sequence {
     
     var onlyValue: Int? {
         guard _onlyValue != 0 else { return nil }
-        return numericCast(_onlyValue)
+        return Int(truncatingIfNeeded: _onlyValue)
     }
     
     func makeIterator() -> OneToNineIterator {
@@ -74,7 +74,7 @@ struct OneToNineIterator: IteratorProtocol {
         
         if base.hasSingeValue {
             index = 10
-            return numericCast(base._onlyValue)
+            return Int(truncatingIfNeeded: base._onlyValue)
         }
         
         repeat {
