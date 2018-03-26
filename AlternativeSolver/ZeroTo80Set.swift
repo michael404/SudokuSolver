@@ -39,8 +39,8 @@ struct ZeroTo80Set: Sequence {
         }
     }
     
-    func makeIterator() -> ZeroTo80Iterator {
-        return ZeroTo80Iterator(self)
+    func makeIterator() -> ZeroTo80SetIterator {
+        return ZeroTo80SetIterator(self)
     }
     
     var isEmpty: Bool {
@@ -49,7 +49,7 @@ struct ZeroTo80Set: Sequence {
     
 }
 
-struct ZeroTo80Iterator: IteratorProtocol {
+struct ZeroTo80SetIterator: IteratorProtocol {
     
     var base: ZeroTo80Set
     private var index = 0

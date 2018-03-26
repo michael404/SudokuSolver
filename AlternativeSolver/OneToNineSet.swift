@@ -66,12 +66,12 @@ struct OneToNineSet: Sequence {
         return Int(truncatingIfNeeded: _onlyValue)
     }
     
-    func makeIterator() -> OneToNineIterator {
-        return OneToNineIterator(self)
+    func makeIterator() -> OneToNineSetIterator {
+        return OneToNineSetIterator(self)
     }
 }
 
-struct OneToNineIterator: IteratorProtocol {
+struct OneToNineSetIterator: IteratorProtocol {
     
     var base: OneToNineSet
     private var index = 1
