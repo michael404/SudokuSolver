@@ -114,12 +114,34 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertFalse(someFalse.contains(7))
         XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9])
         
+        XCTAssertTrue(someFalse.remove(2))
+        XCTAssertTrue(someFalse.remove(3))
+        XCTAssertTrue(someFalse.remove(4))
+        XCTAssertTrue(someFalse.remove(5))
+        XCTAssertTrue(someFalse.remove(6))
+        XCTAssertTrue(someFalse.remove(8))
+        XCTAssertEqual(someFalse.count, 1)
+        XCTAssertTrue(someFalse.hasSingeValue)
+        XCTAssertEqual(someFalse.onlyValue, 9)
+        XCTAssertEqual(Array(someFalse), [9])
+        
         let oneValue = OneToNineSet(5)
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.hasSingeValue)
         XCTAssertEqual(oneValue.onlyValue, 5)
         XCTAssertEqual(Array(oneValue), [5])
-
+    }
+    
+    func testFixedArray81() {
+        var array = FixedArray81(repeating: 42)
+        XCTAssertEqual(array.count, 81)
+        XCTAssertFalse(array.isEmpty)
+        var i = 0
+        for element in array {
+            i += 1
+            XCTAssertEqual(element, 42)
+        }
+        XCTAssertEqual(i, 81)
     }
     
 }

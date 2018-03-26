@@ -144,9 +144,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.62908</real>
+					<real>0.22711</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>22 Mar 2018 at 18:10:25</string>
+					<string>26 Mar 2018 at 17:16:50</string>
 				</dict>
 			</dict>
 			<key>testPerfNormalSudokus()</key>
@@ -154,9 +154,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.10637</real>
+					<real>0.038702</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>20 Mar 2018 at 20:38:32</string>
+					<string>26 Mar 2018 at 17:16:50</string>
 				</dict>
 			</dict>
 		</dict>

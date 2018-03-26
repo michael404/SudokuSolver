@@ -36,7 +36,7 @@ struct OneToNineSet: Sequence {
         let oldValue = ((_storage >> value) & 1) == 1
         if oldValue {
             _storage = 1 << value ^ _storage
-            if hasSingeValue {
+            if _countNoSingleValue == 1 {
                 for index in 1...9 where contains(index) {
                     setOnlyValue(to: UInt16(truncatingIfNeeded: index))
                 }
@@ -46,10 +46,15 @@ struct OneToNineSet: Sequence {
         return false
     }
     
-    var count: Int {
-        guard !hasSingeValue else { return 1 }
+    // Prerequisite: the _onlyValue bits must be zero
+    private var _countNoSingleValue: Int {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
         return (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
+    }
+    
+    var count: Int {
+        guard !hasSingeValue else { return 1 }
+        return _countNoSingleValue
     }
     
     var hasSingeValue: Bool {
