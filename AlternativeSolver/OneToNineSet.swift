@@ -1,20 +1,28 @@
 struct OneToNineSet: Sequence {
     
+    /// Bits 0 through 3 contains 0 if this set has a count higher than one
+    /// and the only value if it only has one value. Bits 6 through 14 contains
+    /// the bit set info for numbers 1 to 9. Bits 4, 5 and 15 are padding and should always
+    /// be set to 0
     private var _storage: UInt16
     
-    //TODO: Evaluate if this cache is necessary after other performance optimizations
-    /// The only value if there is only one value. 0 otherwise
-    fileprivate var _onlyValue: UInt8
+    private var _onlyValue: UInt16 {
+        return _storage >> 12
+    }
+    
+    //Precondition: Can only be set if _onlyValue is 0
+    private mutating func setOnlyValue(to value: UInt16) {
+        _storage = _storage | (value << 12)
+    }
     
     init(allTrue: ()) {
-        self._storage = 0b1111111110
-        self._onlyValue = 0
+        self._storage = 0b0000001111111110
     }
     
     init(_ value: Int) {
         assert((1...9).contains(value))
         self._storage = 1 << value ^ 0
-        self._onlyValue = UInt8(truncatingIfNeeded: value)
+        setOnlyValue(to: UInt16(truncatingIfNeeded: value))
     }
     
     func contains(_ value: Int) -> Bool {
@@ -30,7 +38,7 @@ struct OneToNineSet: Sequence {
             _storage = 1 << value ^ _storage
             if hasSingeValue {
                 for index in 1...9 where contains(index) {
-                    _onlyValue = UInt8(truncatingIfNeeded: index)
+                    setOnlyValue(to: UInt16(truncatingIfNeeded: index))
                 }
             }
             return true
@@ -39,16 +47,15 @@ struct OneToNineSet: Sequence {
     }
     
     var count: Int {
-        // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
+        guard !hasSingeValue else { return 1 }
+        // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
         return (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
     var hasSingeValue: Bool {
-        return count == 1
+        return _onlyValue != 0
     }
-    
 
-    
     var onlyValue: Int? {
         guard _onlyValue != 0 else { return nil }
         return Int(truncatingIfNeeded: _onlyValue)
@@ -72,7 +79,7 @@ struct OneToNineIterator: IteratorProtocol {
         
         if base.hasSingeValue {
             index = 10
-            return Int(truncatingIfNeeded: base._onlyValue)
+            return base.onlyValue
         }
         
         repeat {

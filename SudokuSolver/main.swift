@@ -94,3 +94,4 @@ for _ in 0..<10 {
         print("Error during solving of board2")
     }
 }
+
