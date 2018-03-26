@@ -7,19 +7,19 @@ struct ZeroTo80Set: Sequence {
     }
     
     init(allSet: ()) {
-        self._storage = (0b1111111111111111, UInt64.max)
+        self._storage = (0b11111111111111111, UInt64.max)
     }
 
     subscript(index: Int) -> Bool {
         get {
-            if index <= 64 {
+            if index <= 16 {
                 return ((_storage.0 >> index) & 1) == 1
             } else {
-                return ((_storage.1 >> (index - 64)) & 1) == 1
+                return ((_storage.1 >> (index - 17)) & 1) == 1
             }
         }
         set {
-            if index <= 64 {
+            if index <= 16 {
                 let oldValue = ((_storage.0 >> index) & 1) == 1
                 switch oldValue {
                 case newValue: return
@@ -27,7 +27,7 @@ struct ZeroTo80Set: Sequence {
                 case false: _storage.0 = 1 << index | _storage.0
                 }
             } else {
-                let index = index - 64
+                let index = index - 17
                 let oldValue = ((_storage.1 >> index) & 1) == 1
                 switch oldValue {
                 case newValue: return
