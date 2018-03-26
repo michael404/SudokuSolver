@@ -61,6 +61,7 @@ struct OneToNineSet: Sequence {
         return _countNoSingleValue
     }
     
+    //TODO: Consistent naming (also applies to _Cell)
     var hasSingeValue: Bool {
         return _onlyValue != 0
     }
