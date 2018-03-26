@@ -55,11 +55,10 @@ fileprivate struct CellOptionBoard {
         
         var updatedIndicies = ZeroTo80Set(allZero: ())
         for index in indices {
-            if let valueToRemove = board[index].onlyValue {
-                for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
-                    if try board[indexToRemoveFrom].remove(value: valueToRemove) {
-                        updatedIndicies[indexToRemoveFrom] = true
-                    }
+            guard let valueToRemove = board[index].onlyValue else { continue }
+            for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
+                if try board[indexToRemoveFrom].remove(value: valueToRemove) {
+                    updatedIndicies[indexToRemoveFrom] = true
                 }
             }
         }
