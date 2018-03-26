@@ -26,15 +26,11 @@ struct FixedArray81<T> {
 
 extension FixedArray81 : RandomAccessCollection, MutableCollection {
     
-    var startIndex : Int {
-        return 0
-    }
+    var startIndex : Int { return 0 }
     
-    var endIndex : Int {
-        return 81
-    }
+    var endIndex : Int { return 81 }
     
-    internal subscript(i: Int) -> T {
+    subscript(i: Int) -> T {
         @inline(__always)
         get {
             var copy = storage
@@ -57,20 +53,14 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         }
     }
     
-    @inline(__always)
-    internal func index(after i: Int) -> Int {
-        return i+1
-    }
+    func index(after i: Int) -> Int { return i+1 }
     
-    @inline(__always)
-    internal func index(before i: Int) -> Int {
-        return i-1
-    }
+    func index(before i: Int) -> Int { return i-1 }
 }
 
 extension FixedArray81 {
 
-    internal mutating func withUnsafeMutableBufferPointer<R>(
+    mutating func withUnsafeMutableBufferPointer<R>(
         _ body: (UnsafeMutableBufferPointer<Element>) throws -> R
         ) rethrows -> R {
         return try withUnsafeMutableBytes(of: &storage) { rawBuffer in

@@ -133,15 +133,22 @@ class SudokuTestsAlt: XCTestCase {
     }
     
     func testFixedArray81() {
-        var array = FixedArray81(repeating: 42)
+        var array = FixedArray81(repeating: 1)
         XCTAssertEqual(array.count, 81)
         XCTAssertFalse(array.isEmpty)
         var i = 0
         for element in array {
             i += 1
-            XCTAssertEqual(element, 42)
+            XCTAssertEqual(element, 1)
         }
         XCTAssertEqual(i, 81)
+        XCTAssertEqual(array.reduce(0, +), 81)
+        
+        array[10] = 0
+        array[20] = 100
+        XCTAssertEqual(array.count, 81)
+        XCTAssertFalse(array.isEmpty)
+        XCTAssertEqual(array.reduce(0, +), 179)
     }
     
 }
