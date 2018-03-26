@@ -156,7 +156,7 @@ class SudokuTestsAlt: XCTestCase {
     }
     
     func testZeroTo80Set() {
-        var emptySet = ZeroTo80Set(allZero: ())
+        var emptySet = ZeroTo80Set(allFalse: ())
         XCTAssertTrue(emptySet.isEmpty)
         var emptyIter = emptySet.makeIterator()
         XCTAssertNil(emptyIter.next())
@@ -164,7 +164,7 @@ class SudokuTestsAlt: XCTestCase {
             XCTAssertFalse(emptySet[i])
         }
         
-        var allTrueSet = ZeroTo80Set(allSet: ())
+        var allTrueSet = ZeroTo80Set(allTrue: ())
         XCTAssertFalse(allTrueSet.isEmpty)
         XCTAssertEqual(Array(allTrueSet).count, 81)
         for i in 0..<81 {

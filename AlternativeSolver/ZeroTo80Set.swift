@@ -2,11 +2,11 @@ struct ZeroTo80Set: Sequence {
     
     private var _storage: (UInt64, UInt64)
     
-    init(allZero: ()) {
+    init(allFalse: ()) {
         self._storage = (0, 0)
     }
     
-    init(allSet: ()) {
+    init(allTrue: ()) {
         self._storage = (0b11111111111111111, UInt64.max)
     }
 

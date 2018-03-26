@@ -9,11 +9,11 @@ extension SudokuBoard {
             
             //TODO: figure out why this does not improve performance
             if lastChangedIndex == 0 {
-                var set = ZeroTo80Set(allZero: ())
+                var set = ZeroTo80Set(allFalse: ())
                 set[lastChangedIndex] = true
                 try board.eliminatePossibilities(for: set)
             } else {
-                try board.eliminatePossibilities(for: ZeroTo80Set(allSet: ()))
+                try board.eliminatePossibilities(for: ZeroTo80Set(allTrue: ()))
             }
             
             guard !indicies.isEmpty else { return board }
@@ -53,7 +53,7 @@ fileprivate struct CellOptionBoard {
     // Throws if we are in an impossible situation
     mutating func eliminatePossibilities(for indicies: ZeroTo80Set) throws {
         
-        var updatedIndicies = ZeroTo80Set(allZero: ())
+        var updatedIndicies = ZeroTo80Set(allFalse: ())
         for index in indices {
             guard let valueToRemove = board[index].onlyValue else { continue }
             for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
