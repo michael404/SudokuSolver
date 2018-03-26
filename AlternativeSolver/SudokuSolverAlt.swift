@@ -35,9 +35,6 @@ extension SudokuBoard {
         let solvableCellIndicies = board.indices.filter(board.hasSingleValueAtIndex)
         let result = try _solve(board, solvableCellIndicies)
         return SudokuBoard(result)
-        
-
-        
     }
     
 }
