@@ -12,6 +12,7 @@ struct ZeroTo80Set: Sequence {
 
     subscript(index: Int) -> Bool {
         get {
+            assert((0...80).contains(index))
             if index <= 16 {
                 return ((_storage.0 >> index) & 1) == 1
             } else {
@@ -19,6 +20,7 @@ struct ZeroTo80Set: Sequence {
             }
         }
         set {
+            assert((0...80).contains(index))
             if index <= 16 {
                 let oldValue = ((_storage.0 >> index) & 1) == 1
                 switch oldValue {
