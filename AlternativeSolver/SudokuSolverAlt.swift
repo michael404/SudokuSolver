@@ -3,12 +3,11 @@ extension SudokuBoard {
     func findFirstSolutionAlt() throws -> SudokuBoard {
 
         // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard, _ indicies: [Int], _ lastChangedIndex: Int = -1) throws -> CellOptionBoard {
+        func _solve(_ board: CellOptionBoard, _ indicies: [Int], _ lastChangedIndex: Int? = nil) throws -> CellOptionBoard {
 
             var board = board
             
-            //TODO: figure out why this does not improve performance and why setting this to '== -1' stil works in the same amount of time
-            if lastChangedIndex != -1 {
+            if let lastChangedIndex = lastChangedIndex {
                 try board.eliminatePossibilities(for: ZeroTo80Set(lastChangedIndex))
             } else {
                 try board.eliminatePossibilities(for: ZeroTo80Set(allTrue: ()))
