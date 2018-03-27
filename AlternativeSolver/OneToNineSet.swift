@@ -51,9 +51,7 @@ struct OneToNineSet: Sequence {
     private var _countNoSingleValue: Int {
         assert(_onlyValue == 0)
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
-        let count = (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
-        assert(count > 0)
-        return count
+        return count = (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
     var count: Int {
