@@ -21,6 +21,7 @@ struct OneToNineSet {
     
     //Precondition: Can only be set if _onlyValue is 0
     private mutating func setSolvedValue(to value: UInt16) {
+        assert(_solvedValue == 0)
         _storage = _storage | (value << 12)
     }
     
