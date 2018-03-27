@@ -99,7 +99,7 @@ class SudokuTestsAlt: XCTestCase {
     func testOneToNine() {
         let allTrue = OneToNineSet(allTrue: ())
         XCTAssertEqual(allTrue.count, 9)
-        XCTAssertNil(allTrue.onlyValue)
+        XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
             XCTAssertTrue(allTrue.contains(i))
         }
@@ -109,8 +109,8 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertTrue(someFalse.remove(7))
         XCTAssertFalse(someFalse.remove(7))
         XCTAssertEqual(someFalse.count, 7)
-        XCTAssertFalse(someFalse.hasSingeValue)
-        XCTAssertNil(someFalse.onlyValue)
+        XCTAssertFalse(someFalse.isSolved)
+        XCTAssertNil(someFalse.solvedValue)
         XCTAssertFalse(someFalse.contains(1))
         XCTAssertFalse(someFalse.contains(7))
         XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9])
@@ -122,14 +122,14 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertTrue(someFalse.remove(6))
         XCTAssertTrue(someFalse.remove(8))
         XCTAssertEqual(someFalse.count, 1)
-        XCTAssertTrue(someFalse.hasSingeValue)
-        XCTAssertEqual(someFalse.onlyValue, 9)
+        XCTAssertTrue(someFalse.isSolved)
+        XCTAssertEqual(someFalse.solvedValue, 9)
         XCTAssertEqual(Array(someFalse), [9])
         
         let oneValue = OneToNineSet(6)
         XCTAssertEqual(oneValue.count, 1)
-        XCTAssertTrue(oneValue.hasSingeValue)
-        XCTAssertEqual(oneValue.onlyValue, 6)
+        XCTAssertTrue(oneValue.isSolved)
+        XCTAssertEqual(oneValue.solvedValue, 6)
         XCTAssertEqual(Array(oneValue), [6])
     }
     

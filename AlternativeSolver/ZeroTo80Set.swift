@@ -1,4 +1,4 @@
-struct ZeroTo80Set: Sequence {
+struct ZeroTo80Set {
     
     private var _storage: (UInt64, UInt64)
     
@@ -47,12 +47,16 @@ struct ZeroTo80Set: Sequence {
         }
     }
     
-    func makeIterator() -> ZeroTo80SetIterator {
-        return ZeroTo80SetIterator(self)
-    }
-    
     var isEmpty: Bool {
         return _storage == (0, 0)
+    }
+    
+}
+
+extension ZeroTo80Set: Sequence {
+
+    func makeIterator() -> ZeroTo80SetIterator {
+        return ZeroTo80SetIterator(self)
     }
     
 }

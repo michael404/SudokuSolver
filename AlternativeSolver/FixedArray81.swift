@@ -35,7 +35,7 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         @inline(__always)
         get {
             var copy = storage
-            let res: T = withUnsafeBytes(of: &copy) {
+            let result: T = withUnsafeBytes(of: &copy) {
                 (rawPtr : UnsafeRawBufferPointer) -> T in
                 let stride = MemoryLayout<T>.stride
                 assert(rawPtr.count == 81*stride, "layout mismatch?")
@@ -44,7 +44,7 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
                     count: 81)
                 return bufPtr[i]
             }
-            return res
+            return result
         }
         @inline(__always)
         set {

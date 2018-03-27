@@ -20,7 +20,7 @@ extension SudokuBoard {
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board, indicies.filter(board.hasSingleValueAtIndex), index)
+                    return try _solve(board, indicies.filter(board.isSolvedAtIndex), index)
                 } catch {
                     continue
                 }
@@ -29,7 +29,7 @@ extension SudokuBoard {
         }
         
         let board = CellOptionBoard(self)
-        let solvableCellIndicies = board.indices.filter(board.hasSingleValueAtIndex)
+        let solvableCellIndicies = board.indices.filter(board.isSolvedAtIndex)
         let result = try _solve(board, solvableCellIndicies)
         return SudokuBoard(result)
     }
@@ -52,7 +52,7 @@ struct CellOptionBoard {
         
         var updatedIndicies = ZeroTo80Set(allFalse: ())
         for index in indices {
-            guard let valueToRemove = board[index].onlyValue else { continue }
+            guard let valueToRemove = board[index].solvedValue else { continue }
             for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
                 if try board[indexToRemoveFrom].remove(value: valueToRemove) {
                     updatedIndicies[indexToRemoveFrom] = true
@@ -63,8 +63,8 @@ struct CellOptionBoard {
         try eliminatePossibilities(for: updatedIndicies)
     }
 
-    func hasSingleValueAtIndex(_ index: Int) -> Bool {
-        return self[index].onlyValue == nil
+    func isSolvedAtIndex(_ index: Int) -> Bool {
+        return self[index].solvedValue == nil
     }
 }
 
@@ -106,8 +106,8 @@ struct _Cell {
         self.possibleValues = OneToNineSet(value)
     }
     
-    var onlyValue: Int? {
-        return possibleValues.onlyValue
+    var solvedValue: Int? {
+        return possibleValues.solvedValue
     }
     
     var numberOfPossibleValues: Int {
@@ -117,7 +117,7 @@ struct _Cell {
     // Throws if it is not possible
     // Returns true if values were removed
     mutating func remove(value: Int) throws -> Bool {
-        if onlyValue == value {
+        if solvedValue == value {
             //Tried to remove the value that was filled
            throw SudokuSolverError.unsolvable
         }
@@ -129,7 +129,7 @@ struct _Cell {
 extension _Cell: CustomStringConvertible {
     
     var description: String {
-        if let value = onlyValue {
+        if let value = solvedValue {
             return "<\(value)>"
         }
         return Array(possibleValues).description
@@ -141,7 +141,7 @@ fileprivate extension SudokuBoard {
     
     init(_ cellOptionBoard: CellOptionBoard) {
         self.init(cellOptionBoard.map { cell in
-            if let value = cell.onlyValue {
+            if let value = cell.solvedValue {
                 return SudokuCell(value)
             }
             return nil
