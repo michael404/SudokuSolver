@@ -9,9 +9,7 @@ extension SudokuBoard {
             
             //TODO: figure out why this does not improve performance
             if lastChangedIndex == -1 {
-                var set = ZeroTo80Set(allFalse: ())
-                set[lastChangedIndex] = true
-                try board.eliminatePossibilities(for: set)
+                try board.eliminatePossibilities(for: ZeroTo80Set(lastChangedIndex))
             } else {
                 try board.eliminatePossibilities(for: ZeroTo80Set(allTrue: ()))
             }

@@ -9,6 +9,12 @@ struct ZeroTo80Set: Sequence {
     init(allTrue: ()) {
         self._storage = (0b11111111111111111, UInt64.max)
     }
+    
+    init(_ value: Int) {
+        assert((0...80).contains(value))
+        self.init(allFalse: ())
+        self[value] = true
+    }
 
     subscript(index: Int) -> Bool {
         get {
