@@ -7,7 +7,7 @@ public extension SudokuBoard {
     
     static func randomFullyFilledBoard() -> SudokuBoard {
         let board = SudokuBoard()
-        guard let filledBoard = try? board.findFirstSolution(method: .fromStart,randomizedCellValues: true) else {
+        guard let filledBoard = try? board.findFirstSolution(method: .fromStart, randomizedCellValues: true) else {
             fatalError("Could not construct random board. This should not be possible.")
         }
         return filledBoard
