@@ -36,6 +36,7 @@ extension SudokuBoard {
     
 }
 
+//TODO: Fix name
 struct CellOptionBoard {
     
     var board: FixedArray81<_Cell>
@@ -93,6 +94,7 @@ extension CellOptionBoard: MutableCollection, RandomAccessCollection {
     
 }
 
+//TODO: Fix name
 struct _Cell {
     
     var possibleValues: OneToNineSet
