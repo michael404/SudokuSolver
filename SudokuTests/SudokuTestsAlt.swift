@@ -155,47 +155,6 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertEqual(array[20], 100)
         XCTAssertEqual(array[40], 1)
     }
-    
-    func testZeroTo80Set() {
-        var emptySet = ZeroTo80Set(allFalse: ())
-        XCTAssertTrue(emptySet.isEmpty)
-        var emptyIter = emptySet.makeIterator()
-        XCTAssertNil(emptyIter.next())
-        for i in 0..<81 {
-            XCTAssertFalse(emptySet[i])
-        }
         
-        var allTrueSet = ZeroTo80Set(allTrue: ())
-        XCTAssertFalse(allTrueSet.isEmpty)
-        XCTAssertEqual(Array(allTrueSet).count, 81)
-        for i in 0..<81 {
-            XCTAssertTrue(allTrueSet[i])
-        }
-        XCTAssertEqual(allTrueSet.reduce(0, +), (0...80).reduce(0, +))
-        
-        // Set some values to False
-        var someFalseSet = allTrueSet
-        someFalseSet[1] = false
-        someFalseSet[4] = false
-        XCTAssertEqual(Array(someFalseSet).count, 79)
-        XCTAssertFalse(someFalseSet.isEmpty)
-        XCTAssertTrue(someFalseSet[0])
-        XCTAssertFalse(someFalseSet[1])
-        XCTAssertFalse(someFalseSet[4])
-        XCTAssertTrue(someFalseSet[80])
-        
-        // Zero out everything
-        var everythingRemoved = someFalseSet
-        for i in 0...80 {
-            everythingRemoved[i] = false
-        }
-        XCTAssertTrue(everythingRemoved.isEmpty)
-        var removedIter = everythingRemoved.makeIterator()
-        XCTAssertNil(removedIter.next())
-        for i in 0..<81 {
-            XCTAssertFalse(everythingRemoved[i])
-        }
-    }
-    
 }
 

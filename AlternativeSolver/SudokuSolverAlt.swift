@@ -3,15 +3,10 @@ extension SudokuBoard {
     func findFirstSolutionAlt() throws -> SudokuBoard {
 
         // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard, _ indicies: [Int], _ lastChangedIndex: Int? = nil) throws -> CellOptionBoard {
+        func _solve(_ board: CellOptionBoard, _ indicies: [Int]) throws -> CellOptionBoard {
 
             var board = board
-            
-            if let lastChangedIndex = lastChangedIndex {
-                try board.eliminatePossibilities(for: ZeroTo80Set(lastChangedIndex))
-            } else {
-                try board.eliminatePossibilities(for: ZeroTo80Set(allTrue: ()))
-            }
+            try board.eliminatePossibilities()
             
             guard !indicies.isEmpty else { return board }
             let index = indicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
@@ -20,7 +15,7 @@ extension SudokuBoard {
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board, indicies.filter(board.isSolvedAtIndex), index)
+                    return try _solve(board, indicies.filter(board.isSolvedAtIndex))
                 } catch {
                     continue
                 }
@@ -49,19 +44,16 @@ struct CellOptionBoard {
     }
     
     // Throws if we are in an impossible situation
-    mutating func eliminatePossibilities(for indicies: ZeroTo80Set) throws {
-        
-        var updatedIndicies = ZeroTo80Set(allFalse: ())
-        for index in indices {
+    mutating func eliminatePossibilities() throws {
+        var updated = false
+        for index in 0...80 {
             guard let valueToRemove = board[index].solvedValue else { continue }
-            for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index] {
-                if try board[indexToRemoveFrom].remove(value: valueToRemove) {
-                    updatedIndicies[indexToRemoveFrom] = true
-                }
+            for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index]
+                where try board[indexToRemoveFrom].remove(value: valueToRemove) {
+                updated = true
             }
         }
-        guard !updatedIndicies.isEmpty else { return }
-        try eliminatePossibilities(for: updatedIndicies)
+        if updated { try eliminatePossibilities() }
     }
 
     func isSolvedAtIndex(_ index: Int) -> Bool {
