@@ -43,7 +43,7 @@ struct OneToNineSet {
     //Returns true if a value was removed
     mutating func remove(_ value: Int) -> Bool {
         assert((1...9).contains(value))
-        let oldValue = ((_storage >> value) & 1) == 1
+        let oldValue = contains(value)
         if oldValue {
             _storage = 1 << value ^ _storage
             assert(count > 0)
