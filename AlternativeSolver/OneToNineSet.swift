@@ -43,18 +43,15 @@ struct OneToNineSet {
     //Returns true if a value was removed
     mutating func remove(_ value: Int) -> Bool {
         assert((1...9).contains(value))
-        let oldValue = contains(value)
-        if oldValue {
-            _storage = 1 << value ^ _storage
-            assert(count > 0)
-            if _countNotSolved == 1 {
-                for index in 1...9 where contains(index) {
-                    setSolvedValue(to: UInt16(truncatingIfNeeded: index))
-                }
-            }
-            return true
+        guard contains(value) else { return false }
+        _storage = 1 << value ^ _storage
+        assert(count > 0)
+        guard _countNotSolved == 1 else { return true }
+        //TODO: Is there a more effictiat algo for this?
+        for index in 1...9 where contains(index) {
+            setSolvedValue(to: UInt16(truncatingIfNeeded: index))
         }
-        return false
+        return true
     }
     
     // Prerequisite: the _solvedValue bits must be zero
