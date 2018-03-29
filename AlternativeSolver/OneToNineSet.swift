@@ -31,7 +31,7 @@ struct OneToNineSet {
     
     init(_ value: Int) {
         assert((1...9).contains(value))
-        self._storage = 1 << value ^ 0
+        self._storage = 1 << value
         setSolvedValue(to: UInt16(truncatingIfNeeded: value))
     }
     
