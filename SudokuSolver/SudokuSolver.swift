@@ -5,6 +5,7 @@ public extension SudokuBoard {
         case fromRowWithMostFilledValues
     }
 
+    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     func findFirstSolution(method: SolvingMethod = .fromRowWithMostFilledValues, randomizedCellValues: Bool = false) throws -> SudokuBoard {
         
         guard isValid else { throw SudokuSolverError.unsolvable }

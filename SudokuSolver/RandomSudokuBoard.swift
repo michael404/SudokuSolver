@@ -5,6 +5,7 @@ public extension SudokuBoard {
         return randomFullyFilledBoard().randomStartingPositionFromFullyFilledBoard()
     }
     
+    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     static func randomFullyFilledBoard() -> SudokuBoard {
         let board = SudokuBoard()
         guard let filledBoard = try? board.findFirstSolution(method: .fromStart, randomizedCellValues: true) else {
@@ -17,6 +18,7 @@ public extension SudokuBoard {
 
 internal extension SudokuBoard {
     
+    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
         var board = self
         var shuffledIndiciesIterator = board.indices.shuffled().makeIterator()
