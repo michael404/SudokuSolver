@@ -25,6 +25,14 @@ struct OneToNineSet {
         _storage = _storage | (value << 12)
     }
     
+    @inline(__always)
+    private mutating func findAndSetSolvedValue() {
+        //TODO: Is there a more effictiat algo for this?
+        for index in 1...9 where contains(index) {
+            setSolvedValue(to: UInt16(truncatingIfNeeded: index))
+        }
+    }
+    
     init(allTrue: ()) {
         self._storage = 0b0000001111111110
     }
@@ -46,11 +54,7 @@ struct OneToNineSet {
         guard contains(value) else { return false }
         _storage = 1 << value ^ _storage
         assert(count > 0)
-        guard _countNotSolved == 1 else { return true }
-        //TODO: Is there a more effictiat algo for this?
-        for index in 1...9 where contains(index) {
-            setSolvedValue(to: UInt16(truncatingIfNeeded: index))
-        }
+        if _countNotSolved == 1 { findAndSetSolvedValue() }
         return true
     }
     
