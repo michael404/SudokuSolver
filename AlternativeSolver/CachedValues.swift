@@ -47,7 +47,7 @@ extension CellOptionBoard {
         print(result)
     }
     
-    private static func indiciesInSameRow(as index: Int) -> Range<Int> {
+    private static func indiciesInSameRow(as index: Int) -> CountableRange<Int> {
         let start = (index / 9) * 9
         let end = start + 9
         return start..<end
