@@ -43,6 +43,8 @@ struct OneToNineSet {
         setSolvedValue(to: UInt16(truncatingIfNeeded: value))
     }
     
+    //TODO: test out where @inline(__always) makes sense
+    
     func contains(_ value: Int) -> Bool {
         assert((1...9).contains(value))
         return ((_storage >> value) & 1) == 1
