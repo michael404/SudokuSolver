@@ -3,19 +3,19 @@ extension SudokuBoard {
     func findFirstSolutionAlt() throws -> SudokuBoard {
 
         // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard, _ indicies: [Int]) throws -> CellOptionBoard {
+        func _solve(_ board: CellOptionBoard, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
 
             var board = board
             try board.eliminatePossibilities()
             
-            guard !indicies.isEmpty else { return board }
-            let index = indicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
+            guard !unsolvedIndicies.isEmpty else { return board }
+            let index = unsolvedIndicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
             
             // Test out possible cell values, and recurse
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board, indicies.filter(board.isUnsolvedAtIndex))
+                    return try _solve(board, unsolvedIndicies.filter(board.isUnsolvedAtIndex))
                 } catch {
                     continue
                 }
@@ -24,8 +24,7 @@ extension SudokuBoard {
         }
         
         let board = CellOptionBoard(self)
-        let solvableCellIndicies = board.indices.filter(board.isUnsolvedAtIndex)
-        let result = try _solve(board, solvableCellIndicies)
+        let result = try _solve(board, board.indices.filter(board.isUnsolvedAtIndex))
         return SudokuBoard(result)
     }
     
