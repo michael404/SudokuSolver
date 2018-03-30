@@ -33,20 +33,35 @@ extension SudokuValidator {
     
     struct Mask {
         
-        private var _storage: DoubleWidth<UInt64> = 0
+        private var _storage: (UInt64, UInt64) = (0, 0)
         
         subscript(part: Int, cellValue: Int) -> Bool {
             get {
                 let index = part * 10 + cellValue
-                return ((_storage >> index) & 1) == 1
+                if index < 64 {
+                    return ((_storage.0 >> index) & 1) == 1
+                } else {
+                    let index = index &- 64
+                    return ((_storage.1 >> index) & 1) == 1
+                }
             }
             set {
                 let index = part * 10 + cellValue
-                let oldValue = ((_storage >> index) & 1) == 1
-                switch oldValue {
-                case newValue: return
-                case true: _storage = 1 << index ^ _storage
-                case false: _storage = 1 << index | _storage
+                if index < 64 {
+                    let oldValue = ((_storage.0 >> index) & 1) == 1
+                    switch oldValue {
+                    case newValue: return
+                    case true: _storage.0 = 1 << index ^ _storage.0
+                    case false: _storage.0 = 1 << index | _storage.0
+                    }
+                } else {
+                    let index = index &- 64
+                    let oldValue = ((_storage.1 >> index) & 1) == 1
+                    switch oldValue {
+                    case newValue: return
+                    case true: _storage.1 = 1 << index ^ _storage.1
+                    case false: _storage.1 = 1 << index | _storage.1
+                    }
                 }
             }
         }
