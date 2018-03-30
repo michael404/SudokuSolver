@@ -42,54 +42,25 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
 //}
 
 
-
-// Sudoku that can be solved with constraint propagation only
-var board1 = SudokuBoard("9.4286....581...69..1..382418..9.74.7634..2.....7356.859.861...3.7.2..86.1..7.952")
-
 do {
-    let solution1 = try board1.findFirstSolutionAlt()
-    print(solution1)
+    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
+    withExtendedLifetime(solution1) {}
+//    print(solution1)
 } catch {
     print("Error during solving of board1")
 }
 
 print("+++++++++++++++++++++++++++++++++++++++++++++++")
 
-let board = SudokuBoard(
-    0, 0, 0,   0, 0, 0,   0, 0, 0,
-    0, 0, 0,   0, 0, 3,   0, 8, 5,
-    0, 0, 1,   0, 2, 0,   0, 0, 0,
-    
-    0, 0, 0,   5, 0, 7,   0, 0, 0,
-    0, 0, 4,   0, 0, 0,   1, 0, 0,
-    0, 9, 0,   0, 0, 0,   0, 0, 0,
-    
-    5, 0, 0,   0, 0, 0,   0, 7, 3,
-    0, 0, 2,   0, 1, 0,   0, 0, 0,
-    0, 0, 0,   0, 4, 0,   0, 0, 9)
+let board1 = TestData.board1
+let expectedSolution1 = TestData.expectedSolution1
 
-let expectedSolution1 = """
-+-----+-----+-----+
-|9 8 7|6 5 4|3 2 1|
-|2 4 6|1 7 3|9 8 5|
-|3 5 1|9 2 8|7 4 6|
-+-----+-----+-----+
-|1 2 8|5 3 7|6 9 4|
-|6 3 4|8 9 2|1 5 7|
-|7 9 5|4 6 1|8 3 2|
-+-----+-----+-----+
-|5 1 9|2 8 6|4 7 3|
-|4 7 2|3 1 9|5 6 8|
-|8 6 3|7 4 5|2 1 9|
-+-----+-----+-----+
-
-"""
-
-for _ in 0..<10 {
+for _ in 0..<100 {
     do {
-        let solution2 = try board.findFirstSolutionAlt()
-        print(solution2)
-        precondition(solution2.description == expectedSolution1)
+        let solution1 = try board1.findFirstSolutionAlt()
+        withExtendedLifetime(solution1) {}
+//        print(solution1)
+        precondition(solution1.description == expectedSolution1)
     } catch {
         print("Error during solving of board2")
     }
