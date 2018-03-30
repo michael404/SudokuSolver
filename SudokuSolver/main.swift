@@ -33,11 +33,36 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
     }
 }
 
-generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 21) { board in
-    print("--> \(board.debugDescription) <-- \(board.clues) clues")
-}
+//generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 28) { board in
+//    print("--> \(board.debugDescription) <-- \(board.clues) clues")
+//}
 
 //generateHardToBruteForceSudokusAsync(iterations: 10000) { board, nanoseconds in
 //    print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
 //}
+
+
+do {
+    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
+    withExtendedLifetime(solution1) {}
+//    print(solution1)
+} catch {
+    print("Error during solving of board1")
+}
+
+print("+++++++++++++++++++++++++++++++++++++++++++++++")
+
+let board1 = TestData.board1
+let expectedSolution1 = TestData.expectedSolution1
+
+for _ in 0..<100 {
+    do {
+        let solution1 = try board1.findFirstSolutionAlt()
+        withExtendedLifetime(solution1) {}
+//        print(solution1)
+        precondition(solution1.description == expectedSolution1)
+    } catch {
+        print("Error during solving of board2")
+    }
+}
 
