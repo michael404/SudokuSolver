@@ -115,6 +115,10 @@ struct _Cell {
         return possibleValues.count
     }
     
+    var isSolved: Bool {
+        return possibleValues.isSolved
+    }
+    
     // Throws if it is not possible
     // Returns true if values were removed
     mutating func remove(value: OneToNineSet) throws -> Bool {
