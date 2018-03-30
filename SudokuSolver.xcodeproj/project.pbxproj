@@ -24,6 +24,7 @@
 		4C38A13B20699191001A8724 /* CachedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* CachedValues.swift */; };
 		4C38A13D206AA763001A8724 /* RandomSudokuBoardAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13C206AA763001A8724 /* RandomSudokuBoardAlt.swift */; };
 		4C38A13E206AA763001A8724 /* RandomSudokuBoardAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13C206AA763001A8724 /* RandomSudokuBoardAlt.swift */; };
+		4C38A142206E70C2001A8724 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
 		4C425077206192A9000FF622 /* SudokuTestsAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C425076206192A9000FF622 /* SudokuTestsAlt.swift */; };
 		4C42507920619383000FF622 /* SudokuPerfTestsAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42507820619383000FF622 /* SudokuPerfTestsAlt.swift */; };
 		4C62194E204DCDCF0082AF70 /* SudokuSolverAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C62194D204DCDCF0082AF70 /* SudokuSolverAlt.swift */; };
@@ -272,6 +273,7 @@
 				4C1100411F588ACB00F0745D /* SudokuBoard.swift in Sources */,
 				4CD2143D202618D300018125 /* RandomSudokuBoard.swift in Sources */,
 				4C1100471F5C570000F0745D /* SudokuSolver.swift in Sources */,
+				4C38A142206E70C2001A8724 /* SudokuTestData.swift in Sources */,
 				4C38A13D206AA763001A8724 /* RandomSudokuBoardAlt.swift in Sources */,
 				4CEEB9F62027805C007B1017 /* SudokuCoordinate.swift in Sources */,
 				4CB2B9451F6D22F6004E461B /* SudokuValidator.swift in Sources */,

@@ -101,7 +101,7 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(i))
+            XCTAssertTrue(allTrue.contains(OneToNineSet(from: i)))
         }
         
         var someFalse = allTrue
@@ -126,7 +126,7 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertEqual(someFalse.solvedValue, 9)
         XCTAssertEqual(Array(someFalse), [9])
         
-        let oneValue = OneToNineSet(6)
+        let oneValue = OneToNineSet(from: 6)
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
         XCTAssertEqual(oneValue.solvedValue, 6)

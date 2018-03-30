@@ -1,75 +1,48 @@
-struct OneToNineSet {
+struct OneToNineSet: Equatable {
     
-    /// Bits 0 through 3 contains 0 if this set has a count higher than one
-    /// and the solved value if it only has one value. Bits 6 through 14 contains
-    /// the bit set info for numbers 1 to 9. Bits 4, 5 and 15 are padding and should always
-    /// be set to 0
-    private var _storage: UInt16
-    
-    private var _solvedValue: UInt16 {
-        return _storage >> 12
-    }
-    
-    var isSolved: Bool {
-        return _solvedValue != 0
-    }
-    
-    var solvedValue: Int? {
-        guard _solvedValue != 0 else { return nil }
-        return Int(truncatingIfNeeded: _solvedValue)
-    }
-    
-    //Precondition: Can only be set if _onlyValue is 0
-    private mutating func setSolvedValue(to value: UInt16) {
-        assert(_solvedValue == 0)
-        _storage = _storage | (value << 12)
-    }
-    
-    @inline(__always)
-    private mutating func findAndSetSolvedValue() {
-        //TODO: Is there a more effictiat algo for this?
-        for index in 1...9 where contains(index) {
-            setSolvedValue(to: UInt16(truncatingIfNeeded: index))
-        }
-    }
+    /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
+    /// Bits 0 to 6 are padding and should always be set to 0.
+    /// The set is considered "solved" if only one bit is set.
+    fileprivate var _storage: UInt16
     
     init(allTrue: ()) {
         self._storage = 0b0000001111111110
     }
     
-    init(_ value: Int) {
+    init(from value: Int) {
         assert((1...9).contains(value))
         self._storage = 1 << value
-        setSolvedValue(to: UInt16(truncatingIfNeeded: value))
     }
     
-    //TODO: test out where @inline(__always) makes sense
-    
-    func contains(_ value: Int) -> Bool {
-        assert((1...9).contains(value))
-        return ((_storage >> value) & 1) == 1
+    init(bitPattern: UInt16) {
+        self._storage = bitPattern
     }
     
-    //Returns true if a value was removed
-    mutating func remove(_ value: Int) -> Bool {
-        assert((1...9).contains(value))
-        guard contains(value) else { return false }
-        _storage = 1 << value ^ _storage
-        assert(count > 0)
-        if _countNotSolved == 1 { findAndSetSolvedValue() }
-        return true
-    }
-    
-    // Prerequisite: the _solvedValue bits must be zero
-    private var _countNotSolved: Int {
-        assert(_solvedValue == 0)
+    var count: Int {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
         return (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
-    var count: Int {
-        guard !isSolved else { return 1 }
-        return _countNotSolved
+    var isSolved: Bool {
+        // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
+        // Note that 0 is incorrectly considered a power of 2, but that does not matter in this context
+        return (_storage & (_storage - 1)) == 0
+    }
+    
+    var solvedValue: OneToNineSet? {
+        return isSolved ? self : nil
+    }
+    
+    func contains(_ value: OneToNineSet) -> Bool {
+        return (_storage & value._storage) != 0
+    }
+    
+    /// Returns true if a value was removed
+    /// Throws if the last value was removed
+    mutating func remove(_ value: OneToNineSet) -> Bool {
+        guard contains(value) else { return false }
+        _storage = _storage & ~value._storage
+        return true
     }
     
 }
@@ -84,26 +57,46 @@ extension OneToNineSet: Sequence{
 struct OneToNineSetIterator: IteratorProtocol {
     
     var base: OneToNineSet
-    private var index = 1
+    private var mask = OneToNineSet(from: 1)
     
     init(_ base: OneToNineSet) { self.base = base }
     
-    mutating func next() -> Int? {
+    mutating func next() -> OneToNineSet? {
         
-        guard index < 10 else { return nil }
-        
-        if base.isSolved {
-            index = 10
-            return base.solvedValue
+        while mask._storage != 0b10000000000 {
+            defer { mask._storage = mask._storage << 1 }
+            if base.contains(mask) { return mask }
         }
         
-        repeat {
-            defer { index = index &+ 1 }
-            if base.contains(index) { return index }
-        } while index < 10
         return nil
         
     }
     
 }
 
+// For testing
+extension OneToNineSet: ExpressibleByIntegerLiteral {
+    
+    init(integerLiteral value: Int) {
+        self.init(from: value)
+    }
+    
+}
+
+extension Int {
+    
+    init(_ set: OneToNineSet) {
+        switch set._storage {
+        case 0b1000000000: self = 9
+        case 0b100000000: self = 8
+        case 0b10000000: self = 7
+        case 0b1000000: self = 6
+        case 0b100000: self = 5
+        case 0b10000: self = 4
+        case 0b1000: self = 3
+        case 0b100: self = 2
+        case 0b10: self = 1
+        default: preconditionFailure()
+        }
+    }
+}

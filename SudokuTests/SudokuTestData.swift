@@ -85,6 +85,9 @@ enum TestData {
     
     static let filledboard = SudokuBoard("739561842468237951251498673517349286943826715826715394675182439194673528382954167")
     
+    static let constraintPropagationSolvableBoard = SudokuBoard("9.4286....581...69..1..382418..9.74.7634..2.....7356.859.861...3.7.2..86.1..7.952")
+
+    
     static let expectedSolution1 = """
         +-----+-----+-----+
         |4 9 7|2 3 6|5 8 1|

@@ -15,7 +15,7 @@ extension SudokuBoard {
             for cellValue in board[index].possibleValues {
                 board[index] = _Cell(cellValue)
                 do {
-                    return try _solve(board, indicies.filter(board.isSolvedAtIndex))
+                    return try _solve(board, indicies.filter(board.isUnsolvedAtIndex))
                 } catch {
                     continue
                 }
@@ -24,7 +24,7 @@ extension SudokuBoard {
         }
         
         let board = CellOptionBoard(self)
-        let solvableCellIndicies = board.indices.filter(board.isSolvedAtIndex)
+        let solvableCellIndicies = board.indices.filter(board.isUnsolvedAtIndex)
         let result = try _solve(board, solvableCellIndicies)
         return SudokuBoard(result)
     }
@@ -45,18 +45,20 @@ struct CellOptionBoard {
     
     // Throws if we are in an impossible situation
     mutating func eliminatePossibilities() throws {
-        var updated = false
-        for index in 0...80 {
-            guard let valueToRemove = board[index].solvedValue else { continue }
-            for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index]
-                where try board[indexToRemoveFrom].remove(value: valueToRemove) {
-                updated = true
+        var updated: Bool
+        repeat {
+            updated = false
+            for index in 0...80 {
+                guard let valueToRemove = board[index].solvedValue else { continue }
+                for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index]
+                    where try board[indexToRemoveFrom].remove(value: valueToRemove) {
+                    updated = true
+                }
             }
-        }
-        if updated { try eliminatePossibilities() }
+        } while updated
     }
 
-    func isSolvedAtIndex(_ index: Int) -> Bool {
+    func isUnsolvedAtIndex(_ index: Int) -> Bool {
         return self[index].solvedValue == nil
     }
 }
@@ -87,6 +89,7 @@ extension CellOptionBoard: MutableCollection, RandomAccessCollection {
 }
 
 //TODO: Fix name
+//TODO: Evaluate if this abstraction makes sense
 struct _Cell {
     
     var possibleValues: OneToNineSet
@@ -97,10 +100,14 @@ struct _Cell {
     
     init(_ value: Int) {
         assert((1...9).contains(value))
-        self.possibleValues = OneToNineSet(value)
+        self.possibleValues = OneToNineSet(from: value)
     }
     
-    var solvedValue: Int? {
+    init(_ set: OneToNineSet) {
+        self.possibleValues = set
+    }
+    
+    var solvedValue: OneToNineSet? {
         return possibleValues.solvedValue
     }
     
@@ -110,7 +117,7 @@ struct _Cell {
     
     // Throws if it is not possible
     // Returns true if values were removed
-    mutating func remove(value: Int) throws -> Bool {
+    mutating func remove(value: OneToNineSet) throws -> Bool {
         if solvedValue == value {
             //Tried to remove the value that was filled
            throw SudokuSolverError.unsolvable
@@ -135,8 +142,8 @@ fileprivate extension SudokuBoard {
     
     init(_ cellOptionBoard: CellOptionBoard) {
         self.init(cellOptionBoard.map { cell in
-            if let value = cell.solvedValue {
-                return SudokuCell(value)
+            if let set = cell.solvedValue {
+                return SudokuCell(Int(set))
             }
             return nil
         })
