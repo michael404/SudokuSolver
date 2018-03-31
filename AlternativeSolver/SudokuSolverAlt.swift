@@ -4,9 +4,15 @@ extension SudokuBoard {
         var board = CellOptionBoard(self)
         try board.eliminatePossibilities()
         
+        //Find the relevant indicies and sort them
         var unsolvedIndicies = board.indices.filter(board.isUnsolvedAtIndex)
         unsolvedIndicies.sort { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }
-        guard let index = unsolvedIndicies.first else { return SudokuBoard(board) }
+        
+        guard let index = unsolvedIndicies.first else {
+            // Either the Sudoku was already solved or we solved it
+            // with the first eliminatePossibilities() call
+            return SudokuBoard(board)
+        }
         
         let result = try _testValuesAndCallSolveAlt(board, index, unsolvedIndicies)
         return SudokuBoard(result)
