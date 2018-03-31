@@ -1,12 +1,12 @@
 extension SudokuBoard {
     
     func findFirstSolutionAlt() throws -> SudokuBoard {
-        var board = CellOptionBoard(self)
+        var board = PossibleCellValuesBoard(self)
         try board.eliminatePossibilities()
         
         //Find the relevant indicies and sort them
         var unsolvedIndicies = board.indices.filter(board.isUnsolved)
-        unsolvedIndicies.sort { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }
+        unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
         guard let index = unsolvedIndicies.first else {
             // Either the Sudoku was already solved or we solved it
@@ -19,7 +19,7 @@ extension SudokuBoard {
     }
     
     // Returns true once the function has found a solution
-    private func _solveAlt(_ board: CellOptionBoard, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
+    private func _solveAlt(_ board: PossibleCellValuesBoard, _ unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         
         var board = board
         try board.eliminatePossibilities()
@@ -29,12 +29,12 @@ extension SudokuBoard {
 
     }
     
-    private func _testValuesAndCallSolveAlt(_ board: CellOptionBoard, _ index: Int, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
+    private func _testValuesAndCallSolveAlt(_ board: PossibleCellValuesBoard, _ index: Int, _ unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var board = board
         var unsolvedIndicies = unsolvedIndicies
         // Test out possible cell values, and recurse
-        for cellValue in board[index].possibleValues {
-            board[index] = _Cell(cellValue)
+        for solvedCell in board[index] {
+            board[index] = solvedCell
             do {
                 unsolvedIndicies.removeAll(where: board.isSolved)
                 return try _solveAlt(board, unsolvedIndicies)
@@ -48,14 +48,14 @@ extension SudokuBoard {
 }
 
 //TODO: Fix name
-struct CellOptionBoard {
+struct PossibleCellValuesBoard {
     
-    var board: FixedArray81<_Cell>
+    var board: FixedArray81<PossibleCellValues>
     
     init(_ board: SudokuBoard) {
-        self.board = FixedArray81(repeating: _Cell())
+        self.board = FixedArray81(repeating: PossibleCellValues(allTrue: ()))
         for (index, cell) in zip(board.indices, board) where cell != nil {
-            self.board[index] = _Cell(cell.value)
+            self.board[index] = PossibleCellValues(solved: cell.value)
         }
     }
     
@@ -66,8 +66,8 @@ struct CellOptionBoard {
             updated = false
             for index in 0...80 {
                 guard let valueToRemove = board[index].solvedValue else { continue }
-                for indexToRemoveFrom in CellOptionBoard.indiciesToRemoveFrom[index]
-                    where try board[indexToRemoveFrom].remove(value: valueToRemove) {
+                for indexToRemoveFrom in PossibleCellValuesBoard.indiciesToRemoveFrom[index]
+                    where try board[indexToRemoveFrom].remove(valueToRemove) {
                     updated = true
                 }
             }
@@ -84,13 +84,13 @@ struct CellOptionBoard {
     
 }
 
-extension CellOptionBoard: MutableCollection, RandomAccessCollection {
+extension PossibleCellValuesBoard: MutableCollection, RandomAccessCollection {
     
-    typealias Element = _Cell
+    typealias Element = PossibleCellValues
     typealias Index = Int
-    typealias SubSequence = CellOptionBoard
+    typealias SubSequence = PossibleCellValuesBoard
     
-    subscript(position: Int) -> _Cell {
+    subscript(position: Int) -> PossibleCellValues {
         get {
             return board[position]
         }
@@ -109,64 +109,10 @@ extension CellOptionBoard: MutableCollection, RandomAccessCollection {
     
 }
 
-//TODO: Fix name
-//TODO: Evaluate if this abstraction makes sense
-struct _Cell {
-    
-    var possibleValues: OneToNineSet
-    
-    init() {
-        possibleValues = OneToNineSet(allTrue: ())
-    }
-    
-    init(_ value: Int) {
-        assert((1...9).contains(value))
-        self.possibleValues = OneToNineSet(from: value)
-    }
-    
-    init(_ set: OneToNineSet) {
-        self.possibleValues = set
-    }
-    
-    var solvedValue: OneToNineSet? {
-        return possibleValues.solvedValue
-    }
-    
-    var numberOfPossibleValues: Int {
-        return possibleValues.count
-    }
-    
-    var isSolved: Bool {
-        return possibleValues.isSolved
-    }
-    
-    // Throws if it is not possible
-    // Returns true if values were removed
-    mutating func remove(value: OneToNineSet) throws -> Bool {
-        if solvedValue == value {
-            //Tried to remove the value that was filled
-           throw SudokuSolverError.unsolvable
-        }
-        return possibleValues.remove(value)
-    }
-    
-}
-
-extension _Cell: CustomStringConvertible {
-    
-    var description: String {
-        if let value = solvedValue {
-            return "<\(value)>"
-        }
-        return Array(possibleValues).description
-    }
-
-}
-
 fileprivate extension SudokuBoard {
     
-    init(_ cellOptionBoard: CellOptionBoard) {
-        self.init(cellOptionBoard.map { cell in
+    init(_ board: PossibleCellValuesBoard) {
+        self.init(board.map { cell in
             if let set = cell.solvedValue {
                 return SudokuCell(Int(set))
             }

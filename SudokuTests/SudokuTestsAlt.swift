@@ -106,17 +106,17 @@ class SudokuTestsAlt: XCTestCase {
 //    }
     
     func testOneToNine() {
-        let allTrue = OneToNineSet(allTrue: ())
+        let allTrue = PossibleCellValues(allTrue: ())
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(OneToNineSet(from: i)))
+            XCTAssertTrue(allTrue.contains(PossibleCellValues(solved: i)))
         }
         
         var someFalse = allTrue
-        XCTAssertTrue(someFalse.remove(1))
-        XCTAssertTrue(someFalse.remove(7))
-        XCTAssertFalse(someFalse.remove(7))
+        XCTAssertTrue(try someFalse.remove(1))
+        XCTAssertTrue(try someFalse.remove(7))
+        XCTAssertFalse(try someFalse.remove(7))
         XCTAssertEqual(someFalse.count, 7)
         XCTAssertFalse(someFalse.isSolved)
         XCTAssertNil(someFalse.solvedValue)
@@ -124,18 +124,18 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertFalse(someFalse.contains(7))
         XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9])
         
-        XCTAssertTrue(someFalse.remove(2))
-        XCTAssertTrue(someFalse.remove(3))
-        XCTAssertTrue(someFalse.remove(4))
-        XCTAssertTrue(someFalse.remove(5))
-        XCTAssertTrue(someFalse.remove(6))
-        XCTAssertTrue(someFalse.remove(8))
+        XCTAssertTrue(try someFalse.remove(2))
+        XCTAssertTrue(try someFalse.remove(3))
+        XCTAssertTrue(try someFalse.remove(4))
+        XCTAssertTrue(try someFalse.remove(5))
+        XCTAssertTrue(try someFalse.remove(6))
+        XCTAssertTrue(try someFalse.remove(8))
         XCTAssertEqual(someFalse.count, 1)
         XCTAssertTrue(someFalse.isSolved)
         XCTAssertEqual(someFalse.solvedValue, 9)
         XCTAssertEqual(Array(someFalse), [9])
         
-        let oneValue = OneToNineSet(from: 6)
+        let oneValue = PossibleCellValues(solved: 6)
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
         XCTAssertEqual(oneValue.solvedValue, 6)

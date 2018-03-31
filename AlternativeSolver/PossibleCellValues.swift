@@ -1,4 +1,9 @@
-struct OneToNineSet: Equatable {
+/// A struct representing a Sudoku cell with a set a set of all the
+/// possible values the cell could have (1 through 9).
+/// The implementation uses a bit array as the underlying storage.
+/// When only one bit is set, the cell is considered solved.
+/// A solved set is represented by the same type
+struct PossibleCellValues: Equatable {
     
     /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
     /// Bits 0 to 6 are padding and should always be set to 0.
@@ -9,7 +14,7 @@ struct OneToNineSet: Equatable {
         self._storage = 0b0000001111111110
     }
     
-    init(from value: Int) {
+    init(solved value: Int) {
         assert((1...9).contains(value))
         self._storage = 1 << value
     }
@@ -20,7 +25,7 @@ struct OneToNineSet: Equatable {
     
     var count: Int {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
-        return (Int(truncatingIfNeeded: _storage) * 0x200040008001 & 0x111111111111111) % 0xf
+        return (numericCast(_storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
     var isSolved: Bool {
@@ -29,39 +34,46 @@ struct OneToNineSet: Equatable {
         return (_storage & (_storage - 1)) == 0
     }
     
-    var solvedValue: OneToNineSet? {
+    var solvedValue: PossibleCellValues? {
         return isSolved ? self : nil
     }
     
-    func contains(_ value: OneToNineSet) -> Bool {
+    func contains(_ value: PossibleCellValues) -> Bool {
         return (_storage & value._storage) != 0
     }
     
     /// Returns true if a value was removed
     /// Throws if the last value was removed
-    mutating func remove(_ value: OneToNineSet) -> Bool {
+    mutating func remove(_ value: PossibleCellValues) throws -> Bool {
+        
+        if solvedValue == value {
+            //Tried to remove the value that was filled
+            throw SudokuSolverError.unsolvable
+        }
+        
         guard contains(value) else { return false }
+        
         _storage = _storage & ~value._storage
         return true
     }
     
 }
 
-extension OneToNineSet: Sequence{
+extension PossibleCellValues: Sequence{
     
-    func makeIterator() -> OneToNineSetIterator {
-        return OneToNineSetIterator(self)
+    func makeIterator() -> PossibleCellValuesIterator {
+        return PossibleCellValuesIterator(self)
     }
 }
 
-struct OneToNineSetIterator: IteratorProtocol {
+struct PossibleCellValuesIterator: IteratorProtocol {
     
-    var base: OneToNineSet
-    private var mask = OneToNineSet(from: 1)
+    var base: PossibleCellValues
+    private var mask = PossibleCellValues(solved: 1)
     
-    init(_ base: OneToNineSet) { self.base = base }
+    init(_ base: PossibleCellValues) { self.base = base }
     
-    mutating func next() -> OneToNineSet? {
+    mutating func next() -> PossibleCellValues? {
         
         while mask._storage != 0b10000000000 {
             defer { mask._storage = mask._storage << 1 }
@@ -69,23 +81,22 @@ struct OneToNineSetIterator: IteratorProtocol {
         }
         
         return nil
-        
     }
     
 }
 
 // For testing
-extension OneToNineSet: ExpressibleByIntegerLiteral {
+extension PossibleCellValues: ExpressibleByIntegerLiteral {
     
     init(integerLiteral value: Int) {
-        self.init(from: value)
+        self.init(solved: value)
     }
     
 }
 
 extension Int {
     
-    init(_ set: OneToNineSet) {
+    init(_ set: PossibleCellValues) {
         switch set._storage {
         case 0b1000000000: self = 9
         case 0b100000000: self = 8

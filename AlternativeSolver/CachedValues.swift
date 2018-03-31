@@ -1,4 +1,4 @@
-extension CellOptionBoard {
+extension PossibleCellValuesBoard {
     
     //TODO: Format more nicely
     static let indiciesToRemoveFrom: [[Int]] = [
@@ -30,7 +30,7 @@ extension CellOptionBoard {
     
 }
 
-extension CellOptionBoard {
+extension PossibleCellValuesBoard {
     
     /// Prints the static data that generates `indiciesToRemoveFrom`
     static func printIndiciesToRemoveFrom() {

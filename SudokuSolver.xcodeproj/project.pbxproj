@@ -18,8 +18,8 @@
 		4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11004A1F5DCE5D00F0745D /* Utils.swift */; };
 		4C38A13020679253001A8724 /* FixedArray81.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A12F20679253001A8724 /* FixedArray81.swift */; };
 		4C38A13220679499001A8724 /* FixedArray81.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A12F20679253001A8724 /* FixedArray81.swift */; };
-		4C38A13420679861001A8724 /* OneToNineSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* OneToNineSet.swift */; };
-		4C38A1352067986E001A8724 /* OneToNineSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* OneToNineSet.swift */; };
+		4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
+		4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
 		4C38A13A20699191001A8724 /* CachedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* CachedValues.swift */; };
 		4C38A13B20699191001A8724 /* CachedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* CachedValues.swift */; };
 		4C38A13D206AA763001A8724 /* RandomSudokuBoardAlt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13C206AA763001A8724 /* RandomSudokuBoardAlt.swift */; };
@@ -61,7 +61,7 @@
 		4C1100521F5DDC2800F0745D /* SudokuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTests.swift; sourceTree = "<group>"; };
 		4C1100541F5DDC2800F0745D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C38A12F20679253001A8724 /* FixedArray81.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedArray81.swift; sourceTree = "<group>"; };
-		4C38A13320679861001A8724 /* OneToNineSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneToNineSet.swift; sourceTree = "<group>"; };
+		4C38A13320679861001A8724 /* PossibleCellValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PossibleCellValues.swift; sourceTree = "<group>"; };
 		4C38A13920699191001A8724 /* CachedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedValues.swift; sourceTree = "<group>"; };
 		4C38A13C206AA763001A8724 /* RandomSudokuBoardAlt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomSudokuBoardAlt.swift; sourceTree = "<group>"; };
 		4C425076206192A9000FF622 /* SudokuTestsAlt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTestsAlt.swift; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 			children = (
 				4C62194D204DCDCF0082AF70 /* SudokuSolverAlt.swift */,
 				4C38A13C206AA763001A8724 /* RandomSudokuBoardAlt.swift */,
-				4C38A13320679861001A8724 /* OneToNineSet.swift */,
+				4C38A13320679861001A8724 /* PossibleCellValues.swift */,
 				4C38A12F20679253001A8724 /* FixedArray81.swift */,
 				4C38A13920699191001A8724 /* CachedValues.swift */,
 			);
@@ -244,7 +244,7 @@
 				4CD214392025EF5C00018125 /* SudokuPerfTests.swift in Sources */,
 				4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */,
 				4C1100591F5DDC7900F0745D /* SudokuBoard.swift in Sources */,
-				4C38A1352067986E001A8724 /* OneToNineSet.swift in Sources */,
+				4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */,
 				4C1100581F5DDC6500F0745D /* SudokuSolver.swift in Sources */,
 				4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */,
 				4C38A13B20699191001A8724 /* CachedValues.swift in Sources */,
@@ -266,7 +266,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C62194E204DCDCF0082AF70 /* SudokuSolverAlt.swift in Sources */,
-				4C38A13420679861001A8724 /* OneToNineSet.swift in Sources */,
+				4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */,
 				4C38A13020679253001A8724 /* FixedArray81.swift in Sources */,
 				4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */,
 				4C38A13A20699191001A8724 /* CachedValues.swift in Sources */,
@@ -420,7 +420,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
