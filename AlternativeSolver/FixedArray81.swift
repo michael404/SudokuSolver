@@ -1,7 +1,8 @@
 struct FixedArray81<T> {
 
     // 81 elements
-    var storage: (T, T, T, T, T, T, T, T, T, T,
+    var storage: (
+        T, T, T, T, T, T, T, T, T, T,
         T, T, T, T, T, T, T, T, T, T,
         T, T, T, T, T, T, T, T, T, T,
         T, T, T, T, T, T, T, T, T, T,
@@ -12,7 +13,8 @@ struct FixedArray81<T> {
         T)
     
     init(repeating value: T) {
-        self.storage = (value, value, value, value, value, value, value, value, value, value,
+        self.storage = (
+            value, value, value, value, value, value, value, value, value, value,
             value, value, value, value, value, value, value, value, value, value,
             value, value, value, value, value, value, value, value, value, value,
             value, value, value, value, value, value, value, value, value, value,
