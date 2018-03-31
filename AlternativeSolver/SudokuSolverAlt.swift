@@ -47,7 +47,6 @@ extension SudokuBoard {
     
 }
 
-//TODO: Fix name
 struct PossibleCellValuesBoard {
     
     var board: FixedArray81<PossibleCellValues>
