@@ -6,6 +6,9 @@ extension PossibleCellValuesBoard {
         return PossibleCellValuesBoard._indiciesThatNeedToBeCheckedWhenChangingIndex[start..<end]
     }
     
+    /// The 20 indicies that need to be checked when chaning an index.
+    /// Laid out as a countinous array of 20 indexes. Use the helper
+    /// method to access the values.
     private static let _indiciesThatNeedToBeCheckedWhenChangingIndex: [Int] = [
         10, 20, 5, 7, 27, 45, 63, 3, 11, 54, 72, 19, 2, 4, 9, 18, 6, 36, 8, 1,
         10, 20, 55, 5, 7, 0, 3, 37, 11, 19, 2, 4, 28, 46, 6, 64, 73, 9, 18, 8,
@@ -104,7 +107,7 @@ extension PossibleCellValuesBoard {
             indicies.remove(index)
             result.append(Array(indicies))
         }
-        print(result)
+        print(result.flatMap { $0 } )
     }
     
     private static func indiciesInSameRow(as index: Int) -> CountableRange<Int> {
