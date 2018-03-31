@@ -31,6 +31,7 @@ struct PossibleCellValues: Equatable {
     var isSolved: Bool {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
         // Note that 0 is incorrectly considered a power of 2, but that does not matter in this context
+        // since _storage should never be 0
         return (_storage & (_storage - 1)) == 0
     }
     
