@@ -5,7 +5,7 @@ extension SudokuBoard {
         try board.eliminatePossibilities()
         
         //Find the relevant indicies and sort them
-        var unsolvedIndicies = board.indices.filter(board.isUnsolvedAtIndex)
+        var unsolvedIndicies = board.indices.filter(board.isUnsolved)
         unsolvedIndicies.sort { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }
         
         guard let index = unsolvedIndicies.first else {
@@ -31,11 +31,13 @@ extension SudokuBoard {
     
     private func _testValuesAndCallSolveAlt(_ board: CellOptionBoard, _ index: Int, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
         var board = board
+        var unsolvedIndicies = unsolvedIndicies
         // Test out possible cell values, and recurse
         for cellValue in board[index].possibleValues {
             board[index] = _Cell(cellValue)
             do {
-                return try _solveAlt(board, unsolvedIndicies.filter(board.isUnsolvedAtIndex))
+                unsolvedIndicies.removeAll(where: board.isSolved)
+                return try _solveAlt(board, unsolvedIndicies)
             } catch {
                 continue
             }
@@ -72,9 +74,14 @@ struct CellOptionBoard {
         } while updated
     }
 
-    func isUnsolvedAtIndex(_ index: Int) -> Bool {
-        return self[index].solvedValue == nil
+    func isSolved(at index: Int) -> Bool {
+        return self[index].isSolved
     }
+    
+    func isUnsolved(at index: Int) -> Bool {
+        return !isSolved(at: index)
+    }
+    
 }
 
 extension CellOptionBoard: MutableCollection, RandomAccessCollection {
