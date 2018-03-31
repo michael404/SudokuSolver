@@ -1,31 +1,32 @@
 extension SudokuBoard {
     
     func findFirstSolutionAlt() throws -> SudokuBoard {
-
-        // Returns true once the function has found a solution
-        func _solve(_ board: CellOptionBoard, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
-
-            var board = board
-            try board.eliminatePossibilities()
-            
-            guard !unsolvedIndicies.isEmpty else { return board }
-            let index = unsolvedIndicies.min { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }!
-            
-            // Test out possible cell values, and recurse
-            for cellValue in board[index].possibleValues {
-                board[index] = _Cell(cellValue)
-                do {
-                    return try _solve(board, unsolvedIndicies.filter(board.isUnsolvedAtIndex))
-                } catch {
-                    continue
-                }
-            }
-            throw SudokuSolverError.unsolvable
-        }
-        
-        let board = CellOptionBoard(self)
-        let result = try _solve(board, board.indices.filter(board.isUnsolvedAtIndex))
+        var board = CellOptionBoard(self)
+        //TODO: This is repeated in the first call. Single out first loop? or unroll the recursion?
+        try board.eliminatePossibilities()
+        var unsolvedIndicies = board.indices.filter(board.isUnsolvedAtIndex)
+        unsolvedIndicies.sort { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }
+        let result = try _solveAlt(board, unsolvedIndicies)
         return SudokuBoard(result)
+    }
+    
+    // Returns true once the function has found a solution
+    private func _solveAlt(_ board: CellOptionBoard, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
+        
+        var board = board
+        try board.eliminatePossibilities()
+        guard let index = unsolvedIndicies.first else { return board }
+        
+        // Test out possible cell values, and recurse
+        for cellValue in board[index].possibleValues {
+            board[index] = _Cell(cellValue)
+            do {
+                return try _solveAlt(board, unsolvedIndicies.filter(board.isUnsolvedAtIndex))
+            } catch {
+                continue
+            }
+        }
+        throw SudokuSolverError.unsolvable
     }
     
 }
