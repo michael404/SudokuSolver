@@ -2,11 +2,13 @@ extension SudokuBoard {
     
     func findFirstSolutionAlt() throws -> SudokuBoard {
         var board = CellOptionBoard(self)
-        //TODO: This is repeated in the first call. Single out first loop? or unroll the recursion?
         try board.eliminatePossibilities()
+        
         var unsolvedIndicies = board.indices.filter(board.isUnsolvedAtIndex)
         unsolvedIndicies.sort { board[$0].numberOfPossibleValues < board[$1].numberOfPossibleValues }
-        let result = try _solveAlt(board, unsolvedIndicies)
+        guard let index = unsolvedIndicies.first else { return SudokuBoard(board) }
+        
+        let result = try _testValuesAndCallSolveAlt(board, index, unsolvedIndicies)
         return SudokuBoard(result)
     }
     
@@ -17,6 +19,12 @@ extension SudokuBoard {
         try board.eliminatePossibilities()
         guard let index = unsolvedIndicies.first else { return board }
         
+        return try _testValuesAndCallSolveAlt(board, index, unsolvedIndicies)
+
+    }
+    
+    private func _testValuesAndCallSolveAlt(_ board: CellOptionBoard, _ index: Int, _ unsolvedIndicies: [Int]) throws -> CellOptionBoard {
+        var board = board
         // Test out possible cell values, and recurse
         for cellValue in board[index].possibleValues {
             board[index] = _Cell(cellValue)
