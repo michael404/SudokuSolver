@@ -20,6 +20,15 @@ class SudokuTestsAlt: XCTestCase {
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolutionAlt())
     }
     
+    func testFullyFilled() {
+        let filledBoard = TestData.filledboard
+        XCTAssertEqual(filledBoard.clues, 81)
+        XCTAssertTrue(filledBoard.isFullyFilled)
+        // A filled board should return itself as a solution
+        XCTAssertEqual(try! filledBoard.findFirstSolutionAlt(), filledBoard)
+        
+    }
+    
     /*func testFindAllSolutions() {
         do {
             let solutions = try! TestData.board1.findAllSolutions()
