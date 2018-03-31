@@ -63,7 +63,7 @@ struct PossibleCellValuesBoard {
         var updated: Bool
         repeat {
             updated = false
-            for index in 0...80 {
+            for index in self.indices {
                 guard let valueToRemove = board[index].solvedValue else { continue }
                 for indexToRemoveFrom in PossibleCellValuesBoard.indiciesThatNeedToBeCheckedWhenChanging(index: index)
                     where try board[indexToRemoveFrom].remove(valueToRemove) {
