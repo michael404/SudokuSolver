@@ -66,10 +66,10 @@ fileprivate extension PossibleCellValuesBoard {
         for solvedCell in self[index] {
             self[index] = solvedCell
             do {
-                unsolvedIndicies.removeAll(where: self.isSolved)
-                guard let index = unsolvedIndicies.first else { return self }
                 var newBoard = self
                 try newBoard.eliminatePossibilities()
+                unsolvedIndicies.removeAll(where: self.isSolved)
+                guard let index = unsolvedIndicies.first else { return self }
                 return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
                 continue
