@@ -4,7 +4,10 @@ extension SudokuBoard {
         var board = PossibleCellValuesBoard(self)
         try board.eliminatePossibilities()
         
-        //Find the relevant indicies and sort them
+        // Find the relevant indicies and sort them according to the number of
+        // possible values the cell can have. We do not resort this array later,
+        // so the sorting might not be 100% correct later on, but it is a good
+        // approximation, and resorting leads to worse performance
         var unsolvedIndicies = board.indices.filter(board.isUnsolved)
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
@@ -14,35 +17,8 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try _testValuesAndCallSolveAlt(board, index, unsolvedIndicies)
+        let result = try board.bruteforce(index: index, unsolvedIndicies: unsolvedIndicies)
         return SudokuBoard(result)
-    }
-    
-    // Returns true once the function has found a solution
-    private func _solveAlt(_ board: PossibleCellValuesBoard, _ unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
-        
-        var board = board
-        try board.eliminatePossibilities()
-        guard let index = unsolvedIndicies.first else { return board }
-        
-        return try _testValuesAndCallSolveAlt(board, index, unsolvedIndicies)
-
-    }
-    
-    private func _testValuesAndCallSolveAlt(_ board: PossibleCellValuesBoard, _ index: Int, _ unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
-        var board = board
-        var unsolvedIndicies = unsolvedIndicies
-        // Test out possible cell values, and recurse
-        for solvedCell in board[index] {
-            board[index] = solvedCell
-            do {
-                unsolvedIndicies.removeAll(where: board.isSolved)
-                return try _solveAlt(board, unsolvedIndicies)
-            } catch {
-                continue
-            }
-        }
-        throw SudokuSolverError.unsolvable
     }
     
 }
@@ -58,6 +34,18 @@ struct PossibleCellValuesBoard {
         }
     }
     
+    func isSolved(at index: Int) -> Bool {
+        return self[index].isSolved
+    }
+    
+    func isUnsolved(at index: Int) -> Bool {
+        return !isSolved(at: index)
+    }
+    
+}
+
+fileprivate extension PossibleCellValuesBoard {
+    
     // Throws if we are in an impossible situation
     mutating func eliminatePossibilities() throws {
         var updated: Bool
@@ -72,13 +60,30 @@ struct PossibleCellValuesBoard {
             }
         } while updated
     }
-
-    func isSolved(at index: Int) -> Bool {
-        return self[index].isSolved
+    
+    mutating func eliminateAndBruteforce(unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+        
+        try eliminatePossibilities()
+        guard let index = unsolvedIndicies.first else { return self }
+        
+        return try bruteforce(index: index, unsolvedIndicies: unsolvedIndicies)
+        
     }
     
-    func isUnsolved(at index: Int) -> Bool {
-        return !isSolved(at: index)
+    mutating func bruteforce(index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+        var unsolvedIndicies = unsolvedIndicies
+        // Test out possible cell values, and recurse
+        for solvedCell in self[index] {
+            self[index] = solvedCell
+            do {
+                unsolvedIndicies.removeAll(where: self.isSolved)
+                var board = self
+                return try board.eliminateAndBruteforce(unsolvedIndicies: unsolvedIndicies)
+            } catch {
+                continue
+            }
+        }
+        throw SudokuSolverError.unsolvable
     }
     
 }
