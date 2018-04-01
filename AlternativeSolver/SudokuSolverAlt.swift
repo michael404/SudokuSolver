@@ -17,7 +17,7 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try board.bruteforce(index: index, unsolvedIndicies: unsolvedIndicies)
+        let result = try board.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
         return SudokuBoard(result)
     }
     
@@ -61,24 +61,16 @@ fileprivate extension PossibleCellValuesBoard {
         } while updated
     }
     
-    mutating func eliminateAndBruteforce(unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
-        
-        try eliminatePossibilities()
-        guard let index = unsolvedIndicies.first else { return self }
-        
-        return try bruteforce(index: index, unsolvedIndicies: unsolvedIndicies)
-        
-    }
-    
-    mutating func bruteforce(index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+    mutating func bruteforceAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
-        // Test out possible cell values, and recurse
         for solvedCell in self[index] {
             self[index] = solvedCell
             do {
                 unsolvedIndicies.removeAll(where: self.isSolved)
-                var board = self
-                return try board.eliminateAndBruteforce(unsolvedIndicies: unsolvedIndicies)
+                guard let index = unsolvedIndicies.first else { return self }
+                var newBoard = self
+                try newBoard.eliminatePossibilities()
+                return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
                 continue
             }
