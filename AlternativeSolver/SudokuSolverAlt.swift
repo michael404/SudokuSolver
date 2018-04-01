@@ -25,12 +25,12 @@ extension SudokuBoard {
 
 struct PossibleCellValuesBoard {
     
-    var board: FixedArray81<PossibleCellValues>
+    private var cells: FixedArray81<PossibleCellValues>
     
     init(_ board: SudokuBoard) {
-        self.board = FixedArray81(repeating: PossibleCellValues(allTrue: ()))
+        self.cells = FixedArray81(repeating: PossibleCellValues(allTrue: ()))
         for (index, cell) in zip(board.indices, board) where cell != nil {
-            self.board[index] = PossibleCellValues(solved: cell.value)
+            self[index] = PossibleCellValues(solved: cell.value)
         }
     }
     
@@ -52,9 +52,9 @@ fileprivate extension PossibleCellValuesBoard {
         repeat {
             updated = false
             for index in self.indices {
-                guard let valueToRemove = board[index].solvedValue else { continue }
+                guard let valueToRemove = self[index].solvedValue else { continue }
                 for indexToRemoveFrom in PossibleCellValuesBoard.indiciesThatNeedToBeCheckedWhenChanging(index: index)
-                    where try board[indexToRemoveFrom].remove(valueToRemove) {
+                    where try self[indexToRemoveFrom].remove(valueToRemove) {
                     updated = true
                 }
             }
@@ -82,26 +82,14 @@ fileprivate extension PossibleCellValuesBoard {
 
 extension PossibleCellValuesBoard: MutableCollection, RandomAccessCollection {
     
-    typealias Element = PossibleCellValues
-    typealias Index = Int
-    typealias SubSequence = PossibleCellValuesBoard
-    
     subscript(position: Int) -> PossibleCellValues {
-        get {
-            return board[position]
-        }
-        set(newValue) {
-            board[position] = newValue
-        }
+        @inline(__always) get { return cells[position] }
+        @inline(__always) set(newValue) { cells[position] = newValue }
     }
     
-    var startIndex: Int {
-        return board.startIndex
-    }
+    var startIndex: Int { return cells.startIndex }
     
-    var endIndex: Int {
-        return board.endIndex
-    }
+    var endIndex: Int { return cells.endIndex }
     
 }
 
