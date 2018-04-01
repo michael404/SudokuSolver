@@ -87,7 +87,7 @@ extension PossibleCellValuesBoard: MutableCollection, RandomAccessCollection {
     
     subscript(position: Int) -> PossibleCellValues {
         @inline(__always) get { return cells[position] }
-        @inline(__always) set(newValue) { cells[position] = newValue }
+        @inline(__always) set { cells[position] = newValue }
     }
     
     var startIndex: Int { return cells.startIndex }
