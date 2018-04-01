@@ -95,20 +95,20 @@ extension PossibleCellValues: ExpressibleByIntegerLiteral {
     
 }
 
-extension Int {
+extension SudokuCell {
     
     init(_ set: PossibleCellValues) {
         switch set._storage {
-        case 0b10: self = 1
-        case 0b100: self = 2
-        case 0b1000: self = 3
-        case 0b10000: self = 4
-        case 0b100000: self = 5
-        case 0b1000000: self = 6
-        case 0b10000000: self = 7
-        case 0b100000000: self = 8
-        case 0b1000000000: self = 9
-        default: preconditionFailure()
+        case 0b10:         self.init(1)
+        case 0b100:        self.init(2)
+        case 0b1000:       self.init(3)
+        case 0b10000:      self.init(4)
+        case 0b100000:     self.init(5)
+        case 0b1000000:    self.init(6)
+        case 0b10000000:   self.init(7)
+        case 0b100000000:  self.init(8)
+        case 0b1000000000: self.init(9)
+        default:           preconditionFailure()
         }
     }
 }

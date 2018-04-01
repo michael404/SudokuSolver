@@ -101,7 +101,7 @@ fileprivate extension SudokuBoard {
     init(_ board: PossibleCellValuesBoard) {
         self.init(board.map { cell in
             if let set = cell.solvedValue {
-                return SudokuCell(Int(set))
+                return SudokuCell(set)
             }
             return nil
         })
