@@ -1,12 +1,7 @@
 public extension SudokuBoard {
-    
-    enum SolvingMethod {
-        case fromStart
-        case fromRowWithMostFilledValues
-    }
 
     //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
-    func findFirstSolution(method: SolvingMethod = .fromRowWithMostFilledValues, randomizedCellValues: Bool = false) throws -> SudokuBoard {
+    func findFirstSolution(randomizedCellValues: Bool = false) throws -> SudokuBoard {
         
         guard isValid else { throw SudokuSolverError.unsolvable }
         
@@ -14,13 +9,7 @@ public extension SudokuBoard {
         var validator = SudokuValidator(board)
         var cellValues = Array(1...9)
         
-        let coordinateIterator: Array<SudokuCoordinate>.Iterator
-        switch method {
-        case .fromStart:
-            coordinateIterator = board.indices.filter({ board[$0] == nil }).map(SudokuCoordinate.init).makeIterator()
-        case .fromRowWithMostFilledValues:
-            coordinateIterator = coordinatesSortedByRowWithMostFilledValues().makeIterator()
-        }
+        let coordinateIterator = board.indices.filter({ board[$0] == nil }).map(SudokuCoordinate.init).makeIterator()
         
         // Returns true once the function has found a solution
         func _solve(_ coordinateIterator: Array<SudokuCoordinate>.Iterator) -> Bool {

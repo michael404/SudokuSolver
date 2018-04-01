@@ -6,8 +6,8 @@ class SudokuPerfTests: XCTestCase {
         var solution1 = SudokuBoard()
         var solution2 = SudokuBoard()
         self.measure {
-            solution1 = try! TestData.board1.findFirstSolution(method: .fromStart)
-            solution2 = try! TestData.board2.findFirstSolution(method: .fromStart)
+            solution1 = try! TestData.board1.findFirstSolution()
+            solution2 = try! TestData.board2.findFirstSolution()
         }
         XCTAssertEqual(solution1.description, TestData.expectedSolution1)
         XCTAssertEqual(solution2.description, TestData.expectedSolution2)
@@ -16,26 +16,7 @@ class SudokuPerfTests: XCTestCase {
     func testPerfHardToBruteForceFromStart() {
         var solution = SudokuBoard()
         self.measure {
-            solution = try! TestData.hardToBruteForceBoard.findFirstSolution(method: .fromStart)
-        }
-        XCTAssertEqual(solution.description, TestData.expectedSolutionHardToBruteForce)
-    }
-    
-    func testPerfNormalSudokusFromRowWithMostFilledValues() {
-        var solution1 = SudokuBoard()
-        var solution2 = SudokuBoard()
-        self.measure {
-            solution1 = try! TestData.board1.findFirstSolution(method: .fromRowWithMostFilledValues)
-            solution2 = try! TestData.board2.findFirstSolution(method: .fromRowWithMostFilledValues)
-        }
-        XCTAssertEqual(solution1.description, TestData.expectedSolution1)
-        XCTAssertEqual(solution2.description, TestData.expectedSolution2)
-    }
-    
-    func testPerfHardToBruteForceFromRowWithMostFilledValues() {
-        var solution = SudokuBoard()
-        self.measure {
-            solution = try! TestData.hardToBruteForceBoard.findFirstSolution(method: .fromRowWithMostFilledValues)
+            solution = try! TestData.hardToBruteForceBoard.findFirstSolution()
         }
         XCTAssertEqual(solution.description, TestData.expectedSolutionHardToBruteForce)
     }

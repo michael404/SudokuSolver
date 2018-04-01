@@ -6,17 +6,8 @@ class SudokuTests: XCTestCase {
         XCTAssertFalse(TestData.board1.isFullyFilled)
         XCTAssertTrue(TestData.board1.isValid)
         
-        // Default solving method
         do {
             let solution = try! TestData.board1.findFirstSolution()
-            XCTAssertTrue(solution.isValid)
-            XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData.expectedSolution1)
-        }
-        
-        // "From Start" solving method
-        do {
-            let solution = try! TestData.board1.findFirstSolution(method: .fromStart)
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData.expectedSolution1)
@@ -57,7 +48,7 @@ class SudokuTests: XCTestCase {
     func testFailingBoard() {
         XCTAssertFalse(TestData.invalidBoard.isValid)
         XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution())
-        XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution(method: .fromRowWithMostFilledValues))
+        XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolution())
     }
     
     func testFindAllSolutions() {

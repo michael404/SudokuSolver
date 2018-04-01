@@ -8,7 +8,7 @@ public extension SudokuBoard {
     //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     static func randomFullyFilledBoard() -> SudokuBoard {
         let board = SudokuBoard()
-        guard let filledBoard = try? board.findFirstSolution(method: .fromStart, randomizedCellValues: true) else {
+        guard let filledBoard = try? board.findFirstSolution(randomizedCellValues: true) else {
             fatalError("Could not construct random board. This should not be possible.")
         }
         return filledBoard
