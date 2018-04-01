@@ -72,9 +72,12 @@ fileprivate extension PossibleCellValuesBoard {
                 guard let index = unsolvedIndicies.first else { return self }
                 return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
+                // Ignore the error and move on to testing the next possible value for the current index
                 continue
             }
         }
+        // Only fail an throw if we have tried all possible values for the current cell and all of those
+        // branches failed and throwed.
         throw SudokuSolverError.unsolvable
     }
     
