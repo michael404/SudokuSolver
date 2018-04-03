@@ -75,12 +75,10 @@ struct PossibleCellValuesIterator: IteratorProtocol {
     init(_ base: PossibleCellValues) { self.base = base }
     
     mutating func next() -> PossibleCellValues? {
-        
         while mask._storage != 0b10000000000 {
             defer { mask._storage = mask._storage << 1 }
             if base.contains(mask) { return mask }
         }
-        
         return nil
     }
     
