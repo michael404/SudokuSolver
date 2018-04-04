@@ -1,6 +1,6 @@
 extension SudokuBoard {
     
-    func findFirstSolutionAlt() throws -> SudokuBoard {
+    func findFirstSolutionConstraintElimination() throws -> SudokuBoard {
         var board = PossibleCellValuesBoard(self)
         try board.eliminatePossibilities()
         

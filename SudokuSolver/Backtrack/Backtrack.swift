@@ -1,7 +1,7 @@
 public extension SudokuBoard {
 
     //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
-    func findFirstSolution(randomizedCellValues: Bool = false) throws -> SudokuBoard {
+    func findFirstSolutionBacktrack(randomizedCellValues: Bool = false) throws -> SudokuBoard {
         
         guard isValid else { throw SudokuSolverError.unsolvable }
         
@@ -45,7 +45,7 @@ public extension SudokuBoard {
 
     }
     
-    func findAllSolutions(maxSolutions: Int = 1000) throws -> [SudokuBoard] {
+    func findAllSolutionsBacktrack(maxSolutions: Int = 1000) throws -> [SudokuBoard] {
         
         guard isValid else { throw SudokuSolverError.unsolvable }
         precondition(maxSolutions >= 1, "maxSolutions must be 1 or above")
@@ -93,9 +93,9 @@ public extension SudokuBoard {
         case multiple
     }
     
-    func numberOfSolutions() -> NumberOfSolutions {
+    func numberOfSolutionsBacktrack() -> NumberOfSolutions {
         do {
-            let solutions = try findAllSolutions(maxSolutions: 1)
+            let solutions = try findAllSolutionsBacktrack(maxSolutions: 1)
             switch solutions.count {
             case 0: return .none
             case 1: return .one
@@ -110,18 +110,6 @@ public extension SudokuBoard {
             fatalError("Unexpected error type")
         }
         
-    }
-    
-    private func coordinatesSortedByRowWithMostFilledValues() -> [SudokuCoordinate] {
-        
-        var unnfilledCellIndiciesPerRow: [[Int]] = (0...8).map { rowIndex in
-            let startIndex = rowIndex * 9
-            let endIndex = startIndex + 9
-            let unfilledCellIndices = self[startIndex..<endIndex].indices.filter { self[$0] == nil }
-            return unfilledCellIndices
-        }
-        unnfilledCellIndiciesPerRow.sort { $0.count < $1.count }
-        return unnfilledCellIndiciesPerRow.flatMap({ $0.map(SudokuCoordinate.init) })
     }
     
 }

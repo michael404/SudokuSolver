@@ -1,30 +1,30 @@
 import XCTest
 
-class SudokuPerfTests: XCTestCase {
+class SudokuPerfTestsBacktrack: XCTestCase {
     
-    func testPerfNormalSudokusFromStart() {
+    func testPerfNormalSudokus() {
         var solution1 = SudokuBoard()
         var solution2 = SudokuBoard()
         self.measure {
-            solution1 = try! TestData.board1.findFirstSolution()
-            solution2 = try! TestData.board2.findFirstSolution()
+            solution1 = try! TestData.board1.findFirstSolutionBacktrack()
+            solution2 = try! TestData.board2.findFirstSolutionBacktrack()
         }
         XCTAssertEqual(solution1.description, TestData.expectedSolution1)
         XCTAssertEqual(solution2.description, TestData.expectedSolution2)
     }
     
-    func testPerfHardToBruteForceFromStart() {
+    func testPerfHardToBruteForce() {
         var solution = SudokuBoard()
         self.measure {
-            solution = try! TestData.hardToBruteForceBoard.findFirstSolution()
+            solution = try! TestData.hardToBruteForceBoard.findFirstSolutionBacktrack()
         }
         XCTAssertEqual(solution.description, TestData.expectedSolutionHardToBruteForce)
     }
     
-    func testPerfMultipleSolutions() {
+    func testPerfMultipleSolutionsBacktrack() {
         var solutions: [SudokuBoard] = []
         self.measure {
-            solutions = try! TestData.multipleSolutionsBoard.findAllSolutions()
+            solutions = try! TestData.multipleSolutionsBoard.findAllSolutionsBacktrack()
         }
         XCTAssertEqual(solutions.count, 9)
     }
@@ -33,7 +33,7 @@ class SudokuPerfTests: XCTestCase {
         var board = SudokuBoard()
         self.measure {
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoard()
+                board = SudokuBoard.randomFullyFilledBoardBacktrack()
             }
         }
         XCTAssertTrue(board.isValid)
@@ -41,11 +41,12 @@ class SudokuPerfTests: XCTestCase {
         XCTAssertEqual(board.clues, 81)
     }
     
+    //TODO: Add a PRNG implementation to make this less variable
     func testPerfRandomStartingBoard() {
         var board = SudokuBoard()
         self.measure {
             for _ in 0..<50 {
-                board = SudokuBoard.randomStartingBoard()
+                board = SudokuBoard.randomStartingBoardBacktrack()
             }
         }
         XCTAssertTrue(board.isValid)

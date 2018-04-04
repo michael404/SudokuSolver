@@ -1,13 +1,13 @@
 import XCTest
 
-class SudokuPerfTestsAlt: XCTestCase {
+class SudokuPerfConstraintElimination: XCTestCase {
     
     func testPerfNormalSudokus() {
         var solution1 = SudokuBoard()
         var solution2 = SudokuBoard()
         self.measure {
-            solution1 = try! TestData.board1.findFirstSolutionAlt()
-            solution2 = try! TestData.board2.findFirstSolutionAlt()
+            solution1 = try! TestData.board1.findFirstSolutionConstraintElimination()
+            solution2 = try! TestData.board2.findFirstSolutionConstraintElimination()
         }
         XCTAssertEqual(solution1.description, TestData.expectedSolution1)
         XCTAssertEqual(solution2.description, TestData.expectedSolution2)
@@ -16,7 +16,7 @@ class SudokuPerfTestsAlt: XCTestCase {
     func testPerfHardToBruteForce() {
         var solution = SudokuBoard()
         self.measure {
-            solution = try! TestData.hardToBruteForceBoard.findFirstSolutionAlt()
+            solution = try! TestData.hardToBruteForceBoard.findFirstSolutionConstraintElimination()
         }
         XCTAssertEqual(solution.description, TestData.expectedSolutionHardToBruteForce)
     }

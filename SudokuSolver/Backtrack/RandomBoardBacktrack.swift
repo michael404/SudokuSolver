@@ -1,14 +1,14 @@
 public extension SudokuBoard {
     
-    static func randomStartingBoard() -> SudokuBoard {
+    static func randomStartingBoardBacktrack() -> SudokuBoard {
         //TODO: check if it is more effective to not generate a full filled board first
-        return randomFullyFilledBoard().randomStartingPositionFromFullyFilledBoard()
+        return randomFullyFilledBoardBacktrack().randomStartingPositionFromFullyFilledBoardBacktrack()
     }
     
     //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
-    static func randomFullyFilledBoard() -> SudokuBoard {
+    static func randomFullyFilledBoardBacktrack() -> SudokuBoard {
         let board = SudokuBoard()
-        guard let filledBoard = try? board.findFirstSolution(randomizedCellValues: true) else {
+        guard let filledBoard = try? board.findFirstSolutionBacktrack(randomizedCellValues: true) else {
             fatalError("Could not construct random board. This should not be possible.")
         }
         return filledBoard
@@ -19,7 +19,7 @@ public extension SudokuBoard {
 internal extension SudokuBoard {
     
     //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
-    func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
+    func randomStartingPositionFromFullyFilledBoardBacktrack() -> SudokuBoard {
         var board = self
         var shuffledIndiciesIterator = board.indices.shuffled().makeIterator()
         
@@ -35,7 +35,7 @@ internal extension SudokuBoard {
         for index in shuffledIndiciesIterator {
             let cellAtIndex = board[index]
             board[index] = nil
-            switch board.numberOfSolutions() {
+            switch board.numberOfSolutionsBacktrack() {
             case .none:
                 fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
             case .one:
