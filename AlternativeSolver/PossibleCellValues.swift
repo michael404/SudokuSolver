@@ -21,6 +21,7 @@ struct PossibleCellValues: Equatable {
     
     init(bitPattern: UInt16) {
         self._storage = bitPattern
+        assert((0...9).contains(self.count))
     }
     
     var count: Int {
