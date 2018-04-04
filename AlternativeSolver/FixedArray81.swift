@@ -50,7 +50,11 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         }
         @inline(__always)
         set {
-            self.withUnsafeMutableBufferPointer { buffer in
+            withUnsafeMutableBytes(of: &storage) { rawBuffer in
+                assert(rawBuffer.count == 81*MemoryLayout<T>.stride, "layout mismatch?")
+                let buffer = UnsafeMutableBufferPointer<Element>(
+                    start: rawBuffer.baseAddress._unsafelyUnwrappedUnchecked.assumingMemoryBound(to: Element.self),
+                    count: 81)
                 buffer[i] = newValue
             }
         }
@@ -61,18 +65,3 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
     func index(before i: Int) -> Int { return i-1 }
 }
 
-extension FixedArray81 {
-
-    mutating func withUnsafeMutableBufferPointer<R>(
-        _ body: (UnsafeMutableBufferPointer<Element>) throws -> R
-        ) rethrows -> R {
-        return try withUnsafeMutableBytes(of: &storage) { rawBuffer in
-            assert(rawBuffer.count == 81*MemoryLayout<T>.stride, "layout mismatch?")
-            let buffer = UnsafeMutableBufferPointer<Element>(
-                start: rawBuffer.baseAddress._unsafelyUnwrappedUnchecked
-                    .assumingMemoryBound(to: Element.self),
-                count: 81)
-            return try body(buffer)
-        }
-    }
-}
