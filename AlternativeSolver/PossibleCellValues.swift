@@ -107,7 +107,8 @@ extension SudokuCell {
         case 0b10000000:   self.init(7)
         case 0b100000000:  self.init(8)
         case 0b1000000000: self.init(9)
-        default:           preconditionFailure()
+        default:
+            preconditionFailure("Cannot initialize a SudokuCell from a PossibleCellValue that is not solved")
         }
     }
 }
