@@ -12,8 +12,7 @@ extension SudokuBoard {
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
         guard let index = unsolvedIndicies.first else {
-            // Either the Sudoku was already solved or we solved it
-            // with the first eliminatePossibilities() call
+            // The Sudoku was already solved
             return SudokuBoard(board)
         }
         
