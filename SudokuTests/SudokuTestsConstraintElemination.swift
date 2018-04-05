@@ -29,6 +29,22 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         
     }
     
+    func testConvertionToSudokuBoard() {
+        // Not fully filled
+        do {
+            let pvb = PossibleCellValuesBoard(TestData.board1)
+            let sb = SudokuBoard(pvb)
+            XCTAssertEqual(sb, TestData.board1)
+        }
+        
+        // Fully filled
+        do {
+            let pvb = PossibleCellValuesBoard(TestData.filledboard)
+            let sb = SudokuBoard(pvb)
+            XCTAssertEqual(sb, TestData.filledboard)
+        }
+    }
+    
     func testOneToNine() {
         let allTrue = PossibleCellValues(allTrue: ())
         XCTAssertEqual(allTrue.count, 9)

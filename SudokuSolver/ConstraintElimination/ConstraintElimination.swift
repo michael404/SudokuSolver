@@ -96,7 +96,7 @@ extension PossibleCellValuesBoard: MutableCollection, RandomAccessCollection {
     
 }
 
-fileprivate extension SudokuBoard {
+extension SudokuBoard {
     
     init(_ board: PossibleCellValuesBoard) {
         self.init(board.map { cell in
