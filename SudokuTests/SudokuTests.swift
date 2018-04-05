@@ -3,41 +3,41 @@ import XCTest
 class SudokuTests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
-        XCTAssertFalse(TestData.board1.isFullyFilled)
-        XCTAssertTrue(TestData.board1.isValid)
+        XCTAssertFalse(TestData.Hard1.board.isFullyFilled)
+        XCTAssertTrue(TestData.Hard1.board.isValid)
         
         do {
-            let solution = try! TestData.board1.findFirstSolutionBacktrack()
+            let solution = try! TestData.Hard1.board.findFirstSolutionBacktrack()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData.expectedSolution1)
+            XCTAssertEqual(solution.description, TestData.Hard1.solutionString)
         }
     }
     
     func testInitFromString() {
-        let board = SudokuBoard(TestData.board1String)
-        XCTAssertEqual(board, TestData.board1)
-        XCTAssertEqual(board.debugDescription, TestData.board1String)
+        let board = SudokuBoard(TestData.Hard1.string)
+        XCTAssertEqual(board, TestData.Hard1.board)
+        XCTAssertEqual(board.debugDescription, TestData.Hard1.string)
     }
     
     func testIsValid() {
-        XCTAssertTrue(TestData.board1.isValid)
+        XCTAssertTrue(TestData.Hard1.board.isValid)
         
-        var board1NonValid = TestData.board1
+        var board1NonValid = TestData.Hard1.board
         board1NonValid[0, 0] = 9
         XCTAssertFalse(board1NonValid.isValid)
         
-        board1NonValid = TestData.board1
+        board1NonValid = TestData.Hard1.board
         board1NonValid[8, 6] = 5
         XCTAssertFalse(board1NonValid.isValid)
         
-        board1NonValid = TestData.board1
+        board1NonValid = TestData.Hard1.board
         board1NonValid[6, 7] = 1
         XCTAssertFalse(board1NonValid.isValid)
     }
     
     func testFullyFilled() {
-        let filledBoard = TestData.filledboard
+        let filledBoard = TestData.Filled.board
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
@@ -47,9 +47,9 @@ class SudokuTests: XCTestCase {
 
     
     func testFilledCells() {
-        XCTAssertEqual(TestData.board1.clues, 27)
-        XCTAssertEqual(TestData.board2.clues, 21)
-        XCTAssertEqual(TestData.emptyBoard.clues, 0)
+        XCTAssertEqual(TestData.Hard1.board.clues, 27)
+        XCTAssertEqual(TestData.Hard2.board.clues, 21)
+        XCTAssertEqual(TestData.Empty.board.clues, 0)
     }
     
     func testBitMask() {

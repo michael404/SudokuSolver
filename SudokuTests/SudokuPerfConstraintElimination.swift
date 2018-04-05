@@ -6,19 +6,27 @@ class SudokuPerfConstraintElimination: XCTestCase {
         var solution1 = SudokuBoard()
         var solution2 = SudokuBoard()
         self.measure {
-            solution1 = try! TestData.board1.findFirstSolutionConstraintElimination()
-            solution2 = try! TestData.board2.findFirstSolutionConstraintElimination()
+            solution1 = try! TestData.Hard1.board.findFirstSolutionConstraintElimination()
+            solution2 = try! TestData.Hard2.board.findFirstSolutionConstraintElimination()
         }
-        XCTAssertEqual(solution1.description, TestData.expectedSolution1)
-        XCTAssertEqual(solution2.description, TestData.expectedSolution2)
+        XCTAssertEqual(solution1.description, TestData.Hard1.solutionString)
+        XCTAssertEqual(solution2.description, TestData.Hard2.solutionString)
+    }
+    
+    func testPerfCEOptimized() {
+        var solution = SudokuBoard()
+        self.measure {
+            solution = try! TestData.ConstraintPropagationSolvable.board.findFirstSolutionConstraintElimination()
+        }
+        XCTAssertEqual(solution, TestData.ConstraintPropagationSolvable.solution)
     }
     
     func testPerfHardToBruteForce() {
         var solution = SudokuBoard()
         self.measure {
-            solution = try! TestData.hardToBruteForceBoard.findFirstSolutionConstraintElimination()
+            solution = try! TestData.HardToBruteForce.board.findFirstSolutionConstraintElimination()
         }
-        XCTAssertEqual(solution.description, TestData.expectedSolutionHardToBruteForce)
+        XCTAssertEqual(solution.description, TestData.HardToBruteForce.solutionString)
     }
     
 //    func testPerfMultipleSolutions() {

@@ -3,25 +3,25 @@ import XCTest
 class SudokuSolverTestsConstraintElimination: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
-        XCTAssertFalse(TestData.board1.isFullyFilled)
-        XCTAssertTrue(TestData.board1.isValid)
+        XCTAssertFalse(TestData.Hard1.board.isFullyFilled)
+        XCTAssertTrue(TestData.Hard1.board.isValid)
         
         do {
-            let solution = try! TestData.board1.findFirstSolutionConstraintElimination()
+            let solution = try! TestData.Hard1.board.findFirstSolutionConstraintElimination()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData.expectedSolution1)
+            XCTAssertEqual(solution.description, TestData.Hard1.solutionString)
         }
         
     }
     
     func testFailingBoard() {
-        XCTAssertFalse(TestData.invalidBoard.isValid)
-        XCTAssertThrowsError(try TestData.invalidBoard.findFirstSolutionConstraintElimination())
+        XCTAssertFalse(TestData.Invalid.board.isValid)
+        XCTAssertThrowsError(try TestData.Invalid.board.findFirstSolutionConstraintElimination())
     }
     
     func testFullyFilled() {
-        let filledBoard = TestData.filledboard
+        let filledBoard = TestData.Filled.board
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
@@ -32,16 +32,16 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     func testConvertionToSudokuBoard() {
         // Not fully filled
         do {
-            let pvb = PossibleCellValuesBoard(TestData.board1)
+            let pvb = PossibleCellValuesBoard(TestData.Hard1.board)
             let sb = SudokuBoard(pvb)
-            XCTAssertEqual(sb, TestData.board1)
+            XCTAssertEqual(sb, TestData.Hard1.board)
         }
         
         // Fully filled
         do {
-            let pvb = PossibleCellValuesBoard(TestData.filledboard)
+            let pvb = PossibleCellValuesBoard(TestData.Filled.board)
             let sb = SudokuBoard(pvb)
-            XCTAssertEqual(sb, TestData.filledboard)
+            XCTAssertEqual(sb, TestData.Filled.board)
         }
     }
     
