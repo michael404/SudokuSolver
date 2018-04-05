@@ -7,7 +7,7 @@ extension SudokuBoard {
         // Find the relevant indicies and sort them according to the number of
         // possible values the cell can have. We do not re-sort this array later,
         // so the sorting might not be 100% correct later on, but it is a good
-        // approximation, and resorting leads to worse performance
+        // approximation, and re-sorting leads to worse performance
         var unsolvedIndicies = board.indices.filter(board.isUnsolved)
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
