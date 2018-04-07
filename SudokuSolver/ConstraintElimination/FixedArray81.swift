@@ -46,7 +46,7 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         @inline(__always)
         set {
             withUnsafeMutableBytes(of: &storage) { rawPtr in
-                let buffer = UnsafeMutableBufferPointer<Element>(start: rawPtr.baseAddress!.assumingMemoryBound(to: Element.self), count: 81)
+                let buffer = UnsafeMutableBufferPointer<Element>(start: rawPtr.baseAddress!.assumingMemoryBound(to: T.self), count: 81)
                 buffer[i] = newValue
             }
         }
