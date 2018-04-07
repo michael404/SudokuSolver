@@ -36,18 +36,22 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
     subscript(i: Int) -> T {
         @inline(__always)
         get {
-            //TODO: If SE-0205 passes - see if we can eliminate the copy here
+            assert((startIndex..<endIndex).contains(i))
+            //TODO: If SE-0205 passes we can eliminate the copy here and just pass `storage` as a non-inout argument
             var copy = storage
-            return withUnsafeBytes(of: &copy) { (rawPtr : UnsafeRawBufferPointer) -> T in
-                let buffer = UnsafeBufferPointer(start: rawPtr.baseAddress!.assumingMemoryBound(to: T.self), count: 81)
-                return buffer[i]
+            return withUnsafeBytes(of: &copy) { rawPointer in
+                let pointer = rawPointer.baseAddress!.assumingMemoryBound(to: T.self)
+                let bufferPointer = UnsafeBufferPointer(start: pointer, count: 81)
+                return bufferPointer[i]
             }
         }
         @inline(__always)
         set {
-            withUnsafeMutableBytes(of: &storage) { rawPtr in
-                let buffer = UnsafeMutableBufferPointer<Element>(start: rawPtr.baseAddress!.assumingMemoryBound(to: T.self), count: 81)
-                buffer[i] = newValue
+            assert((startIndex..<endIndex).contains(i))
+            withUnsafeMutableBytes(of: &storage) { rawPointer in
+                let pointer = rawPointer.baseAddress!.assumingMemoryBound(to: T.self)
+                let bufferPointer = UnsafeMutableBufferPointer<Element>(start: pointer, count: 81)
+                bufferPointer[i] = newValue
             }
         }
     }
