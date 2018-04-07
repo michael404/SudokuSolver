@@ -50,8 +50,10 @@ fileprivate extension PossibleCellValuesBoard {
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
         guard let valueToRemove = self[index].solvedValue else { return }
-        for indexToRemoveFrom in indiciesAffectedBy(index: index) where try self[indexToRemoveFrom].remove(valueToRemove) {
-            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+        for indexToRemoveFrom in indiciesAffectedBy(index: index) {
+            if try self[indexToRemoveFrom].remove(valueToRemove) {
+                try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            }
         }
     }
     
