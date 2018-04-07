@@ -46,7 +46,7 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     }
     
     func testOneToNine() {
-        let allTrue = PossibleCellValues(allTrue: ())
+        let allTrue = PossibleCellValues.allTrue
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {

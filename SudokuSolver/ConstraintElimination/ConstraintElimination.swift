@@ -28,7 +28,7 @@ struct PossibleCellValuesBoard {
     private var cells: FixedArray81<PossibleCellValues>
     
     init(_ board: SudokuBoard) throws {
-        self.cells = FixedArray81(repeating: PossibleCellValues(allTrue: ()))
+        self.cells = FixedArray81(repeating: PossibleCellValues.allTrue)
         for (index, cell) in zip(board.indices, board) where cell != nil {
             self[index] = PossibleCellValues(solved: cell.value)
             try eliminatePossibilitites(basedOnChangeOf: index)

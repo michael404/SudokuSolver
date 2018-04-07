@@ -10,9 +10,9 @@ struct PossibleCellValues: Equatable {
     /// The set is considered "solved" if only one bit is set.
     fileprivate var _storage: UInt16
     
-    init(allTrue: ()) {
-        self._storage = 0b0000001111111110
-    }
+    static var allTrue: PossibleCellValues { return PossibleCellValues(allTrue: ()) }
+    
+    private init(allTrue: ()) { self._storage = 0b0000001111111110 }
     
     init(solved value: Int) {
         assert((1...9).contains(value))
