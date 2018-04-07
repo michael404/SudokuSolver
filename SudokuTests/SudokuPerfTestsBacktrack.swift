@@ -2,34 +2,21 @@ import XCTest
 
 class SudokuPerfTestsBacktrack: XCTestCase {
     
-    func testPerfNormalSudokus() {
-        var solution1 = SudokuBoard()
-        var solution2 = SudokuBoard()
+    func testPerfSuite() {
+        var solutions = [SudokuBoard]()
         self.measure {
-            solution1 = try! TestData.Hard1.board.findFirstSolutionBacktrack()
-            solution2 = try! TestData.Hard2.board.findFirstSolutionBacktrack()
+            for board in TestData.PerfTestSuite.boards {
+                let solvedBoard = try! board.findFirstSolutionBacktrack()
+                solutions.append(solvedBoard)
+            }
         }
-        XCTAssertEqual(solution1.description, TestData.Hard1.solutionString)
-        XCTAssertEqual(solution2.description, TestData.Hard2.solutionString)
+        for (solvedBoard, expectedSolution) in zip(solutions, TestData.PerfTestSuite.solutions) {
+            XCTAssertEqual(solvedBoard, expectedSolution)
+        }
+        
     }
     
-    func testPerfCEOptimized() {
-        var solution = SudokuBoard()
-        self.measure {
-            solution = try! TestData.ConstraintPropagationSolvable.board.findFirstSolutionConstraintElimination()
-        }
-        XCTAssertEqual(solution, TestData.ConstraintPropagationSolvable.solution)
-    }
-    
-    func testPerfHardToBruteForce() {
-        var solution = SudokuBoard()
-        self.measure {
-            solution = try! TestData.HardToBruteForce.board.findFirstSolutionBacktrack()
-        }
-        XCTAssertEqual(solution.description, TestData.HardToBruteForce.solutionString)
-    }
-    
-    func testPerfMultipleSolutionsBacktrack() {
+    func testPerfMultipleSolutions() {
         var solutions: [SudokuBoard] = []
         self.measure {
             solutions = try! TestData.MultipleSolutions.board.findAllSolutionsBacktrack()
