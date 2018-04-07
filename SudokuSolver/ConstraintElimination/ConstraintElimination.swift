@@ -12,7 +12,8 @@ extension SudokuBoard {
         
         guard let index = unsolvedIndicies.first else {
             // Either the Sudoku was already solved or we solved it
-            // with the first eliminatePossibilities() call
+            // with the first round of eliminatePossibilities in the
+            // PossibleCellValuesBoard initializer
             return SudokuBoard(board)
         }
         
@@ -57,12 +58,12 @@ fileprivate extension PossibleCellValuesBoard {
     mutating func bruteforceAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
         for solvedCell in self[index] {
-            self[index] = solvedCell
             do {
                 var newBoard = self
+                newBoard[index] = solvedCell
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
-                unsolvedIndicies.removeAll(where: self.isSolved)
-                guard let index = unsolvedIndicies.first else { return self }
+                unsolvedIndicies.removeAll(where: newBoard.isSolved)
+                guard let index = unsolvedIndicies.first else { return newBoard }
                 return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
