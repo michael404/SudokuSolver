@@ -40,7 +40,7 @@ struct PossibleCellValues: Equatable {
         guard contains(value) else { return false }
         // Since we know that the bit we are testing is 1, we can set it to
         // 0 using XOR instead of AND NOT.
-        storage = storage ^ value.storage
+        storage ^= value.storage
         return true
     }
     
@@ -62,7 +62,7 @@ struct PossibleCellValuesIterator: IteratorProtocol {
     
     mutating func next() -> SolvedCellValue? {
         while mask.storage != 0b10000000000 {
-            defer { mask.storage = mask.storage << 1 }
+            defer { mask.storage <<= 1 }
             if base.contains(mask) { return mask }
         }
         return nil
@@ -85,7 +85,7 @@ struct SolvedCellValue: Equatable {
     
     init(_ value: Int) {
         assert((1...9).contains(value))
-        self.storage = 1 << value
+        self.storage = 0b1 << value
     }
     
 }
