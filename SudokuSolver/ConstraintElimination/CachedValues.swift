@@ -1,15 +1,15 @@
 extension PossibleCellValuesBoard {
     
-    static func indiciesThatNeedToBeCheckedWhenChanging(index: Int) -> ArraySlice<Int> {
+    func indiciesAffectedBy(index: Int) -> ArraySlice<Int> {
         let start = index * 20
         let end = start + 20
-        return PossibleCellValuesBoard._indiciesThatNeedToBeCheckedWhenChangingIndex[start..<end]
+        return PossibleCellValuesBoard._indiciesAffectedByIndex[start..<end]
     }
     
     /// The 20 indicies that need to be checked when chaning an index.
     /// Laid out as a countinous array of 20 indexes. Use the helper
     /// method to access the values.
-    private static let _indiciesThatNeedToBeCheckedWhenChangingIndex: [Int] = [
+    private static let _indiciesAffectedByIndex: [Int] = [
         10, 20, 5, 7, 27, 45, 63, 3, 11, 54, 72, 19, 2, 4, 9, 18, 6, 36, 8, 1,
         10, 20, 55, 5, 7, 0, 3, 37, 11, 19, 2, 4, 28, 46, 6, 64, 73, 9, 18, 8,
         65, 10, 20, 38, 5, 7, 29, 74, 0, 11, 3, 56, 19, 47, 18, 4, 9, 6, 8, 1,

@@ -32,14 +32,14 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     func testConvertionToSudokuBoard() {
         // Not fully filled
         do {
-            let pvb = PossibleCellValuesBoard(TestData.Hard1.board)
+            let pvb = try! PossibleCellValuesBoard(TestData.Hard1.board)
             let sb = SudokuBoard(pvb)
             XCTAssertEqual(sb, TestData.Hard1.board)
         }
         
         // Fully filled
         do {
-            let pvb = PossibleCellValuesBoard(TestData.Filled.board)
+            let pvb = try! PossibleCellValuesBoard(TestData.Filled.board)
             let sb = SudokuBoard(pvb)
             XCTAssertEqual(sb, TestData.Filled.board)
         }

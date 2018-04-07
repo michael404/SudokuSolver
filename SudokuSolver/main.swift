@@ -4,7 +4,7 @@ import Foundation
 func generateMinimalSudokusAsync(iterations: Int, maxClues: Int, handler: @escaping (SudokuBoard) -> ()) {
     let serialQueue = DispatchQueue(label: "se.michaelholmgren.SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
-        let board = SudokuBoard.randomStartingBoard()
+        let board = SudokuBoard.randomStartingBoardBacktrack()
         guard board.clues <= maxClues else { return }
         serialQueue.sync { handler(board) }
     }
@@ -20,9 +20,9 @@ func countNanoseconds(for function: () -> ()) -> Int {
 func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: Int = 25_000_000, handler: @escaping (_ board: SudokuBoard, _ nanoseconds: Int) -> ()) {
     let serialQueue = DispatchQueue(label: "se.michaelholmgren.SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
-        let board = SudokuBoard.randomStartingBoard()
+        let board = SudokuBoard.randomStartingBoardBacktrack()
         let nanoseconds = countNanoseconds {
-            guard board.numberOfSolutions() == .one else {
+            guard board.numberOfSolutionsBacktrack() == .one else {
                 fatalError("Not solvable or multiple solutions. This should not happen.")
             }
         }
@@ -42,27 +42,34 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
 //}
 
 
-do {
-    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
-    withExtendedLifetime(solution1) {}
-//    print(solution1)
-} catch {
-    print("Error during solving of board1")
-}
+//do {
+//    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
+//    withExtendedLifetime(solution1) {}
+////    print(solution1)
+//} catch {
+//    print("Error during solving of board1")
+//}
+//
+//print("+++++++++++++++++++++++++++++++++++++++++++++++")
+//
+//let board1 = TestData.board1
+//let expectedSolution1 = TestData.expectedSolution1
+//
+//for _ in 0..<100 {
+//    do {
+//        let solution1 = try board1.findFirstSolutionAlt()
+//        withExtendedLifetime(solution1) {}
+////        print(solution1)
+//        precondition(solution1.description == expectedSolution1)
+//    } catch {
+//        print("Error during solving of board2")
+//    }
+//}
 
-print("+++++++++++++++++++++++++++++++++++++++++++++++")
-
-let board1 = TestData.board1
-let expectedSolution1 = TestData.expectedSolution1
-
-for _ in 0..<100 {
-    do {
-        let solution1 = try board1.findFirstSolutionAlt()
-        withExtendedLifetime(solution1) {}
-//        print(solution1)
-        precondition(solution1.description == expectedSolution1)
-    } catch {
-        print("Error during solving of board2")
+var reversed = Dictionary<Int, [Int]>()
+for i in 0...80 {
+    for j in PossibleCellValuesBoard.indiciesThatNeedToBeCheckedWhenChanging(index: i) {
+        reversed[j, default: []].append(i)
     }
 }
-
+print(reversed[0]!)

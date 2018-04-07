@@ -1,8 +1,7 @@
 extension SudokuBoard {
     
     func findFirstSolutionConstraintElimination() throws -> SudokuBoard {
-        var board = PossibleCellValuesBoard(self)
-        try board.eliminatePossibilities()
+        var board = try PossibleCellValuesBoard(self)
         
         // Find the relevant indicies and sort them according to the number of
         // possible values the cell can have. We do not re-sort this array later,
@@ -27,10 +26,11 @@ struct PossibleCellValuesBoard {
     
     private var cells: FixedArray81<PossibleCellValues>
     
-    init(_ board: SudokuBoard) {
+    init(_ board: SudokuBoard) throws {
         self.cells = FixedArray81(repeating: PossibleCellValues(allTrue: ()))
         for (index, cell) in zip(board.indices, board) where cell != nil {
             self[index] = PossibleCellValues(solved: cell.value)
+            try eliminatePossibilitites(basedOnChangeOf: index)
         }
     }
     
@@ -46,28 +46,21 @@ struct PossibleCellValuesBoard {
 
 fileprivate extension PossibleCellValuesBoard {
     
-    // Throws if we are in an impossible situation
-    mutating func eliminatePossibilities() throws {
-        var updated: Bool
-        repeat {
-            updated = false
-            for index in self.indices {
-                guard let valueToRemove = self[index].solvedValue else { continue }
-                for indexToRemoveFrom in PossibleCellValuesBoard.indiciesThatNeedToBeCheckedWhenChanging(index: index)
-                    where try self[indexToRemoveFrom].remove(valueToRemove) {
-                    updated = true
-                }
-            }
-        } while updated
+    /// Throws if we are in an impossible situation
+    mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
+        guard let valueToRemove = self[index].solvedValue else { return }
+        for indexToRemoveFrom in indiciesAffectedBy(index: index) where try self[indexToRemoveFrom].remove(valueToRemove) {
+            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+        }
     }
     
     mutating func bruteforceAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
         for solvedCell in self[index] {
-            self[index] = solvedCell
+            self[index] = solvedCell //TODO: Should this be done on newBoard instead?
             do {
                 var newBoard = self
-                try newBoard.eliminatePossibilities()
+                try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 unsolvedIndicies.removeAll(where: self.isSolved)
                 guard let index = unsolvedIndicies.first else { return self }
                 return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
