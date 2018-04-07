@@ -42,34 +42,26 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
 //}
 
 
-//do {
-//    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
-//    withExtendedLifetime(solution1) {}
-////    print(solution1)
-//} catch {
-//    print("Error during solving of board1")
-//}
-//
-//print("+++++++++++++++++++++++++++++++++++++++++++++++")
-//
-//let board1 = TestData.board1
-//let expectedSolution1 = TestData.expectedSolution1
-//
-//for _ in 0..<100 {
-//    do {
-//        let solution1 = try board1.findFirstSolutionAlt()
-//        withExtendedLifetime(solution1) {}
-////        print(solution1)
-//        precondition(solution1.description == expectedSolution1)
-//    } catch {
-//        print("Error during solving of board2")
-//    }
-//}
+do {
+    let solution1 = try TestData.constraintPropagationSolvableBoard.findFirstSolutionAlt()
+    withExtendedLifetime(solution1) {}
+//    print(solution1)
+} catch {
+    print("Error during solving of board1")
+}
 
-var reversed = Dictionary<Int, [Int]>()
-for i in 0...80 {
-    for j in PossibleCellValuesBoard.indiciesThatNeedToBeCheckedWhenChanging(index: i) {
-        reversed[j, default: []].append(i)
+print("+++++++++++++++++++++++++++++++++++++++++++++++")
+
+let board1 = TestData.board1
+let expectedSolution1 = TestData.expectedSolution1
+
+for _ in 0..<100 {
+    do {
+        let solution1 = try board1.findFirstSolutionAlt()
+        withExtendedLifetime(solution1) {}
+//        print(solution1)
+        precondition(solution1.description == expectedSolution1)
+    } catch {
+        print("Error during solving of board2")
     }
 }
-print(reversed[0]!)
