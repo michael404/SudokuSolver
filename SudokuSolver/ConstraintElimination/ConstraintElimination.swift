@@ -57,9 +57,9 @@ fileprivate extension PossibleCellValuesBoard {
     mutating func bruteforceAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
         for solvedCell in self[index] {
+            self[index] = solvedCell
             do {
                 var newBoard = self
-                newBoard[index] = solvedCell
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 unsolvedIndicies.removeAll(where: self.isSolved)
                 guard let index = unsolvedIndicies.first else { return self }
