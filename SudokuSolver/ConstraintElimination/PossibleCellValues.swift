@@ -47,18 +47,16 @@ struct PossibleCellValues: Equatable {
     /// Returns true if a value was removed
     /// Throws if the last value was removed
     mutating func remove(_ value: PossibleCellValues) throws -> Bool {
-        
-        if solvedValue == value {
-            //Tried to remove the value that was filled
-            throw SudokuSolverError.unsolvable
-        }
-        
+        // Throw if we try to remove the solved value
+        guard solvedValue != value else { throw SudokuSolverError.unsolvable }
         guard contains(value) else { return false }
-        
-        _storage = _storage & ~value._storage
+        _remove(value)
         return true
     }
     
+    private mutating func _remove(_ value: PossibleCellValues) {
+        _storage = _storage & ~value._storage
+    }
 }
 
 extension PossibleCellValues: Sequence{
