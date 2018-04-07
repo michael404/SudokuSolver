@@ -55,7 +55,7 @@ extension MutableCollection {
     }
 }
 
-//TODO: Remove this when SE-0197 is implemented
+//TODO: Remove this when SE-0197 is implemented, probably in Swift 4.2
 extension RangeReplaceableCollection where Self: MutableCollection {
     /// Removes from the collection all elements that satisfy the given predicate.
     ///
@@ -65,9 +65,7 @@ extension RangeReplaceableCollection where Self: MutableCollection {
     ///
     /// - Complexity: O(*n*), where *n* is the length of the collection.
     @_inlineable
-    public mutating func removeAll(
-        where predicate: (Element) throws -> Bool
-        ) rethrows {
+    public mutating func removeAll(where predicate: (Element) throws -> Bool) rethrows {
         if var i = try index(where: predicate) {
             var j = index(after: i)
             while j != endIndex {
