@@ -18,6 +18,8 @@ struct PossibleCellValues: Equatable {
     
     var count: Int {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
+        // While `storage.nonzeroBitCount` should be mapped to SSE instructions, it seems to
+        // be a little bit slower
         return (numericCast(storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
