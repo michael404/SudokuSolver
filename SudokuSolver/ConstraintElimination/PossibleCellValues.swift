@@ -38,13 +38,12 @@ struct PossibleCellValues: Equatable {
         // Throw if we try to remove the solved value
         guard SolvedCellValue(self) != value else { throw SudokuSolverError.unsolvable }
         guard contains(value) else { return false }
-        _remove(value)
+        // Since we know that the bit we are testing is 1, we can set it to
+        // 0 using XOR instead of AND NOT.
+        storage = storage ^ value.storage
         return true
     }
     
-    private mutating func _remove(_ value: SolvedCellValue) {
-        storage = storage & ~value.storage
-    }
 }
 
 extension PossibleCellValues: Sequence{
