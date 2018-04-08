@@ -32,9 +32,9 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     func testConvertionToSudokuBoard() {
         // Not fully filled
         do {
-            let pvb = try! PossibleCellValuesBoard(TestData.Hard1.board)
+            let pvb = try! PossibleCellValuesBoard(TestData.Empty.board)
             let sb = SudokuBoard(pvb)
-            XCTAssertEqual(sb, TestData.Hard1.board)
+            XCTAssertEqual(sb, TestData.Empty.board)
         }
         
         // Fully filled
@@ -48,9 +48,9 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     func testOneToNine() {
         let allTrue = PossibleCellValues.allTrue
         XCTAssertEqual(allTrue.count, 9)
-        XCTAssertNil(SolvedCellValue(allTrue))
+        XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(SolvedCellValue(i)))
+            XCTAssertTrue(allTrue.contains(PossibleCellValues(solved: i)))
         }
         
         var someFalse = allTrue
@@ -59,7 +59,7 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         XCTAssertFalse(try someFalse.remove(7))
         XCTAssertEqual(someFalse.count, 7)
         XCTAssertFalse(someFalse.isSolved)
-        XCTAssertNil(SolvedCellValue(someFalse))
+        XCTAssertNil(someFalse.solvedValue)
         XCTAssertFalse(someFalse.contains(1))
         XCTAssertFalse(someFalse.contains(7))
         XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9])
@@ -72,13 +72,13 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         XCTAssertTrue(try someFalse.remove(8))
         XCTAssertEqual(someFalse.count, 1)
         XCTAssertTrue(someFalse.isSolved)
-        XCTAssertEqual(SolvedCellValue(someFalse), 9)
+        XCTAssertEqual(someFalse.solvedValue, 9)
         XCTAssertEqual(Array(someFalse), [9])
         
-        let oneValue = PossibleCellValues(SolvedCellValue(6))
+        let oneValue = PossibleCellValues(solved: 6)
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
-        XCTAssertEqual(SolvedCellValue(oneValue), 6)
+        XCTAssertEqual(oneValue.solvedValue, 6)
         XCTAssertEqual(Array(oneValue), [6])
     }
     

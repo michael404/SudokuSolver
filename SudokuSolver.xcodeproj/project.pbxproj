@@ -20,8 +20,8 @@
 		4C38A13220679499001A8724 /* FixedArray81.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A12F20679253001A8724 /* FixedArray81.swift */; };
 		4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
 		4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
-		4C38A13A20699191001A8724 /* CachedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* CachedValues.swift */; };
-		4C38A13B20699191001A8724 /* CachedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* CachedValues.swift */; };
+		4C38A13A20699191001A8724 /* PrecalculatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* PrecalculatedValues.swift */; };
+		4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* PrecalculatedValues.swift */; };
 		4C38A13D206AA763001A8724 /* RandomBoardConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13C206AA763001A8724 /* RandomBoardConstraintElimination.swift */; };
 		4C38A13E206AA763001A8724 /* RandomBoardConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13C206AA763001A8724 /* RandomBoardConstraintElimination.swift */; };
 		4C38A142206E70C2001A8724 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
@@ -63,7 +63,7 @@
 		4C1100541F5DDC2800F0745D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C38A12F20679253001A8724 /* FixedArray81.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedArray81.swift; sourceTree = "<group>"; };
 		4C38A13320679861001A8724 /* PossibleCellValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PossibleCellValues.swift; sourceTree = "<group>"; };
-		4C38A13920699191001A8724 /* CachedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedValues.swift; sourceTree = "<group>"; };
+		4C38A13920699191001A8724 /* PrecalculatedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrecalculatedValues.swift; sourceTree = "<group>"; };
 		4C38A13C206AA763001A8724 /* RandomBoardConstraintElimination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomBoardConstraintElimination.swift; sourceTree = "<group>"; };
 		4C425076206192A9000FF622 /* SudokuTestsConstraintElemination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTestsConstraintElemination.swift; sourceTree = "<group>"; };
 		4C42507820619383000FF622 /* SudokuPerfConstraintElimination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuPerfConstraintElimination.swift; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 				4C38A13C206AA763001A8724 /* RandomBoardConstraintElimination.swift */,
 				4C38A13320679861001A8724 /* PossibleCellValues.swift */,
 				4C38A12F20679253001A8724 /* FixedArray81.swift */,
-				4C38A13920699191001A8724 /* CachedValues.swift */,
+				4C38A13920699191001A8724 /* PrecalculatedValues.swift */,
 			);
 			path = ConstraintElimination;
 			sourceTree = "<group>";
@@ -259,7 +259,7 @@
 				4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */,
 				4C1100581F5DDC6500F0745D /* Backtrack.swift in Sources */,
 				4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */,
-				4C38A13B20699191001A8724 /* CachedValues.swift in Sources */,
+				4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */,
 				4CB2B9461F6D235E004E461B /* SudokuValidator.swift in Sources */,
 				4C11005A1F5DDC7C00F0745D /* SudokuCell.swift in Sources */,
 				4C62194F204DCDF80082AF70 /* ConstraintElimination.swift in Sources */,
@@ -281,7 +281,7 @@
 				4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */,
 				4C38A13020679253001A8724 /* FixedArray81.swift in Sources */,
 				4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */,
-				4C38A13A20699191001A8724 /* CachedValues.swift in Sources */,
+				4C38A13A20699191001A8724 /* PrecalculatedValues.swift in Sources */,
 				4C1100411F588ACB00F0745D /* SudokuBoard.swift in Sources */,
 				4CD2143D202618D300018125 /* RandomBoardBacktrack.swift in Sources */,
 				4C1100471F5C570000F0745D /* Backtrack.swift in Sources */,

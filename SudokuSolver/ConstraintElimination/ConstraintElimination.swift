@@ -30,7 +30,7 @@ struct PossibleCellValuesBoard {
     init(_ board: SudokuBoard) throws {
         self.cells = FixedArray81(repeating: PossibleCellValues.allTrue)
         for (index, cell) in zip(board.indices, board) where cell != nil {
-            self[index] = PossibleCellValues(SolvedCellValue(cell.value))
+            self[index] = PossibleCellValues(solved: cell.value)
             try eliminatePossibilitites(basedOnChangeOf: index)
         }
     }
@@ -49,10 +49,39 @@ fileprivate extension PossibleCellValuesBoard {
     
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
-        guard let valueToRemove = SolvedCellValue(self[index]) else { return }
+        guard let valueToRemove = self[index].solvedValue else { return }
         for indexToRemoveFrom in indiciesAffectedBy(index: index) {
-            if try self[indexToRemoveFrom].remove(valueToRemove) {
-                try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom)
+        }
+    }
+    
+    mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
+        let value = self[index]
+        try _eliminateNakedPairs(value: value, for: indiciesInSameRowAs(index: index))
+        try _eliminateNakedPairs(value: value, for: indiciesInSameColumnAs(index: index))
+        try _eliminateNakedPairs(value: value, for: indiciesInSameBoxAs(index: index))
+    }
+    
+    mutating func _eliminateNakedPairs(value: PossibleCellValues, for indicies: ArraySlice<Int>) throws {
+        //TODO: We do not need to create an iterator here if removeAndApplyConstraints could remove based on a
+        // PossibleCellValues instead of a SolvedCellValue. Is that possible?
+        var iterator = value.makeIterator()
+        let (value1, value2) = (iterator.next()!, iterator.next()!)
+        for index in indicies where self[index] == value {
+            // Found a duplicate. Loop over all indicies, exept the current one and remove from that
+            for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
+                guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
+                try removeAndApplyConstraints(valueToRemove: value1, indexToRemoveFrom: indexToRemoveFrom)
+                try removeAndApplyConstraints(valueToRemove: value2, indexToRemoveFrom: indexToRemoveFrom)
+            }
+        }
+    }
+    
+    mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
+        if try self[indexToRemoveFrom].remove(valueToRemove) {
+            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            if self[indexToRemoveFrom].count == 2 {
+                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
         }
     }
@@ -62,7 +91,7 @@ fileprivate extension PossibleCellValuesBoard {
         for solvedCell in self[index] {
             do {
                 var newBoard = self
-                newBoard[index] = PossibleCellValues(solvedCell)
+                newBoard[index] = solvedCell
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 unsolvedIndicies.removeAll(where: newBoard.isSolved)
                 guard let index = unsolvedIndicies.first else { return newBoard }
@@ -96,7 +125,7 @@ extension SudokuBoard {
     
     init(_ board: PossibleCellValuesBoard) {
         self.init(board.map { cell in
-            if let set = SolvedCellValue(cell) {
+            if let set = cell.solvedValue {
                 return SudokuCell(set)
             }
             return nil

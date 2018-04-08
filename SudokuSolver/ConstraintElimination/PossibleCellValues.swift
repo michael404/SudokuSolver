@@ -1,6 +1,8 @@
 /// A type representing a Sudoku cell with a set a set of all the
 /// possible values the cell could have (1 through 9).
 /// The implementation uses a bit array as the underlying storage.
+/// A solved value is represented with the same type, but with only
+/// one bit set.
 struct PossibleCellValues: Equatable {
     
     /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
@@ -8,12 +10,12 @@ struct PossibleCellValues: Equatable {
     /// The set is considered "solved" if only one bit is set.
     fileprivate var storage: UInt16
     
-    static var allTrue: PossibleCellValues { return PossibleCellValues(allTrue: ()) }
-    
+    static var allTrue: PossibleCellValues = PossibleCellValues(allTrue: ())
     private init(allTrue: ()) { self.storage = 0b0000001111111110 }
     
-    init(_ solvedCellValue: SolvedCellValue) {
-        self.storage = solvedCellValue.storage
+    init(solved value: Int) {
+        assert((1...9).contains(value))
+        self.storage = 0b1 << value
     }
     
     var count: Int {
@@ -30,15 +32,19 @@ struct PossibleCellValues: Equatable {
         return (storage & (storage - 1)) == 0
     }
     
-    func contains(_ value: SolvedCellValue) -> Bool {
+    var solvedValue: PossibleCellValues? {
+        return isSolved ? self : nil
+    }
+    
+    func contains(_ value: PossibleCellValues) -> Bool {
         return (storage & value.storage) != 0
     }
     
     /// Returns true if a value was removed
     /// Throws if the last value was removed
-    mutating func remove(_ value: SolvedCellValue) throws -> Bool {
+    mutating func remove(_ value: PossibleCellValues) throws -> Bool {
         // Throw if we try to remove the solved value
-        guard SolvedCellValue(self) != value else { throw SudokuSolverError.unsolvable }
+        guard self != value else { throw SudokuSolverError.unsolvable }
         guard contains(value) else { return false }
         // Since we know that the bit we are testing is 1, we can set it to
         // 0 using XOR instead of AND NOT.
@@ -48,7 +54,7 @@ struct PossibleCellValues: Equatable {
     
 }
 
-extension PossibleCellValues: Sequence{
+extension PossibleCellValues: Sequence {
     
     func makeIterator() -> PossibleCellValuesIterator {
         return PossibleCellValuesIterator(self)
@@ -58,11 +64,11 @@ extension PossibleCellValues: Sequence{
 struct PossibleCellValuesIterator: IteratorProtocol {
     
     var base: PossibleCellValues
-    private var mask = SolvedCellValue(1)
+    private var mask = PossibleCellValues(solved: 1)
     
     init(_ base: PossibleCellValues) { self.base = base }
     
-    mutating func next() -> SolvedCellValue? {
+    mutating func next() -> PossibleCellValues? {
         while mask.storage != 0b10000000000 {
             defer { mask.storage <<= 1 }
             if base.contains(mask) { return mask }
@@ -72,36 +78,22 @@ struct PossibleCellValuesIterator: IteratorProtocol {
     
 }
 
-/// A type representing a solved Sudoku cell, i.e. a cell that only has
-/// one possible value. SolvedCellValue uses the same storage representation
-/// as PossibleCellValues under the hood, so you can convert between them
-/// in O(1)
-struct SolvedCellValue: Equatable {
-    
-    fileprivate var storage: UInt16
-    
-    init?(_ possibleCellValues: PossibleCellValues) {
-        guard possibleCellValues.isSolved else { return nil }
-        self.storage = possibleCellValues.storage
+extension PossibleCellValues: CustomStringConvertible {
+    var description: String {
+        return Array(self).map(Int.init).map(String.init).joined(separator: "")
     }
-    
-    init(_ value: Int) {
-        assert((1...9).contains(value))
-        self.storage = 0b1 << value
-    }
-    
 }
 
-// For testing
-extension SolvedCellValue: ExpressibleByIntegerLiteral {
+extension PossibleCellValues: ExpressibleByIntegerLiteral {
     init(integerLiteral value: Int) {
-        self.init(value)
+        self.init(solved: value)
     }
 }
+
 
 extension Int {
     
-    init(_ value: SolvedCellValue) {
+    init(_ value: PossibleCellValues) {
         switch value.storage {
         case 0b10:         self.init(1)
         case 0b100:        self.init(2)
@@ -119,7 +111,7 @@ extension Int {
 
 extension SudokuCell {
 
-    init(_ value: SolvedCellValue) {
+    init(_ value: PossibleCellValues) {
         self.init(Int(value))
     }
     
