@@ -70,6 +70,7 @@ fileprivate extension PossibleCellValuesBoard {
             // Found a duplicate. Loop over all indicies, exept the current one and remove from that
             for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
                 guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
+                //TODO: Can this be done in one operation somehow?
                 try removeAndApplyConstraints(valueToRemove: valuesToRemove.0, indexToRemoveFrom: indexToRemoveFrom)
                 try removeAndApplyConstraints(valueToRemove: valuesToRemove.1, indexToRemoveFrom: indexToRemoveFrom)
             }
