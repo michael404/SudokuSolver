@@ -63,17 +63,16 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func _eliminateNakedPairs(value: PossibleCellValues, for indicies: ArraySlice<Int>) throws {
-        //TODO: We do not need to create an iterator here if removeAndApplyConstraints could remove based on a
-        // PossibleCellValues instead of a SolvedCellValue. Is that possible?
         var iterator = value.makeIterator()
-        let (value1, value2) = (iterator.next()!, iterator.next()!)
+        let valuesToRemove = (iterator.next()!, iterator.next()!)
         for index in indicies where self[index] == value {
             // Found a duplicate. Loop over all indicies, exept the current one and remove from that
             for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
                 guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
-                try removeAndApplyConstraints(valueToRemove: value1, indexToRemoveFrom: indexToRemoveFrom)
-                try removeAndApplyConstraints(valueToRemove: value2, indexToRemoveFrom: indexToRemoveFrom)
+                try removeAndApplyConstraints(valueToRemove: valuesToRemove.0, indexToRemoveFrom: indexToRemoveFrom)
+                try removeAndApplyConstraints(valueToRemove: valuesToRemove.1, indexToRemoveFrom: indexToRemoveFrom)
             }
+            return
         }
     }
     
