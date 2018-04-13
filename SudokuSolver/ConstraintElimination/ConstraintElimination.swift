@@ -1,13 +1,14 @@
 extension SudokuBoard {
     
     func findFirstSolutionConstraintElimination() throws -> SudokuBoard {
+        
         var board = try PossibleCellValuesBoard(self)
         
         // Find the relevant indicies and sort them according to the number of
         // possible values the cell can have. We do not re-sort this array later,
         // so the sorting might not be 100% correct later on, but it is a good
         // approximation, and re-sorting leads to worse performance
-        var unsolvedIndicies = board.indices.filter(board.isUnsolved)
+        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
         guard let index = unsolvedIndicies.first else {
@@ -35,14 +36,6 @@ struct PossibleCellValuesBoard {
         }
     }
     
-    func isSolved(at index: Int) -> Bool {
-        return self[index].isSolved
-    }
-    
-    func isUnsolved(at index: Int) -> Bool {
-        return !isSolved(at: index)
-    }
-    
 }
 
 fileprivate extension PossibleCellValuesBoard {
@@ -62,7 +55,7 @@ fileprivate extension PossibleCellValuesBoard {
                 var newBoard = self
                 newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
-                unsolvedIndicies.removeAll(where: newBoard.isSolved)
+                unsolvedIndicies.removeAll { newBoard[$0].isSolved }
                 guard let index = unsolvedIndicies.first else { return newBoard }
                 return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
