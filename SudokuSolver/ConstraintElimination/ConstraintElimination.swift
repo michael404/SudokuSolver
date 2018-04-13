@@ -63,8 +63,11 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func _eliminateNakedPairs(value: PossibleCellValues, for indicies: ArraySlice<Int>) throws {
+        
+        assert(value.count == 2)
         var iterator = value.makeIterator()
         let valuesToRemove = (iterator.next()!, iterator.next()!)
+        
         // The body of this for loop will only be executed once, since it returns at the end
         for index in indicies where self[index] == value {
             // Found a duplicate. Loop over all indicies, exept the current one and remove from that
