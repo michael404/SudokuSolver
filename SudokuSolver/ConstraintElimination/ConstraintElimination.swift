@@ -55,6 +55,35 @@ fileprivate extension PossibleCellValuesBoard {
         }
     }
     
+    mutating func guessAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+        var unsolvedIndicies = unsolvedIndicies
+        for guess in self[index] {
+            do {
+                var newBoard = self
+                newBoard[index] = guess
+                try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
+                unsolvedIndicies.removeAll(where: newBoard.isSolved)
+                guard let index = unsolvedIndicies.first else { return newBoard }
+                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
+            } catch {
+                // Ignore the error and move on to testing the next possible value for the current index
+                continue
+            }
+        }
+        // Only fail an throw if we have tried all possible values for the current cell and all of those
+        // branches failed and throwed.
+        throw SudokuSolverError.unsolvable
+    }
+    
+    mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
+        if try self[indexToRemoveFrom].remove(valueToRemove) {
+            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            if self[indexToRemoveFrom].count == 2 {
+                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
+            }
+        }
+    }
+    
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = self[index]
         try _eliminateNakedPairs(value: value, for: indiciesInSameRowAs(index: index))
@@ -82,35 +111,6 @@ fileprivate extension PossibleCellValuesBoard {
             // and found annother equal pair, that would have indicated that the board is unsolvable.
             return
         }
-    }
-    
-    mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
-        if try self[indexToRemoveFrom].remove(valueToRemove) {
-            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
-            if self[indexToRemoveFrom].count == 2 {
-                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
-            }
-        }
-    }
-    
-    mutating func guessAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
-        var unsolvedIndicies = unsolvedIndicies
-        for guess in self[index] {
-            do {
-                var newBoard = self
-                newBoard[index] = guess
-                try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
-                unsolvedIndicies.removeAll(where: newBoard.isSolved)
-                guard let index = unsolvedIndicies.first else { return newBoard }
-                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
-            } catch {
-                // Ignore the error and move on to testing the next possible value for the current index
-                continue
-            }
-        }
-        // Only fail an throw if we have tried all possible values for the current cell and all of those
-        // branches failed and throwed.
-        throw SudokuSolverError.unsolvable
     }
     
 }
