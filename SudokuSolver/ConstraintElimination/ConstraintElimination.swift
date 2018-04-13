@@ -17,7 +17,7 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try board.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
+        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
         return SudokuBoard(result)
     }
     
@@ -93,16 +93,16 @@ fileprivate extension PossibleCellValuesBoard {
         }
     }
     
-    mutating func bruteforceAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+    mutating func guessAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
-        for solvedCell in self[index] {
+        for guess in self[index] {
             do {
                 var newBoard = self
-                newBoard[index] = solvedCell
+                newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 unsolvedIndicies.removeAll(where: newBoard.isSolved)
                 guard let index = unsolvedIndicies.first else { return newBoard }
-                return try newBoard.bruteforceAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
+                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
                 continue
