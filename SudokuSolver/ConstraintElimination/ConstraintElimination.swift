@@ -48,6 +48,15 @@ fileprivate extension PossibleCellValuesBoard {
         }
     }
     
+    mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
+        if try self[indexToRemoveFrom].remove(valueToRemove) {
+            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            if self[indexToRemoveFrom].count == 2 {
+                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
+            }
+        }
+    }
+    
     mutating func guessAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
         for guess in self[index] {
@@ -66,15 +75,6 @@ fileprivate extension PossibleCellValuesBoard {
         // Only fail an throw if we have tried all possible values for the current cell and all of those
         // branches failed and throwed.
         throw SudokuSolverError.unsolvable
-    }
-    
-    mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
-        if try self[indexToRemoveFrom].remove(valueToRemove) {
-            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
-            if self[indexToRemoveFrom].count == 2 {
-                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
-            }
-        }
     }
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
