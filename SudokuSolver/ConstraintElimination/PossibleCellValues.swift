@@ -10,7 +10,7 @@ struct PossibleCellValues: Equatable {
     /// The set is considered "solved" if only one bit is set.
     fileprivate var storage: UInt16
     
-    static var allTrue: PossibleCellValues = PossibleCellValues(allTrue: ())
+    static let allTrue: PossibleCellValues = PossibleCellValues(allTrue: ())
     private init(allTrue: ()) { self.storage = 0b0000001111111110 }
     
     init(solved value: Int) {
@@ -61,7 +61,7 @@ extension PossibleCellValues: Sequence {
     }
 }
 
-struct PossibleCellValuesIterator: IteratorProtocol {
+struct PossibleCellValuesIterator: IteratorProtocol, Sequence {
     
     var base: PossibleCellValues
     private var mask = PossibleCellValues(solved: 1)
@@ -71,6 +71,23 @@ struct PossibleCellValuesIterator: IteratorProtocol {
     mutating func next() -> PossibleCellValues? {
         while mask.storage != 0b10000000000 {
             defer { mask.storage <<= 1 }
+            if base.contains(mask) { return mask }
+        }
+        return nil
+    }
+    
+}
+
+struct PossibleCellValuesReversedIterator: IteratorProtocol, Sequence {
+    
+    var base: PossibleCellValues
+    private var mask = PossibleCellValues(solved: 9)
+    
+    init(_ base: PossibleCellValues) { self.base = base }
+    
+    mutating func next() -> PossibleCellValues? {
+        while mask.storage != 0b1 {
+            defer { mask.storage >>= 1 }
             if base.contains(mask) { return mask }
         }
         return nil

@@ -61,3 +61,9 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
     func index(before i: Int) -> Int { return i - 1 }
 }
 
+extension FixedArray81: Equatable where T: Equatable {
+    static func == (lhs: FixedArray81<T>, rhs: FixedArray81<T>) -> Bool {
+        return lhs.elementsEqual(rhs)
+    }
+}
+

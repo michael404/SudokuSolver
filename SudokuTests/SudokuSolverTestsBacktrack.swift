@@ -60,8 +60,6 @@ class SudokuSolverTestsBacktrack: XCTestCase {
         XCTAssertEqual(TestData.Hard2.board.numberOfSolutionsBacktrack(), .one)
         XCTAssertEqual(TestData.MultipleSolutions.board.numberOfSolutionsBacktrack(), .multiple)
         XCTAssertEqual(TestData.Invalid.board.numberOfSolutionsBacktrack(), .none)
-        
-        
     }
     
     func testRandomFullyFilledBoard() {

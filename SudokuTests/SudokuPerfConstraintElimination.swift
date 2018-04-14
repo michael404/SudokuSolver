@@ -15,6 +15,17 @@ class SudokuPerfConstraintElimination: XCTestCase {
         }
     }
     
+    func testPerfRandomFullyFilledBoardCE() {
+        var board = SudokuBoard()
+        self.measure {
+            for _ in 0..<10 {
+                board = SudokuBoard.randomFullyFilledBoardCE()
+            }
+        }
+        XCTAssertTrue(board.isValid)
+        XCTAssertTrue(board.isFullyFilled)
+        XCTAssertEqual(board.clues, 81)
+    }
 }
 
 

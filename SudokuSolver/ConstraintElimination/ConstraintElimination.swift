@@ -18,13 +18,40 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
+        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: NoTransformation.self)
         return SudokuBoard(result)
     }
     
+    static func randomFullyFilledBoardCE() -> SudokuBoard {
+        var board = PossibleCellValuesBoard.empty
+        let unsolvedIndicies = Array(board.indices)
+        let index = unsolvedIndicies.first!
+        let result = try! board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Shuffle.self)
+        return SudokuBoard(result)
+    }
+    
+    func numberOfSolutionsCE() -> NumberOfSolutions {
+        guard var board = try? PossibleCellValuesBoard(self) else { return .none }
+        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
+        unsolvedIndicies.sort { board[$0].count < board[$1].count }
+        guard let index = unsolvedIndicies.first else {
+            // Either the Sudoku was already solved or we solved it
+            // with the first round of eliminatePossibilities in the
+            // PossibleCellValuesBoard initializer
+            return .one
+        }
+        do {
+            //TODO: Can this be done in paralell?
+            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: NoTransformation.self)
+            let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Reverse.self)
+            return first == last ? .one : .multiple
+        } catch {
+            return .none
+        }
+    }
 }
 
-struct PossibleCellValuesBoard {
+struct PossibleCellValuesBoard: Equatable {
     
     private var cells: FixedArray81<PossibleCellValues>
     
@@ -34,6 +61,12 @@ struct PossibleCellValuesBoard {
             self[index] = PossibleCellValues(solved: cell.value)
             try eliminatePossibilitites(basedOnChangeOf: index)
         }
+    }
+    
+    static let empty: PossibleCellValuesBoard = PossibleCellValuesBoard(empty: ())
+    
+    private init(empty: ()) {
+        self.cells = FixedArray81(repeating: PossibleCellValues.allTrue)
     }
     
 }
@@ -57,16 +90,17 @@ fileprivate extension PossibleCellValuesBoard {
         }
     }
     
-    mutating func guessAndEliminate(at index: Int, unsolvedIndicies: [Int]) throws -> PossibleCellValuesBoard {
+    mutating func guessAndEliminate<T: PossibleCellValuesTransformation>(
+        at index: Int, unsolvedIndicies: [Int], transform: T.Type) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
-        for guess in self[index] {
+        for guess in T.transform(self[index]) {
             do {
                 var newBoard = self
                 newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
                 guard let index = unsolvedIndicies.first else { return newBoard }
-                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies)
+                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: transform.self)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
                 continue
