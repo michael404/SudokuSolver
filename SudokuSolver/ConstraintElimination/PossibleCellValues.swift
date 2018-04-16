@@ -43,13 +43,10 @@ struct PossibleCellValues: Hashable {
     /// Returns true if a value was removed
     /// Throws if the last value was removed
     mutating func remove(_ value: PossibleCellValues) throws -> Bool {
-        // Throw if we try to remove the solved value
-        guard self != value else { throw SudokuSolverError.unsolvable }
-        guard contains(value) else { return false }
-        // Since we know that the bit we are testing is 1, we can set it to
-        // 0 using XOR instead of AND NOT.
-        storage ^= value.storage
-        return true
+        let original = self
+        self.storage &= ~value.storage
+        if self.storage == 0 { throw SudokuSolverError.unsolvable }
+        return self != original
     }
     
 }

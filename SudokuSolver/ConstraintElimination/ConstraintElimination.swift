@@ -155,19 +155,13 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func _eliminateNakedPairs(value: PossibleCellValues, for indicies: ArraySlice<Int>) throws {
-        
         assert(value.count == 2)
-        var iterator = value.makeIterator()
-        let valuesToRemove = (iterator.next()!, iterator.next()!)
-        
         // The body of this for loop will only be executed once, since it returns at the end
         for index in indicies where self[index] == value {
             // Found a duplicate. Loop over all indicies, exept the current one and remove from that
             for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
                 guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
-                //TODO: Can this be done in one operation somehow?
-                try removeAndApplyConstraints(valueToRemove: valuesToRemove.0, indexToRemoveFrom: indexToRemoveFrom)
-                try removeAndApplyConstraints(valueToRemove: valuesToRemove.1, indexToRemoveFrom: indexToRemoveFrom)
+                try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
             }
             // Once we have found a naked pair and tried to remove based on it, we return
             // since we do not need to find any additional equal pairs. If we had tried that
