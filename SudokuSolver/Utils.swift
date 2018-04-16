@@ -40,7 +40,7 @@ extension MutableCollection {
         while amount > 1 {
             let random: Int = numericCast(arc4random_uniform(numericCast(amount)))
             amount -= 1
-            swapAt(currentIndex, index(currentIndex, offsetBy: numericCast(random)))
+            swapAt(currentIndex, index(currentIndex, offsetBy: random))
             formIndex(after: &currentIndex)
         }
     }
