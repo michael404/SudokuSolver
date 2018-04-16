@@ -81,17 +81,17 @@ fileprivate extension PossibleCellValuesBoard {
         }
         
         //TODO: Why have this here instead of in removeAndApplyConstraints?
-//        if !self[index].isSolved {
-            try findHiddenSingles(basedOnChangeOf: index)
-//        }
+        try findHiddenSingles(basedOnChangeOf: index)
     }
     
     mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
         if try self[indexToRemoveFrom].remove(valueToRemove) {
             try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
             
-
-            
+//            if !self[indexToRemoveFrom].isSolved {
+//                try findHiddenSingles(basedOnChangeOf: indexToRemoveFrom)
+//            }
+        
             //TODO: check if performance is better without this
             if self[indexToRemoveFrom].count == 2 {
                 try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
@@ -140,6 +140,7 @@ fileprivate extension PossibleCellValuesBoard {
             }
             guard count == 1 && !self[foundIndex].isSolved else { continue cellValueLoop }
             for valueToRemove in self[foundIndex] where valueToRemove != cellValue {
+                print("Removing value \(valueToRemove) from index \(foundIndex)")
                 try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: foundIndex)
             }
             
