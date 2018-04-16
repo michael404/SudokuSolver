@@ -129,23 +129,20 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func _findHiddenSingles<S: Sequence>(for indicies: S) throws where S.Element == Int {
-        var dict = [PossibleCellValues: (firstIndex: Int, count: Int)]()
-        for loopIndex in indicies {
-            for cellValue in self[loopIndex] {
-                if let current = dict[cellValue] {
-                    dict[cellValue] = (current.firstIndex, current.count + 1)
-                } else {
-                    dict[cellValue] = (loopIndex, 1)
-                }
+        
+        cellValueLoop: for cellValue in PossibleCellValues.allTrue {
+            var count = 0
+            var foundIndex = -1
+            for index in indicies where self[index].contains(cellValue) {
+                count += 1
+                guard count < 2 else { continue cellValueLoop }
+                foundIndex = index
             }
-        }
-        for (key, value) in dict where value.count == 1 && !self[value.firstIndex].isSolved {
-//            print("Found hidden single \(key) at index \(value.firstIndex), which is currently \(self[value.firstIndex]). (\(type(of: indicies))")
-//            print(SudokuBoard(self))
-            for valueToRemove in self[value.firstIndex] where valueToRemove != key {
-//                print("Removing value \(valueToRemove) from index \(value.firstIndex)")
-                try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: value.firstIndex)
+            guard count == 1 && !self[foundIndex].isSolved else { continue cellValueLoop }
+            for valueToRemove in self[foundIndex] where valueToRemove != cellValue {
+                try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: foundIndex)
             }
+            
         }
     }
     
