@@ -3,7 +3,7 @@
 /// The implementation uses a bit array as the underlying storage.
 /// A solved value is represented with the same type, but with only
 /// one bit set.
-struct PossibleCellValues: Equatable {
+struct PossibleCellValues: Hashable {
     
     /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
     /// Bits 0 to 6 are padding and should always be set to 0.

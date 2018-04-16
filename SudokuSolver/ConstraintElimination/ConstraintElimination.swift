@@ -79,14 +79,24 @@ fileprivate extension PossibleCellValuesBoard {
         for indexToRemoveFrom in indiciesAffectedBy(index: index) {
             try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom)
         }
+        
+        //TODO: Why have this here instead of in removeAndApplyConstraints?
+//        if !self[index].isSolved {
+            try findHiddenSingles(basedOnChangeOf: index)
+//        }
     }
     
     mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
         if try self[indexToRemoveFrom].remove(valueToRemove) {
             try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            
+
+            
+            //TODO: check if performance is better without this
             if self[indexToRemoveFrom].count == 2 {
                 try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
+
         }
     }
     
@@ -109,6 +119,34 @@ fileprivate extension PossibleCellValuesBoard {
         // Only fail an throw if we have tried all possible values for the current cell and all of those
         // branches failed and throwed.
         throw SudokuSolverError.unsolvable
+    }
+    
+    
+    mutating func findHiddenSingles(basedOnChangeOf index: Int) throws {
+        try _findHiddenSingles(for: allIndiciesInSameRowAs(index: index))
+        try _findHiddenSingles(for: allIndiciesInSameColumnAs(index: index))
+        try _findHiddenSingles(for: allIndiciesInSameBoxAs(index: index))
+    }
+    
+    mutating func _findHiddenSingles<S: Sequence>(for indicies: S) throws where S.Element == Int {
+        var dict = [PossibleCellValues: (firstIndex: Int, count: Int)]()
+        for loopIndex in indicies {
+            for cellValue in self[loopIndex] {
+                if let current = dict[cellValue] {
+                    dict[cellValue] = (current.firstIndex, current.count + 1)
+                } else {
+                    dict[cellValue] = (loopIndex, 1)
+                }
+            }
+        }
+        for (key, value) in dict where value.count == 1 && !self[value.firstIndex].isSolved {
+//            print("Found hidden single \(key) at index \(value.firstIndex), which is currently \(self[value.firstIndex]). (\(type(of: indicies))")
+//            print(SudokuBoard(self))
+            for valueToRemove in self[value.firstIndex] where valueToRemove != key {
+//                print("Removing value \(valueToRemove) from index \(value.firstIndex)")
+                try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: value.firstIndex)
+            }
+        }
     }
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
