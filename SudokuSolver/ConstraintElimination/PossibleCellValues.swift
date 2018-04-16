@@ -52,6 +52,13 @@ struct PossibleCellValues: Equatable {
         return true
     }
     
+    mutating func removeMultiple(_ values: PossibleCellValues) throws -> Bool {
+        let original = self
+        self.storage = self.storage & ~values.storage
+        if self.storage == 0 { throw SudokuSolverError.unsolvable }
+        return self != original
+    }
+    
 }
 
 extension PossibleCellValues: Sequence {
