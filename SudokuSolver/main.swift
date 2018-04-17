@@ -65,3 +65,5 @@ for _ in 0..<100 {
         print("Error during solving of board2")
     }
 }
+
+PossibleCellValuesBoard.printBoxes()

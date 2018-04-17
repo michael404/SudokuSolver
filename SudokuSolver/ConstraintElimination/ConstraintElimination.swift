@@ -121,7 +121,7 @@ fileprivate extension PossibleCellValuesBoard {
         }
     }
     
-    mutating func _findHiddenSingles<S: Sequence>(for indicies: S) throws where S.Element == Int {
+    mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
         
         cellValueLoop: for cellValue in PossibleCellValues.allTrue {
             var count = 0
