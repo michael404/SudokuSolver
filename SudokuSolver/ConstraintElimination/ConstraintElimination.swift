@@ -126,11 +126,14 @@ fileprivate extension PossibleCellValuesBoard {
         cellValueLoop: for cellValue in PossibleCellValues.allTrue {
             var foundIndex = -1
             for index in indicies where self[index].contains(cellValue) {
+                // If we have already found one value in this unit, it is not a candiadate for a hidden single
                 guard foundIndex == -1 else { continue cellValueLoop }
+                // If we have found a solved value, that is not a candidate for a hidden single
+                guard !self[index].isSolved else { continue cellValueLoop }
                 foundIndex = index
             }
+            // If we did not find the value at all, the board is unsolvable
             guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
-            guard !self[foundIndex].isSolved else { continue cellValueLoop }
             
             self[foundIndex] = cellValue
             try eliminatePossibilitites(basedOnChangeOf: foundIndex)
