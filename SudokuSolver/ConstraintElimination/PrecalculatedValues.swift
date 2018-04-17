@@ -194,21 +194,19 @@ extension PossibleCellValuesBoard {
         72, 73, 74, 75, 76, 77, 78, 80,  7, 16, 25, 34, 43, 52, 61, 70, 60, 61, 62, 69, 70, 71, 78, 80,
         72, 73, 74, 75, 76, 77, 78, 79,  8, 17, 26, 35, 44, 53, 62, 71, 60, 61, 62, 69, 70, 71, 78, 79]
     
-    func allIndiciesInSameRowAs(index: Int) -> CountableRange<Int> {
-        let start = (index / 9) * 9
+    func allIndiciesInRow(number: Int) -> CountableRange<Int> {
+        let start = number * 9
         let end = start + 9
         return start..<end
     }
     
-    func allIndiciesInSameColumnAs(index: Int) -> StrideTo<Int> {
-        let start = index % 9
-        return stride(from: start, to: 81, by: 9)
+    func allIndiciesInColumn(number: Int) -> StrideTo<Int> {
+        return stride(from: number, to: 81, by: 9)
     }
     
-    func allIndiciesInSameBoxAs(index: Int) -> ArraySlice<Int> {
-        let start = index * 9
-        let end = start + 9
-        return PossibleCellValuesBoard._allIndiciesInSameBoxAsIndex[start..<end]
+    func allIndiciesInBox(number: Int) -> ArraySlice<Int> {
+        let end = number + 9
+        return PossibleCellValuesBoard._allIndiciesInSameBoxAsIndex[number..<end]
     }
     
     private static let _allIndiciesInSameBoxAsIndex: [Int] = [

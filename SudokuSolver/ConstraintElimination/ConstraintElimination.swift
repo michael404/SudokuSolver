@@ -79,20 +79,11 @@ fileprivate extension PossibleCellValuesBoard {
         for indexToRemoveFrom in indiciesAffectedBy(index: index) {
             try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom)
         }
-        
-        //TODO: Why have this here instead of in removeAndApplyConstraints?
-        try findHiddenSingles(basedOnChangeOf: index)
     }
     
     mutating func removeAndApplyConstraints(valueToRemove: PossibleCellValues, indexToRemoveFrom: Int) throws {
         if try self[indexToRemoveFrom].remove(valueToRemove) {
             try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
-            
-//            if !self[indexToRemoveFrom].isSolved {
-//                try findHiddenSingles(basedOnChangeOf: indexToRemoveFrom)
-//            }
-        
-            //TODO: check if performance is better without this
             if self[indexToRemoveFrom].count == 2 {
                 try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
@@ -108,6 +99,7 @@ fileprivate extension PossibleCellValuesBoard {
                 var newBoard = self
                 newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
+                try newBoard.findAllHiddenSingles()
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
                 guard let index = unsolvedIndicies.first else { return newBoard }
                 return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: transform.self)
@@ -121,11 +113,12 @@ fileprivate extension PossibleCellValuesBoard {
         throw SudokuSolverError.unsolvable
     }
     
-    
-    mutating func findHiddenSingles(basedOnChangeOf index: Int) throws {
-        try _findHiddenSingles(for: allIndiciesInSameRowAs(index: index))
-        try _findHiddenSingles(for: allIndiciesInSameColumnAs(index: index))
-        try _findHiddenSingles(for: allIndiciesInSameBoxAs(index: index))
+    mutating func findAllHiddenSingles() throws {
+        for unit in 0...8 {
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+            try _findHiddenSingles(for: allIndiciesInColumn(number: unit))
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+        }
     }
     
     mutating func _findHiddenSingles<S: Sequence>(for indicies: S) throws where S.Element == Int {
@@ -134,16 +127,15 @@ fileprivate extension PossibleCellValuesBoard {
             var count = 0
             var foundIndex = -1
             for index in indicies where self[index].contains(cellValue) {
+                if count == 1 { continue cellValueLoop }
                 count += 1
-                guard count < 2 else { continue cellValueLoop }
                 foundIndex = index
             }
-            guard count == 1 && !self[foundIndex].isSolved else { continue cellValueLoop }
-            for valueToRemove in self[foundIndex] where valueToRemove != cellValue {
-                print("Removing value \(valueToRemove) from index \(foundIndex)")
-                try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: foundIndex)
-            }
+            guard count != 0 else { throw SudokuSolverError.unsolvable }
+            guard !self[foundIndex].isSolved else { continue cellValueLoop }
             
+            self[foundIndex] = cellValue
+            try eliminatePossibilitites(basedOnChangeOf: foundIndex)
         }
     }
     
