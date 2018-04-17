@@ -122,7 +122,6 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
-        
         cellValueLoop: for cellValue in PossibleCellValues.allTrue {
             var foundIndex = -1
             for index in indicies where self[index].contains(cellValue) {
@@ -134,7 +133,7 @@ fileprivate extension PossibleCellValuesBoard {
             }
             // If we did not find the value at all, the board is unsolvable
             guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
-            
+            // We have identified a hidden single, and can set the cell to that value
             self[foundIndex] = cellValue
             try eliminatePossibilitites(basedOnChangeOf: foundIndex)
         }
