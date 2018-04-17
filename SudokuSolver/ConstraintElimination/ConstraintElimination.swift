@@ -124,14 +124,12 @@ fileprivate extension PossibleCellValuesBoard {
     mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
         
         cellValueLoop: for cellValue in PossibleCellValues.allTrue {
-            var count = 0
             var foundIndex = -1
             for index in indicies where self[index].contains(cellValue) {
-                if count == 1 { continue cellValueLoop }
-                count += 1
+                guard foundIndex == -1 else { continue cellValueLoop }
                 foundIndex = index
             }
-            guard count != 0 else { throw SudokuSolverError.unsolvable }
+            guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
             guard !self[foundIndex].isSolved else { continue cellValueLoop }
             
             self[foundIndex] = cellValue
