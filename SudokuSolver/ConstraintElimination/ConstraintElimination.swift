@@ -18,7 +18,7 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: NoTransformation.self)
+        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Normal.self)
         return SudokuBoard(result)
     }
     
@@ -42,7 +42,7 @@ extension SudokuBoard {
         }
         do {
             //TODO: Can this be done in paralell?
-            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: NoTransformation.self)
+            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Normal.self)
             let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Reverse.self)
             return first == last ? .one : .multiple
         } catch {
@@ -87,7 +87,6 @@ fileprivate extension PossibleCellValuesBoard {
             if self[indexToRemoveFrom].count == 2 {
                 try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
-
         }
     }
     

@@ -3,7 +3,7 @@ protocol PossibleCellValuesTransformation {
     static func transform(_ possibleCellValues: PossibleCellValues) -> CellValueSequence
 }
 
-enum NoTransformation: PossibleCellValuesTransformation {
+enum Normal: PossibleCellValuesTransformation {
     static func transform(_ possibleCellValues: PossibleCellValues) -> PossibleCellValues {
         return possibleCellValues
     }
