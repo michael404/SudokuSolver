@@ -87,6 +87,7 @@ fileprivate extension PossibleCellValuesBoard {
             if self[indexToRemoveFrom].count == 2 {
                 try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
+
         }
     }
     
@@ -98,6 +99,7 @@ fileprivate extension PossibleCellValuesBoard {
                 var newBoard = self
                 newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
+                try newBoard.findAllHiddenSingles()
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
                 guard let index = unsolvedIndicies.first else { return newBoard }
                 return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: transform.self)
@@ -109,6 +111,32 @@ fileprivate extension PossibleCellValuesBoard {
         // Only fail an throw if we have tried all possible values for the current cell and all of those
         // branches failed and throwed.
         throw SudokuSolverError.unsolvable
+    }
+    
+    mutating func findAllHiddenSingles() throws {
+        for unit in 0...8 {
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+            try _findHiddenSingles(for: allIndiciesInColumn(number: unit))
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+        }
+    }
+    
+    mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
+        cellValueLoop: for cellValue in PossibleCellValues.allTrue {
+            var foundIndex = -1
+            for index in indicies where self[index].contains(cellValue) {
+                // If we have already found one value in this unit, it is not a candiadate for a hidden single
+                guard foundIndex == -1 else { continue cellValueLoop }
+                // If we have found a solved value, that is not a candidate for a hidden single
+                guard !self[index].isSolved else { continue cellValueLoop }
+                foundIndex = index
+            }
+            // If we did not find the value at all, the board is unsolvable
+            guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
+            // We have identified a hidden single, and can set the cell to that value
+            self[foundIndex] = cellValue
+            try eliminatePossibilitites(basedOnChangeOf: foundIndex)
+        }
     }
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
