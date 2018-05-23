@@ -1,22 +1,24 @@
 protocol PossibleCellValuesTransformation {
     associatedtype CellValueSequence: Sequence where CellValueSequence.Element == PossibleCellValues
-    static func transform(_ possibleCellValues: PossibleCellValues) -> CellValueSequence
+    static func transform<R: RNG>(_ possibleCellValues: PossibleCellValues, rng: inout R) -> CellValueSequence
 }
 
 enum Normal: PossibleCellValuesTransformation {
-    static func transform(_ possibleCellValues: PossibleCellValues) -> PossibleCellValues {
+    static func transform<R: RNG>(_ possibleCellValues: PossibleCellValues, rng: inout R) -> PossibleCellValues {
         return possibleCellValues
     }
 }
 
 enum Shuffle: PossibleCellValuesTransformation {
-    static func transform(_ possibleCellValues: PossibleCellValues) -> [PossibleCellValues] {
-        return possibleCellValues.shuffled()
+    static func transform<R: RNG>(_ possibleCellValues: PossibleCellValues, rng: inout R) -> [PossibleCellValues] {
+        var result = Array(possibleCellValues)
+        result.shuffle(using: &rng)
+        return result
     }
 }
 
 enum Reverse: PossibleCellValuesTransformation {
-    static func transform(_ possibleCellValues: PossibleCellValues) -> PossibleCellValuesReversedIterator {
+    static func transform<R: RNG>(_ possibleCellValues: PossibleCellValues, rng: inout R) -> PossibleCellValuesReversedIterator {
         return PossibleCellValuesReversedIterator(possibleCellValues)
     }
 }

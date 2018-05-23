@@ -1,14 +1,21 @@
 public extension SudokuBoard {
     
     static func randomStartingBoardBacktrack() -> SudokuBoard {
-        //TODO: check if it is more effective to not generate a full filled board first
-        return randomFullyFilledBoardBacktrack().randomStartingPositionFromFullyFilledBoardBacktrack()
+        return randomStartingBoardBacktrack(rng: &Random.default)
     }
     
-    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
+    static func randomStartingBoardBacktrack<R: RNG>(rng: inout R) -> SudokuBoard {
+        //TODO: check if it is more effective to not generate a full filled board first
+        return randomFullyFilledBoardBacktrack(rng: &rng).randomStartingPositionFromFullyFilledBoardBacktrack(rng: &rng)
+    }
+    
     static func randomFullyFilledBoardBacktrack() -> SudokuBoard {
+        return randomFullyFilledBoardBacktrack(rng: &Random.default)
+    }
+    
+    static func randomFullyFilledBoardBacktrack<R: RNG>(rng: inout R) -> SudokuBoard {
         let board = SudokuBoard()
-        guard let filledBoard = try? board.findFirstSolutionBacktrack(randomizedCellValues: true) else {
+        guard let filledBoard = try? board.findFirstSolutionBacktrack(randomizedCellValues: true, rng: &rng) else {
             fatalError("Could not construct random board. This should not be possible.")
         }
         return filledBoard
@@ -18,10 +25,13 @@ public extension SudokuBoard {
 
 internal extension SudokuBoard {
     
-    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     func randomStartingPositionFromFullyFilledBoardBacktrack() -> SudokuBoard {
+        return randomStartingPositionFromFullyFilledBoardBacktrack(rng: &Random.default)
+    }
+    
+    func randomStartingPositionFromFullyFilledBoardBacktrack<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = self
-        var shuffledIndiciesIterator = board.indices.shuffled().makeIterator()
+        var shuffledIndiciesIterator = board.indices.shuffled(using: &rng).makeIterator()
         
         // Since the maximum number of clues in a minimal Sudoku is 40
         // (https://en.wikipedia.org/wiki/Mathematics_of_Sudoku#Maximum_number_of_givens)

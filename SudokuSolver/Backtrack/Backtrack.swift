@@ -1,7 +1,10 @@
 public extension SudokuBoard {
 
-    //TODO: Once Swift incorporates a RNG protocol, add affordances to use it, and use a PRNG in the unit tests
     func findFirstSolutionBacktrack(randomizedCellValues: Bool = false) throws -> SudokuBoard {
+        return try findFirstSolutionBacktrack(randomizedCellValues: randomizedCellValues, rng: &Random.default)
+    }
+    
+    func findFirstSolutionBacktrack<R: RNG>(randomizedCellValues: Bool = false, rng: inout R) throws -> SudokuBoard {
         
         guard isValid else { throw SudokuSolverError.unsolvable }
         
@@ -20,7 +23,7 @@ public extension SudokuBoard {
                 return true
             }
             
-            if randomizedCellValues { cellValues.shuffle() }
+            if randomizedCellValues { cellValues.shuffle(using: &rng) }
             
             // Test out all cellValues, and recurse
             for cellValue in cellValues {
