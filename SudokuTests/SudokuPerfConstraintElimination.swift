@@ -18,12 +18,12 @@ class SudokuPerfConstraintElimination: XCTestCase {
     func testPerfRandomFullyFilledBoardCE() {
         var board = SudokuBoard()
         self.measure {
-            var lcrng = LCRNG(seed: 42)
+            var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoardCE(rng: &lcrng)
+                board = SudokuBoard.randomFullyFilledBoardCE(rng: &rng)
             }
         }
-        XCTAssertEqual(board, SudokuBoard("458392716612857493937164825274639158861475239593218674326581947189743562745926381"))
+        XCTAssertEqual(board, SudokuBoard("983624571421587369567931482854196237239758614716243958145862793672319845398475126"))
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)

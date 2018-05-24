@@ -9,17 +9,23 @@ public enum SudokuSolverError: Error {
 
 public typealias RNG = RandomNumberGenerator
 
-/// A linear congruential PRNG.
-struct LCRNG: RNG {
-    private var state: UInt64
+// Adapted from https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlRandom.swift
+struct Xoroshiro: RNG {
     
-    init(seed: Int) {
-        state = UInt64(truncatingIfNeeded: seed)
-        for _ in 0..<10 { _ = next() }
+    typealias State = (UInt64, UInt64)
+    
+    var state: State
+    
+    init(seed: State) {
+        self.state = seed
     }
     
     mutating func next() -> UInt64 {
-        state = 2862933555777941757 &* state &+ 3037000493
-        return state
+        let (l, k0, k1, k2): (UInt64, UInt64, UInt64, UInt64) = (64, 55, 14, 36)
+        let result = state.0 &+ state.1
+        let x = state.0 ^ state.1
+        state.0 = ((state.0 << k0) | (state.0 >> (l - k0))) ^ x ^ (x << k1)
+        state.1 = (x << k2) | (x >> (l - k2))
+        return result
     }
 }

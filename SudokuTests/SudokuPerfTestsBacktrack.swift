@@ -27,12 +27,12 @@ class SudokuPerfTestsBacktrack: XCTestCase {
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard()
         self.measure {
-            var lcrng = LCRNG(seed: 42)
+            var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoardBacktrack(rng: &lcrng)
+                board = SudokuBoard.randomFullyFilledBoardBacktrack(rng: &rng)
             }
         }
-        XCTAssertEqual(board, SudokuBoard("148692537527413986396587124465938271279164853813275649934826715781359462652741398"))
+        XCTAssertEqual(board, SudokuBoard("365791482249386157187524396423967518658132974791458263574813629936275841812649735"))
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
@@ -41,12 +41,13 @@ class SudokuPerfTestsBacktrack: XCTestCase {
     func testPerfRandomStartingBoard() {
         var board = SudokuBoard()
         self.measure {
-            var lcrng = LCRNG(seed: 0)
+            // The performance of this benchmark is very dependent on this seed
+            var rng = Xoroshiro(seed: (1, 42))
             for _ in 0..<10 {
-                board = SudokuBoard.randomStartingBoardBacktrack(rng: &lcrng)
+                board = SudokuBoard.randomStartingBoardBacktrack(rng: &rng)
             }
         }
-        XCTAssertEqual(board, SudokuBoard("8.......2.9...748.7...289..387.6.24.5.9.418.7....83.5.451.7.3.69.83...2.6..19.5.8"))
+        XCTAssertEqual(board, SudokuBoard(".1...6..236.21...572.4951.3.71...5.8..3.726...42...317.34..92..2..83......752.8.6"))
         XCTAssertTrue(board.isValid)
         XCTAssertFalse(board.isFullyFilled)
         XCTAssertTrue((17...40).contains(board.clues))
