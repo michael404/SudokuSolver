@@ -42,6 +42,7 @@ struct PossibleCellValues: Hashable {
     
     /// Returns true if a value was removed
     /// Throws if the last value was removed
+    /// This method supports removing multiple values at a time
     mutating func remove(_ value: PossibleCellValues) throws -> Bool {
         let original = self
         self.storage &= ~value.storage
