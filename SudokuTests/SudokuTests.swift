@@ -21,19 +21,42 @@ class SudokuTests: XCTestCase {
     }
     
     func testIsValid() {
-        XCTAssertTrue(TestData.Hard1.board.isValid)
+    
+        do {
+            XCTAssertTrue(TestData.Hard1.board.isValid)
+    
+            var board1NonValid = TestData.Hard1.board
+            board1NonValid[0, 0] = 9
+            XCTAssertFalse(board1NonValid.isValid)
+    
+            board1NonValid = TestData.Hard1.board
+            board1NonValid[8, 6] = 5
+            XCTAssertFalse(board1NonValid.isValid)
+    
+            board1NonValid = TestData.Hard1.board
+            board1NonValid[6, 7] = 1
+            XCTAssertFalse(board1NonValid.isValid)
+        }
         
-        var board1NonValid = TestData.Hard1.board
-        board1NonValid[0, 0] = 9
-        XCTAssertFalse(board1NonValid.isValid)
+        do {
+            var board = SudokuBoard()
+            board[0, 0] = 5
+            board[0, 1] = 5
+            XCTAssertFalse(board.isValid)
+            
+            board = SudokuBoard()
+            board[0, 8] = 9
+            board[2, 6] = 9
+            XCTAssertFalse(board.isValid)
+            
+        }
         
-        board1NonValid = TestData.Hard1.board
-        board1NonValid[8, 6] = 5
-        XCTAssertFalse(board1NonValid.isValid)
+        XCTAssertFalse(TestData.MultipleSolutions.board.isValid)
         
-        board1NonValid = TestData.Hard1.board
-        board1NonValid[6, 7] = 1
-        XCTAssertFalse(board1NonValid.isValid)
+        for board in TestData.PerfTestSuite.boards {
+            XCTAssertTrue(board.isValid)
+        }
+        
     }
     
     func testFullyFilled() {
@@ -50,40 +73,6 @@ class SudokuTests: XCTestCase {
         XCTAssertEqual(TestData.Hard1.board.clues, 27)
         XCTAssertEqual(TestData.Hard2.board.clues, 21)
         XCTAssertEqual(TestData.Empty.board.clues, 0)
-    }
-    
-    func testBitMask() {
-        let a = SudokuValidator.Mask()
-        for i in 0..<10 {
-            for j in 0..<10 {
-                XCTAssertFalse(a[i, j])
-            }
-        }
-        var c = SudokuValidator.Mask()
-        for i in 0...9 {
-            c[0,i] = true
-            XCTAssertTrue(c[0,i])
-        }
-        for i in 0...9 {
-            XCTAssertFalse(c[1,i])
-        }
-        c[2,0] = true
-        XCTAssertTrue(c[2,0])
-        for i in 1...9 {
-            XCTAssertFalse(c[2,i])
-        }
-        c[3,0] = true
-        XCTAssertTrue(c[3,0])
-        for i in 1...9 {
-            XCTAssertFalse(c[3,i])
-        }
-        c[4,1] = true
-        XCTAssertTrue(c[4,1])
-        c[4,1] = false
-        XCTAssertFalse(c[4,1])
-        for i in 2...50 {
-            XCTAssertFalse(c[4,i])
-        }
     }
     
 }

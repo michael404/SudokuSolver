@@ -39,14 +39,11 @@ public struct SudokuBoard: Equatable {
         }
     }
     
+    /// Indicates if this Sudoku is valid
+    /// If it is not solvable, or violates any of the row/box/column
+    /// requirements, or has multiple solutions, it is considered non-valid
     var isValid: Bool {
-        var validator = SudokuValidator()
-        for i in self.indices where self[i] != nil {
-            let coordinate = SudokuCoordinate(i)
-            guard validator.validate(self[i].value, at: coordinate) else { return false }
-            validator.set(self[i].value, to: true, at: coordinate)
-        }
-        return true
+        return numberOfSolutions() == .one
     }
     
     var isFullyFilled: Bool {
