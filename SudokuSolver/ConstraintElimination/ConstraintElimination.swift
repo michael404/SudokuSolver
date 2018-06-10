@@ -34,6 +34,12 @@ extension SudokuBoard {
         return SudokuBoard(result)
     }
     
+    enum NumberOfSolutions {
+        case none
+        case one
+        case multiple
+    }
+    
     func numberOfSolutionsCE() -> NumberOfSolutions {
         guard var board = try? PossibleCellValuesBoard(self) else { return .none }
         var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
