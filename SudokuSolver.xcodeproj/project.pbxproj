@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C09949920CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C09949820CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift */; };
+		4C09949A20CD7EF500F4F6F3 /* RandomBoardConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C09949820CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift */; };
 		4C1100411F588ACB00F0745D /* SudokuBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100401F588ACB00F0745D /* SudokuBoard.swift */; };
 		4C1100451F5C29CD00F0745D /* SudokuCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100441F5C29CD00F0745D /* SudokuCell.swift */; };
 		4C1100471F5C570000F0745D /* Backtrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100461F5C570000F0745D /* Backtrack.swift */; };
@@ -54,6 +56,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C09949820CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomBoardConstraintElimination.swift; sourceTree = "<group>"; };
 		4C1100401F588ACB00F0745D /* SudokuBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuBoard.swift; sourceTree = "<group>"; };
 		4C1100441F5C29CD00F0745D /* SudokuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCell.swift; sourceTree = "<group>"; };
 		4C1100461F5C570000F0745D /* Backtrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backtrack.swift; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				4C62194D204DCDCF0082AF70 /* ConstraintElimination.swift */,
+				4C09949820CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift */,
 				4C38A13320679861001A8724 /* PossibleCellValues.swift */,
 				4C38A12F20679253001A8724 /* FixedArray81.swift */,
 				4CBDF96C20821C2E00A0754E /* PossibleCellValuesTransformations.swift */,
@@ -267,6 +271,7 @@
 				4C11005A1F5DDC7C00F0745D /* SudokuCell.swift in Sources */,
 				4C62194F204DCDF80082AF70 /* ConstraintElimination.swift in Sources */,
 				4C1100531F5DDC2800F0745D /* SudokuTests.swift in Sources */,
+				4C09949A20CD7EF500F4F6F3 /* RandomBoardConstraintElimination.swift in Sources */,
 				4C38A13220679499001A8724 /* FixedArray81.swift in Sources */,
 				4CEEB9F820278540007B1017 /* SudokuCoordinate.swift in Sources */,
 				4C425077206192A9000FF622 /* SudokuTestsConstraintElemination.swift in Sources */,
@@ -281,6 +286,7 @@
 			files = (
 				4C62194E204DCDCF0082AF70 /* ConstraintElimination.swift in Sources */,
 				4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */,
+				4C09949920CD7EC300F4F6F3 /* RandomBoardConstraintElimination.swift in Sources */,
 				4C38A13020679253001A8724 /* FixedArray81.swift in Sources */,
 				4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */,
 				4C38A13A20699191001A8724 /* PrecalculatedValues.swift in Sources */,

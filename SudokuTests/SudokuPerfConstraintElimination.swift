@@ -28,6 +28,20 @@ class SudokuPerfConstraintElimination: XCTestCase {
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
     }
+    
+    func testPerfRandomStartingBoard() {
+        var board = SudokuBoard()
+        self.measure {
+            var rng = Xoroshiro()
+            for _ in 0..<10 {
+                board = SudokuBoard.randomStartingBoardCE(rng: &rng)
+            }
+        }        
+        XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+        XCTAssertTrue(board.isValid)
+        XCTAssertFalse(board.isFullyFilled)
+        XCTAssertTrue((17...40).contains(board.clues))
+    }
 }
 
 

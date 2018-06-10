@@ -47,7 +47,7 @@ class SudokuPerfTestsBacktrack: XCTestCase {
                 board = SudokuBoard.randomStartingBoardBacktrack(rng: &rng)
             }
         }
-        XCTAssertEqual(board, SudokuBoard(".1...6..236.21...572.4951.3.71...5.8..3.726...42...317.34..92..2..83......752.8.6"))
+        XCTAssertEqual(board.numberOfSolutionsBacktrack(), .one)
         XCTAssertTrue(board.isValid)
         XCTAssertFalse(board.isFullyFilled)
         XCTAssertTrue((17...40).contains(board.clues))

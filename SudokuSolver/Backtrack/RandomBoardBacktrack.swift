@@ -31,18 +31,8 @@ internal extension SudokuBoard {
     
     func randomStartingPositionFromFullyFilledBoardBacktrack<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = self
-        var shuffledIndiciesIterator = board.indices.shuffled(using: &rng).makeIterator()
-        
-        // Since the maximum number of clues in a minimal Sudoku is 40
-        // (https://en.wikipedia.org/wiki/Mathematics_of_Sudoku#Maximum_number_of_givens)
-        // we can safely set the first 41 random cells to nil without any checks
-        for _ in 0..<41 {
-            board[shuffledIndiciesIterator.next()!] = nil
-        }
-        
-        // Try to set the last 40 indicies to nil, while checking that it is stil valid
-        // and only has one solution
-        for index in shuffledIndiciesIterator {
+
+        for index in board.indices.shuffled(using: &rng) {
             let cellAtIndex = board[index]
             board[index] = nil
             switch board.numberOfSolutionsBacktrack() {
@@ -52,7 +42,7 @@ internal extension SudokuBoard {
                 // Do nothing
                 break
             case .multiple:
-                // Too many solutions. Add back last cell set to nil and move on whith next index
+                // Too many solutions. Add back last cell set to nil and move on with next index
                 board[index] = cellAtIndex
             }
         }
