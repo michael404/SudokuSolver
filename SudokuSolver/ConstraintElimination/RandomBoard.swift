@@ -1,12 +1,12 @@
 public extension SudokuBoard {
     
-    static func randomStartingBoardCE() -> SudokuBoard {
-        return randomStartingBoardCE(rng: &Random.default)
+    static func randomStartingBoard() -> SudokuBoard {
+        return randomStartingBoard(rng: &Random.default)
     }
     
-    static func randomStartingBoardCE<R: RNG>(rng: inout R) -> SudokuBoard {
+    static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         //TODO: check if it is more effective to not generate a full filled board first
-        return randomFullyFilledBoardCE(rng: &rng).randomStartingPositionFromFullyFilledBoardCE(rng: &rng)
+        return randomFullyFilledBoard(rng: &rng).randomStartingPositionFromFullyFilledBoard(rng: &rng)
     }
 
 
@@ -14,17 +14,17 @@ public extension SudokuBoard {
 
 internal extension SudokuBoard {
     
-    func randomStartingPositionFromFullyFilledBoardCE() -> SudokuBoard {
-        return randomStartingPositionFromFullyFilledBoardCE(rng: &Random.default)
+    func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
+        return randomStartingPositionFromFullyFilledBoard(rng: &Random.default)
     }
     
-    func randomStartingPositionFromFullyFilledBoardCE<R: RNG>(rng: inout R) -> SudokuBoard {
+    func randomStartingPositionFromFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = self
         
         for index in board.indices.shuffled(using: &rng) {
             let cellAtIndex = board[index]
             board[index] = nil
-            switch board.numberOfSolutionsCE() {
+            switch board.numberOfSolutions() {
             case .none:
                 fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
             case .one:

@@ -1,13 +1,13 @@
 import XCTest
 
-class SudokuSolverTestsConstraintElimination: XCTestCase {
+class SudokuSolverTests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
         XCTAssertFalse(TestData.Hard1.board.isFullyFilled)
         XCTAssertTrue(TestData.Hard1.board.isValid)
         
         do {
-            let solution = try! TestData.Hard1.board.findFirstSolutionConstraintElimination()
+            let solution = try! TestData.Hard1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData.Hard1.solutionString)
@@ -17,7 +17,7 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     
     func testFailingBoard() {
         XCTAssertFalse(TestData.Invalid.board.isValid)
-        XCTAssertThrowsError(try TestData.Invalid.board.findFirstSolutionConstraintElimination())
+        XCTAssertThrowsError(try TestData.Invalid.board.findFirstSolution())
     }
     
     func testFullyFilled() {
@@ -25,7 +25,7 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
-        XCTAssertEqual(try! filledBoard.findFirstSolutionConstraintElimination(), filledBoard)
+        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
         
     }
     
@@ -46,18 +46,18 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
     }
     
     func testNumberOfSolutions() {
-        XCTAssertEqual(TestData.Hard1.board.numberOfSolutionsCE(), .one)
-        XCTAssertEqual(TestData.Hard2.board.numberOfSolutionsCE(), .one)
-        XCTAssertEqual(TestData.MultipleSolutions.board.numberOfSolutionsCE(), .multiple)
-        XCTAssertEqual(TestData.Invalid.board.numberOfSolutionsCE(), .none)
+        XCTAssertEqual(TestData.Hard1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData.Hard2.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData.MultipleSolutions.board.numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData.Invalid.board.numberOfSolutions(), .none)
     }
     
     func testRandomStartingBoard() {
         
         // Standard RNG
         do {
-            let board = SudokuBoard.randomStartingBoardCE()
-            XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+            let board = SudokuBoard.randomStartingBoard()
+            XCTAssertEqual(board.numberOfSolutions(), .one)
             XCTAssertTrue(board.isValid)
             XCTAssertFalse(board.isFullyFilled)
             XCTAssertTrue((17...40).contains(board.clues))
@@ -66,9 +66,9 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         // Custom PRNG
         do {
             var rng = Xoroshiro()
-            let board = SudokuBoard.randomStartingBoardCE(rng: &rng)
+            let board = SudokuBoard.randomStartingBoard(rng: &rng)
             
-            XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+            XCTAssertEqual(board.numberOfSolutions(), .one)
             XCTAssertTrue(board.isValid)
             XCTAssertFalse(board.isFullyFilled)
             XCTAssertTrue((17...40).contains(board.clues))

@@ -7,7 +7,7 @@ class SudokuTests: XCTestCase {
         XCTAssertTrue(TestData.Hard1.board.isValid)
         
         do {
-            let solution = try! TestData.Hard1.board.findFirstSolutionConstraintElimination()
+            let solution = try! TestData.Hard1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData.Hard1.solutionString)
@@ -41,7 +41,7 @@ class SudokuTests: XCTestCase {
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
-        XCTAssertEqual(try! filledBoard.findFirstSolutionConstraintElimination(), filledBoard)
+        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
     }
     
 

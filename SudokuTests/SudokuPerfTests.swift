@@ -1,12 +1,12 @@
 import XCTest
 
-class SudokuPerfConstraintElimination: XCTestCase {
+class SudokuPerfTests: XCTestCase {
     
     func testPerfSuite() {
         var solutions = [SudokuBoard]()
         self.measure {
             for board in TestData.PerfTestSuite.boards {
-                let solvedBoard = try! board.findFirstSolutionConstraintElimination()
+                let solvedBoard = try! board.findFirstSolution()
                 solutions.append(solvedBoard)
             }
         }
@@ -15,12 +15,12 @@ class SudokuPerfConstraintElimination: XCTestCase {
         }
     }
     
-    func testPerfRandomFullyFilledBoardCE() {
+    func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard()
         self.measure {
             var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoardCE(rng: &rng)
+                board = SudokuBoard.randomFullyFilledBoard(rng: &rng)
             }
         }
         XCTAssertEqual(board, SudokuBoard("983624571421587369567931482854196237239758614716243958145862793672319845398475126"))
@@ -34,10 +34,10 @@ class SudokuPerfConstraintElimination: XCTestCase {
         self.measure {
             var rng = Xoroshiro()
             for _ in 0..<10 {
-                board = SudokuBoard.randomStartingBoardCE(rng: &rng)
+                board = SudokuBoard.randomStartingBoard(rng: &rng)
             }
         }        
-        XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+        XCTAssertEqual(board.numberOfSolutions(), .one)
         XCTAssertTrue(board.isValid)
         XCTAssertFalse(board.isFullyFilled)
         XCTAssertTrue((17...40).contains(board.clues))

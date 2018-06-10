@@ -43,7 +43,7 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
 
 
 do {
-    let solution1 = try TestData.ConstraintPropagationSolvable.board.findFirstSolutionConstraintElimination()
+    let solution1 = try TestData.ConstraintPropagationSolvable.board.findFirstSolution()
     withExtendedLifetime(solution1) {}
 //    print(solution1)
 } catch {
@@ -57,7 +57,7 @@ let expectedSolution1 = TestData.Hard1.solutionString
 
 for _ in 0..<100 {
     do {
-        let solution1 = try board1.findFirstSolutionConstraintElimination()
+        let solution1 = try board1.findFirstSolution()
         withExtendedLifetime(solution1) {}
 //        print(solution1)
         precondition(solution1.description == expectedSolution1)

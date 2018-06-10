@@ -1,6 +1,6 @@
 extension SudokuBoard {
     
-    func findFirstSolutionConstraintElimination() throws -> SudokuBoard {
+    func findFirstSolution() throws -> SudokuBoard {
         
         var board = try PossibleCellValuesBoard(self)
         
@@ -22,11 +22,11 @@ extension SudokuBoard {
         return SudokuBoard(result)
     }
     
-    static func randomFullyFilledBoardCE() -> SudokuBoard {
-        return randomFullyFilledBoardCE(rng: &Random.default)
+    static func randomFullyFilledBoard() -> SudokuBoard {
+        return randomFullyFilledBoard(rng: &Random.default)
     }
     
-    static func randomFullyFilledBoardCE<R: RNG>(rng: inout R) -> SudokuBoard {
+    static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = PossibleCellValuesBoard.empty
         let unsolvedIndicies = Array(board.indices)
         let index = unsolvedIndicies.first!
@@ -40,7 +40,7 @@ extension SudokuBoard {
         case multiple
     }
     
-    func numberOfSolutionsCE() -> NumberOfSolutions {
+    func numberOfSolutions() -> NumberOfSolutions {
         guard var board = try? PossibleCellValuesBoard(self) else { return .none }
         var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
