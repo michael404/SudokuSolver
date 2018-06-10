@@ -16,6 +16,12 @@ struct Xoroshiro: RNG {
     
     var state: State
     
+    /// Initializes the Xoroshiro PRNG with a seed from Random.default
+    init() {
+        var random = Random.default
+        self.init(seed: (random.next(), random.next()))
+    }
+    
     init(seed: State) {
         self.state = seed
     }
