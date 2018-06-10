@@ -7,72 +7,31 @@ public enum SudokuSolverError: Error {
     
 }
 
-// TODO: Remove random methods if stdlib incorporates these
+public typealias RNG = RandomNumberGenerator
 
-extension RandomAccessCollection {
-    func randomElement() -> Element {
-        let randomIndexOffset: Int = numericCast(arc4random_uniform(numericCast(distance(from: startIndex, to: endIndex))))
-        let randomIndex = self.index(startIndex, offsetBy: randomIndexOffset)
-        return self[randomIndex]
-    }
-}
-
-extension Sequence {
-    /// Returns the elements of the sequence, shuffled.
-    ///
-    /// - Parameter generator: The random number generator to use when shuffling
-    ///   the sequence.
-    /// - Returns: A shuffled array of this sequence's elements.
-    @_inlineable
-    public func shuffled() -> [Element] {
-        var result = ContiguousArray(self)
-        result.shuffle()
-        return Array(result)
-    }
-}
-
-extension MutableCollection {
-    /// Shuffles the collection in place.
-    public mutating func shuffle() {
-        guard count > 1 else { return }
-        var amount = count
-        var currentIndex = startIndex
-        while amount > 1 {
-            let random: Int = numericCast(arc4random_uniform(numericCast(amount)))
-            amount -= 1
-            swapAt(currentIndex, index(currentIndex, offsetBy: random))
-            formIndex(after: &currentIndex)
-        }
+// Adapted from https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlRandom.swift
+struct Xoroshiro: RNG {
+    
+    typealias State = (UInt64, UInt64)
+    
+    var state: State
+    
+    /// Initializes the Xoroshiro PRNG with a seed from Random.default
+    init() {
+        var random = Random.default
+        self.init(seed: (random.next(), random.next()))
     }
     
-    public func shuffled() -> Self {
-        var copy = self
-        copy.shuffle()
-        return copy
+    init(seed: State) {
+        self.state = seed
     }
-}
-
-//TODO: Remove this when SE-0197 is implemented, probably in Swift 4.2
-extension RangeReplaceableCollection where Self: MutableCollection {
-    /// Removes from the collection all elements that satisfy the given predicate.
-    ///
-    /// - Parameter predicate: A closure that takes an element of the
-    ///   sequence as its argument and returns a Boolean value indicating
-    ///   whether the element should be removed from the collection.
-    ///
-    /// - Complexity: O(*n*), where *n* is the length of the collection.
-    @_inlineable
-    public mutating func removeAll(where predicate: (Element) throws -> Bool) rethrows {
-        if var i = try index(where: predicate) {
-            var j = index(after: i)
-            while j != endIndex {
-                if try !predicate(self[j]) {
-                    swapAt(i, j)
-                    formIndex(after: &i)
-                }
-                formIndex(after: &j)
-            }
-            removeSubrange(i...)
-        }
+    
+    mutating func next() -> UInt64 {
+        let (l, k0, k1, k2): (UInt64, UInt64, UInt64, UInt64) = (64, 55, 14, 36)
+        let result = state.0 &+ state.1
+        let x = state.0 ^ state.1
+        state.0 = ((state.0 << k0) | (state.0 >> (l - k0))) ^ x ^ (x << k1)
+        state.1 = (x << k2) | (x >> (l - k2))
+        return result
     }
 }

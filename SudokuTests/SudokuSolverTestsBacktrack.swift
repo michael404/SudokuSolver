@@ -90,6 +90,16 @@ class SudokuSolverTestsBacktrack: XCTestCase {
         
         // Two random starting boards should (usually) not be equal
         XCTAssertNotEqual(SudokuBoard.randomStartingBoardBacktrack(), SudokuBoard.randomStartingBoardBacktrack())
+        
+        do {
+            var rng = Xoroshiro()
+            let board = SudokuBoard.randomStartingBoardBacktrack(rng: &rng)
+            
+            XCTAssertEqual(board.numberOfSolutionsBacktrack(), .one)
+            XCTAssertTrue(board.isValid)
+            XCTAssertFalse(board.isFullyFilled)
+            XCTAssertTrue((17...40).contains(board.clues))
+        }
     }
 
 }

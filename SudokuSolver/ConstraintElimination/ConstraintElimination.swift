@@ -18,15 +18,19 @@ extension SudokuBoard {
             return SudokuBoard(board)
         }
         
-        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Normal.self)
+        let result = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
         return SudokuBoard(result)
     }
     
     static func randomFullyFilledBoardCE() -> SudokuBoard {
+        return randomFullyFilledBoardCE(rng: &Random.default)
+    }
+    
+    static func randomFullyFilledBoardCE<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = PossibleCellValuesBoard.empty
         let unsolvedIndicies = Array(board.indices)
         let index = unsolvedIndicies.first!
-        let result = try! board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Shuffle.self)
+        let result = try! board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Shuffle.self, rng: &rng)
         return SudokuBoard(result)
     }
     
@@ -42,8 +46,8 @@ extension SudokuBoard {
         }
         do {
             //TODO: Can this be done in paralell?
-            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Normal.self)
-            let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: Reverse.self)
+            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
+            let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Reverse.self)
             return first == last ? .one : .multiple
         } catch {
             return .none
@@ -91,9 +95,14 @@ fileprivate extension PossibleCellValuesBoard {
     }
     
     mutating func guessAndEliminate<T: PossibleCellValuesTransformation>(
-        at index: Int, unsolvedIndicies: [Int], transform: T.Type) throws -> PossibleCellValuesBoard {
+        at index: Int, unsolvedIndicies: [Int], transformation: T.Type) throws -> PossibleCellValuesBoard {
+        return try guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &Random.default)
+    }
+    
+    mutating func guessAndEliminate<T: PossibleCellValuesTransformation, R: RNG>(
+        at index: Int, unsolvedIndicies: [Int], transformation: T.Type, rng: inout R) throws -> PossibleCellValuesBoard {
         var unsolvedIndicies = unsolvedIndicies
-        for guess in T.transform(self[index]) {
+        for guess in T.transform(self[index], rng: &rng) {
             do {
                 var newBoard = self
                 newBoard[index] = guess
@@ -101,7 +110,7 @@ fileprivate extension PossibleCellValuesBoard {
                 try newBoard.findAllHiddenSingles()
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
                 guard let index = unsolvedIndicies.first else { return newBoard }
-                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transform: transform.self)
+                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
                 continue

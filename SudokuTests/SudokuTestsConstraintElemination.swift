@@ -52,6 +52,29 @@ class SudokuSolverTestsConstraintElimination: XCTestCase {
         XCTAssertEqual(TestData.Invalid.board.numberOfSolutionsCE(), .none)
     }
     
+    func testRandomStartingBoard() {
+        
+        // Standard RNG
+        do {
+            let board = SudokuBoard.randomStartingBoardCE()
+            XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+            XCTAssertTrue(board.isValid)
+            XCTAssertFalse(board.isFullyFilled)
+            XCTAssertTrue((17...40).contains(board.clues))
+        }
+        
+        // Custom PRNG
+        do {
+            var rng = Xoroshiro()
+            let board = SudokuBoard.randomStartingBoardCE(rng: &rng)
+            
+            XCTAssertEqual(board.numberOfSolutionsCE(), .one)
+            XCTAssertTrue(board.isValid)
+            XCTAssertFalse(board.isFullyFilled)
+            XCTAssertTrue((17...40).contains(board.clues))
+        }
+    }
+
     func testOneToNine() {
         let allTrue = PossibleCellValues.allTrue
         XCTAssertEqual(allTrue.count, 9)
