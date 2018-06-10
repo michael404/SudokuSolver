@@ -199,6 +199,16 @@
 					<string>Local Baseline</string>
 				</dict>
 			</dict>
+			<key>testPerfSuite()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.0291</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>SudokuPerfTestsAlt</key>
 		<dict>
