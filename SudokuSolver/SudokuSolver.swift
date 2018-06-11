@@ -1,12 +1,5 @@
 extension SudokuBoard {
     
-    private init(eliminating board: SudokuBoard) throws {
-        self = board
-        for (index, cell) in zip(self.indices, self) where cell.isSolved {
-            try eliminatePossibilitites(basedOnChangeOf: index)
-        }
-    }
-    
     func findFirstSolution() throws -> SudokuBoard {
         
         var board = try SudokuBoard(eliminating: self)
@@ -67,6 +60,13 @@ extension SudokuBoard {
 }
 
 fileprivate extension SudokuBoard {
+    
+    init(eliminating board: SudokuBoard) throws {
+        self = board
+        for (index, cell) in zip(self.indices, self) where cell.isSolved {
+            try eliminatePossibilitites(basedOnChangeOf: index)
+        }
+    }
     
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
