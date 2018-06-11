@@ -1,4 +1,4 @@
-public extension SudokuBoard {
+extension SudokuBoard {
     
     static func randomStartingBoard() -> SudokuBoard {
         return randomStartingBoard(rng: &Random.default)
@@ -23,7 +23,7 @@ internal extension SudokuBoard {
         
         for index in board.indices.shuffled(using: &rng) {
             let cellAtIndex = board[index]
-            board[index] = nil
+            board[index] = .allTrue
             switch board.numberOfSolutions() {
             case .none:
                 fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")

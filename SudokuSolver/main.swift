@@ -4,7 +4,7 @@ import Foundation
 func generateMinimalSudokusAsync(iterations: Int, maxClues: Int, handler: @escaping (SudokuBoard) -> ()) {
     let serialQueue = DispatchQueue(label: "se.michaelholmgren.SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
-        let board = SudokuBoard.randomStartingBoardBacktrack()
+        let board = SudokuBoard.randomStartingBoard()
         guard board.clues <= maxClues else { return }
         serialQueue.sync { handler(board) }
     }
@@ -20,9 +20,9 @@ func countNanoseconds(for function: () -> ()) -> Int {
 func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: Int = 25_000_000, handler: @escaping (_ board: SudokuBoard, _ nanoseconds: Int) -> ()) {
     let serialQueue = DispatchQueue(label: "se.michaelholmgren.SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
-        let board = SudokuBoard.randomStartingBoardBacktrack()
+        let board = SudokuBoard.randomStartingBoard()
         let nanoseconds = countNanoseconds {
-            guard board.numberOfSolutionsBacktrack() == .one else {
+            guard board.numberOfSolutions() == .one else {
                 fatalError("Not solvable or multiple solutions. This should not happen.")
             }
         }
@@ -33,13 +33,13 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
     }
 }
 
-//generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 28) { board in
-//    print("--> \(board.debugDescription) <-- \(board.clues) clues")
-//}
+generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 28) { board in
+    print("--> \(board.debugDescription) <-- \(board.clues) clues")
+}
 
-//generateHardToBruteForceSudokusAsync(iterations: 10000) { board, nanoseconds in
-//    print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
-//}
+generateHardToBruteForceSudokusAsync(iterations: 10000) { board, nanoseconds in
+    print("--> \(board.debugDescription) <-- \(nanoseconds) nanoseconds - \(board.clues) clues")
+}
 
 
 do {

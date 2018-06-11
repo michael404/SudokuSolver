@@ -25,30 +25,24 @@ class SudokuTests: XCTestCase {
         do {
             XCTAssertTrue(TestData.Hard1.board.isValid)
     
-            var board1NonValid = TestData.Hard1.board
-            board1NonValid[0, 0] = 9
-            XCTAssertFalse(board1NonValid.isValid)
-    
-            board1NonValid = TestData.Hard1.board
-            board1NonValid[8, 6] = 5
-            XCTAssertFalse(board1NonValid.isValid)
-    
-            board1NonValid = TestData.Hard1.board
-            board1NonValid[6, 7] = 1
-            XCTAssertFalse(board1NonValid.isValid)
+            let nonValid = SudokuBoard("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+            XCTAssertFalse(nonValid.isValid)
         }
-        
         do {
-            var board = SudokuBoard()
-            board[0, 0] = 5
-            board[0, 1] = 5
-            XCTAssertFalse(board.isValid)
-            
-            board = SudokuBoard()
-            board[0, 8] = 9
-            board[2, 6] = 9
-            XCTAssertFalse(board.isValid)
-            
+            let nonValid = SudokuBoard(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
+            XCTAssertFalse(nonValid.isValid)
+        }
+        do {
+            let nonValid = SudokuBoard(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+            XCTAssertFalse(nonValid.isValid)
+        }
+        do {
+            let nonValid = SudokuBoard("55...............................................................................")
+            XCTAssertFalse(nonValid.isValid)
+        }
+        do {
+            let nonValid = SudokuBoard(".....................................................................9..........9")
+            XCTAssertFalse(nonValid.isValid)
         }
         
         XCTAssertFalse(TestData.MultipleSolutions.board.isValid)

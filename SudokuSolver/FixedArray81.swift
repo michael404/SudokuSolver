@@ -25,6 +25,14 @@ struct FixedArray81<T> {
             value, value, value, value, value, value, value, value, value)
     }
     
+    init<C: Collection>(from collection: C, temporaryValue: Element) where C.Element == Element {
+        precondition(collection.count == 81, "Initialized a fixed array with the wrong number of elements")
+        self.init(repeating: temporaryValue)
+        for (index1, index2) in zip(indices, collection.indices) {
+            self[index1] = collection[index2]
+        }
+    }
+    
 }
 
 extension FixedArray81 : RandomAccessCollection, MutableCollection {

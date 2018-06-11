@@ -29,22 +29,6 @@ class SudokuSolverTests: XCTestCase {
         
     }
     
-    func testConvertionToSudokuBoard() {
-        // Not fully filled
-        do {
-            let pvb = try! PossibleCellValuesBoard(TestData.Empty.board)
-            let sb = SudokuBoard(pvb)
-            XCTAssertEqual(sb, TestData.Empty.board)
-        }
-        
-        // Fully filled
-        do {
-            let pvb = try! PossibleCellValuesBoard(TestData.Filled.board)
-            let sb = SudokuBoard(pvb)
-            XCTAssertEqual(sb, TestData.Filled.board)
-        }
-    }
-    
     func testNumberOfSolutions() {
         XCTAssertEqual(TestData.Hard1.board.numberOfSolutions(), .one)
         XCTAssertEqual(TestData.Hard2.board.numberOfSolutions(), .one)
@@ -76,11 +60,11 @@ class SudokuSolverTests: XCTestCase {
     }
 
     func testOneToNine() {
-        let allTrue = PossibleCellValues.allTrue
+        let allTrue = SudokuCell.allTrue
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(PossibleCellValues(solved: i)))
+            XCTAssertTrue(allTrue.contains(SudokuCell(solved: i)))
         }
         
         var someFalse = allTrue
@@ -105,7 +89,7 @@ class SudokuSolverTests: XCTestCase {
         XCTAssertEqual(someFalse.solvedValue, 9)
         XCTAssertEqual(Array(someFalse), [9])
         
-        let oneValue = PossibleCellValues(solved: 6)
+        let oneValue = SudokuCell(solved: 6)
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
         XCTAssertEqual(oneValue.solvedValue, 6)

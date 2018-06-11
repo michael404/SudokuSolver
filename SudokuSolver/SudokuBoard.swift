@@ -1,42 +1,37 @@
-public struct SudokuBoard: Equatable {
+struct SudokuBoard: Equatable {
     
-    internal var board: [SudokuCell]
+    private var cells: FixedArray81<SudokuCell>
     
-    init<C: Collection>(_ board: C) where C.Element == SudokuCell {
-        precondition(board.count == 81, "Must pass in 81 SudokuCell elements")
-        self.board = Array(board)
+    init(eliminating board: SudokuBoard) throws {
+        self = board
+        for (index, cell) in zip(self.indices, self) where cell.isSolved {
+            try eliminatePossibilitites(basedOnChangeOf: index)
+        }
     }
     
-    init(_ board: SudokuCell...) {
-        self.init(board)
+    static let empty: SudokuBoard = SudokuBoard(empty: ())
+    
+    private init(empty: ()) {
+        self.cells = FixedArray81(repeating: SudokuCell.allTrue)
     }
     
-    init() {
-        self.board = Array(repeating: nil, count: 81)
-    }
-    
-    init<S: StringProtocol>(_ board: S) {
-        self.board = board.map { character in
-            switch character {
-            case ".": return nil
-            case "1"..."9": return SudokuCell(Int(String(character))!)
-            default: preconditionFailure("Unexpected character in string sequence")
+    init<S: StringProtocol>(_ numbers: S) {
+        precondition(numbers.count == 81, "Must pass in 81 SudokuCell elements")
+        self = SudokuBoard.empty
+        for (i, j) in zip(self.indices, numbers.indices) {
+            switch numbers[j] {
+                
+            case ".":
+                self[i] = .allTrue
+                
+            case "1"..."9":
+                self[i] = SudokuCell(solved: Int(String(numbers[j]))!)
+                
+            default:
+                preconditionFailure("Unexpected character in string sequence")
             }
         }
-        precondition(self.board.count == 81, "Must pass in 81 SudokuCell elements")
-    }
-    
-    subscript(row: Int, column: Int) -> SudokuCell {
-        get {
-            assert(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
-            assert(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
-            return self.board[indexFor(row: row, column: column)]
-        }
-        set(newValue) {
-            assert(row >= 0 && row <= 8, "Row must be a value between 0 and 8")
-            assert(column >= 0 && column <= 8, "Column must be a value between 0 and 8")
-            self.board[indexFor(row: row, column: column)] = newValue
-        }
+        
     }
     
     /// Indicates if this Sudoku is valid
@@ -47,55 +42,95 @@ public struct SudokuBoard: Equatable {
     }
     
     var isFullyFilled: Bool {
-        for cell in self.board where cell == nil { return false }
+        for cell in self where !cell.isSolved { return false }
         return true
     }
     
     var clues: Int {
-        return lazy.filter({ $0 != nil }).count
-    }
-    
-    func indexFor(row: Int, column: Int) -> Int {
-        return row * 9 + column
+        return lazy.filter({ $0.isSolved }).count
     }
     
 }
 
-extension SudokuBoard: RandomAccessCollection, MutableCollection {
+extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
-    public typealias Element = SudokuCell
-    
-    public subscript(index: Int) -> SudokuCell {
-        get { return self.board[index] }
-        set { self.board[index] = newValue }
+    subscript(position: Int) -> SudokuCell {
+        @inline(__always) get { return cells[position] }
+        @inline(__always) set { cells[position] = newValue }
     }
     
-    public var count: Int {
-        return self.board.count
+    var startIndex: Int { return cells.startIndex }
+    
+    var endIndex: Int { return cells.endIndex }
+    
+}
+
+
+extension SudokuBoard {
+    
+    func findFirstSolution() throws -> SudokuBoard {
+        
+        var board = try SudokuBoard(eliminating: self)
+        
+        // Find the relevant indicies and sort them according to the number of
+        // possible values the cell can have. We do not re-sort this array later,
+        // so the sorting might not be 100% correct later on, but it is a good
+        // approximation, and re-sorting leads to worse performance
+        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
+        unsolvedIndicies.sort { board[$0].count < board[$1].count }
+        
+        guard let index = unsolvedIndicies.first else {
+            // Either the Sudoku was already solved or we solved it
+            // with the first round of eliminatePossibilities in the
+            // SudokuBoard initializer
+            return board
+        }
+        
+        return try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
     }
     
-    public var startIndex: Int {
-        return self.board.startIndex
+    static func randomFullyFilledBoard() -> SudokuBoard {
+        return randomFullyFilledBoard(rng: &Random.default)
     }
     
-    public var endIndex: Int {
-        return self.board.endIndex
+    static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
+        var board = SudokuBoard.empty
+        let unsolvedIndicies = Array(board.indices)
+        let index = unsolvedIndicies.first!
+        return try! board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Shuffle.self, rng: &rng)
     }
     
-    public func index(after index: Int) -> Int {
-        return self.board.index(after: index)
+    enum NumberOfSolutions {
+        case none
+        case one
+        case multiple
     }
     
-    public func index(before index: Int) -> Int {
-        return self.board.index(before: index)
+    func numberOfSolutions() -> NumberOfSolutions {
+        guard var board = try? SudokuBoard(eliminating: self) else { return .none }
+        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
+        unsolvedIndicies.sort { board[$0].count < board[$1].count }
+        guard let index = unsolvedIndicies.first else {
+            // Either the Sudoku was already solved or we solved it
+            // with the first round of eliminatePossibilities in the
+            // SudokuBoard initializer
+            return .one
+        }
+        do {
+            //TODO: Can this be done in paralell?
+            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
+            let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Reverse.self)
+            return first == last ? .one : .multiple
+        } catch {
+            return .none
+        }
     }
-    
 }
 
 extension SudokuBoard: CustomStringConvertible {
-    
-    public var description: String {
-        var i = self.board.makeIterator()
+
+    var description: String {
+        var i = makeIterator()
         var description = "+-----+-----+-----+\n"
         for _ in 1...3 {
             for _ in 1...3 {
@@ -109,17 +144,111 @@ extension SudokuBoard: CustomStringConvertible {
         }
         return description
     }
-    
+
 }
 
 extension SudokuBoard: CustomDebugStringConvertible {
+
+    var debugDescription: String {
+        return reduce(into: "") { result, cell in
+            result.append(cell.debugDescription)
+        }
+    }
+
+}
+
+fileprivate extension SudokuBoard {
     
-    public var debugDescription: String {
-        return self.board.reduce(into: "") { result, cell in
-            switch cell {
-            case nil: result.append(".")
-            default: result.append(cell.description)
+    /// Throws if we are in an impossible situation
+    mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
+        guard let valueToRemove = self[index].solvedValue else { return }
+        for indexToRemoveFrom in indiciesAffectedBy(index: index) {
+            try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom)
+        }
+    }
+    
+    mutating func removeAndApplyConstraints(valueToRemove: SudokuCell, indexToRemoveFrom: Int) throws {
+        if try self[indexToRemoveFrom].remove(valueToRemove) {
+            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
+            if self[indexToRemoveFrom].count == 2 {
+                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             }
+        }
+    }
+    
+    mutating func guessAndEliminate<T: SudokuCellTransformation>(
+        at index: Int, unsolvedIndicies: [Int], transformation: T.Type) throws -> SudokuBoard {
+        return try guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &Random.default)
+    }
+    
+    mutating func guessAndEliminate<T: SudokuCellTransformation, R: RNG>(
+        at index: Int, unsolvedIndicies: [Int], transformation: T.Type, rng: inout R) throws -> SudokuBoard {
+        var unsolvedIndicies = unsolvedIndicies
+        for guess in T.transform(self[index], rng: &rng) {
+            do {
+                var newBoard = self
+                newBoard[index] = guess
+                try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
+                try newBoard.findAllHiddenSingles()
+                unsolvedIndicies.removeAll { newBoard[$0].isSolved }
+                guard let index = unsolvedIndicies.first else { return newBoard }
+                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
+            } catch {
+                // Ignore the error and move on to testing the next possible value for the current index
+                continue
+            }
+        }
+        // Only fail an throw if we have tried all possible values for the current cell and all of those
+        // branches failed and throwed.
+        throw SudokuSolverError.unsolvable
+    }
+    
+    mutating func findAllHiddenSingles() throws {
+        for unit in 0...8 {
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+            try _findHiddenSingles(for: allIndiciesInColumn(number: unit))
+            try _findHiddenSingles(for: allIndiciesInBox(number: unit))
+        }
+    }
+    
+    mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
+        cellValueLoop: for cellValue in SudokuCell.allTrue {
+            var foundIndex = -1
+            for index in indicies where self[index].contains(cellValue) {
+                // If we have already found one value in this unit, it is not a candiadate for a hidden single
+                guard foundIndex == -1 else { continue cellValueLoop }
+                // If we have found a solved value, that is not a candidate for a hidden single
+                guard !self[index].isSolved else { continue cellValueLoop }
+                foundIndex = index
+            }
+            // If we did not find the value at all, the board is unsolvable
+            guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
+            // We have identified a hidden single, and can set the cell to that value
+            self[foundIndex] = cellValue
+            try eliminatePossibilitites(basedOnChangeOf: foundIndex)
+        }
+    }
+    
+    mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
+        let value = self[index]
+        try _eliminateNakedPairs(value: value, for: indiciesInSameRowAs(index: index))
+        try _eliminateNakedPairs(value: value, for: indiciesInSameColumnAs(index: index))
+        try _eliminateNakedPairs(value: value, for: indiciesInSameBoxAs(index: index))
+    }
+    
+    mutating func _eliminateNakedPairs(value: SudokuCell, for indicies: ArraySlice<Int>) throws {
+        assert(value.count == 2)
+        // The body of this for loop will only be executed once, since it returns at the end
+        for index in indicies where self[index] == value {
+            // Found a duplicate. Loop over all indicies, exept the current one and remove from that
+            for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
+                guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
+                try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
+            }
+            // Once we have found a naked pair and tried to remove based on it, we return
+            // since we do not need to find any additional equal pairs. If we had tried that
+            // and found annother equal pair, that would have indicated that the board is unsolvable.
+            return
         }
     }
     

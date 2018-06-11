@@ -1,9 +1,9 @@
-extension PossibleCellValuesBoard {
+extension SudokuBoard {
     
     func indiciesAffectedBy(index: Int) -> ArraySlice<Int> {
         let start = index * 20
         let end = start + 20
-        return PossibleCellValuesBoard._indiciesAffectedByIndex[start..<end]
+        return SudokuBoard._indiciesAffectedByIndex[start..<end]
     }
     
     /// The 20 indicies that need to be checked when chaning an index.
@@ -95,19 +95,19 @@ extension PossibleCellValuesBoard {
     func indiciesInSameRowAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24
         let end = start + 8
-        return PossibleCellValuesBoard._indiciesInSameUnitAsIndex[start..<end]
+        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
     }
     
     func indiciesInSameColumnAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24 + 8
         let end = start + 8
-        return PossibleCellValuesBoard._indiciesInSameUnitAsIndex[start..<end]
+        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
     }
     
     func indiciesInSameBoxAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24 + 16
         let end = start + 8
-        return PossibleCellValuesBoard._indiciesInSameUnitAsIndex[start..<end]
+        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
     }
     
     private static let _indiciesInSameUnitAsIndex: [Int] = [
@@ -197,19 +197,19 @@ extension PossibleCellValuesBoard {
     func allIndiciesInRow(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return PossibleCellValuesBoard._allIndiciesInRowNr[start..<end]
+        return SudokuBoard._allIndiciesInRowNr[start..<end]
     }
     
     func allIndiciesInColumn(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return PossibleCellValuesBoard._allIndiciesInColumnNr[start..<end]
+        return SudokuBoard._allIndiciesInColumnNr[start..<end]
     }
     
     func allIndiciesInBox(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return PossibleCellValuesBoard._allIndiciesInBoxNr[start..<end]
+        return SudokuBoard._allIndiciesInBoxNr[start..<end]
     }
     
     private static let _allIndiciesInBoxNr: [Int] = [
@@ -247,7 +247,7 @@ extension PossibleCellValuesBoard {
     
 }
 
-extension PossibleCellValuesBoard {
+extension SudokuBoard {
     
     /// Prints the static data that generates `_indiciesAffectedByIndex`
     static func printIndiciesToRemoveFrom() {
@@ -275,9 +275,9 @@ extension PossibleCellValuesBoard {
         var result = [[Int]]()
         for i in 0...80 {
             var tempResult = [Int]()
-            tempResult.append(contentsOf: PossibleCellValuesBoard.indiciesInSameRow(as: i).filter { $0 != i })
-            tempResult.append(contentsOf: PossibleCellValuesBoard.indiciesInSameColumn(as: i).filter { $0 != i })
-            tempResult.append(contentsOf: PossibleCellValuesBoard.indiciesInSameBox(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: SudokuBoard.indiciesInSameRow(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: SudokuBoard.indiciesInSameColumn(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: SudokuBoard.indiciesInSameBox(as: i).filter { $0 != i })
             result.append(tempResult)
         }
         for line in result {
@@ -290,7 +290,7 @@ extension PossibleCellValuesBoard {
     }
     
     static func printBoxes() {
-        let result = (0...80).map(PossibleCellValuesBoard.indiciesInSameRow)
+        let result = (0...80).map(SudokuBoard.indiciesInSameRow)
         for line in result {
             for index in line {
                 let leadingspace = index < 10 ? " " :  ""

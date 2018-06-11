@@ -18,15 +18,11 @@
 		4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11004A1F5DCE5D00F0745D /* Utils.swift */; };
 		4C38A13020679253001A8724 /* FixedArray81.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A12F20679253001A8724 /* FixedArray81.swift */; };
 		4C38A13220679499001A8724 /* FixedArray81.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A12F20679253001A8724 /* FixedArray81.swift */; };
-		4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
-		4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13320679861001A8724 /* PossibleCellValues.swift */; };
 		4C38A13A20699191001A8724 /* PrecalculatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* PrecalculatedValues.swift */; };
 		4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* PrecalculatedValues.swift */; };
 		4C38A142206E70C2001A8724 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
 		4C425077206192A9000FF622 /* SudokuSolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C425076206192A9000FF622 /* SudokuSolverTests.swift */; };
 		4C42507920619383000FF622 /* SudokuPerfTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42507820619383000FF622 /* SudokuPerfTests.swift */; };
-		4C62194E204DCDCF0082AF70 /* ConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C62194D204DCDCF0082AF70 /* ConstraintElimination.swift */; };
-		4C62194F204DCDF80082AF70 /* ConstraintElimination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C62194D204DCDCF0082AF70 /* ConstraintElimination.swift */; };
 		4CBDF96D20821C2E00A0754E /* Transformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBDF96C20821C2E00A0754E /* Transformations.swift */; };
 		4CBDF96E20821CB700A0754E /* Transformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBDF96C20821C2E00A0754E /* Transformations.swift */; };
 		4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B0FE1F588A9B00C2576C /* main.swift */; };
@@ -54,11 +50,9 @@
 		4C1100521F5DDC2800F0745D /* SudokuTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTests.swift; sourceTree = "<group>"; };
 		4C1100541F5DDC2800F0745D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C38A12F20679253001A8724 /* FixedArray81.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedArray81.swift; sourceTree = "<group>"; };
-		4C38A13320679861001A8724 /* PossibleCellValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PossibleCellValues.swift; sourceTree = "<group>"; };
 		4C38A13920699191001A8724 /* PrecalculatedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrecalculatedValues.swift; sourceTree = "<group>"; };
 		4C425076206192A9000FF622 /* SudokuSolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolverTests.swift; sourceTree = "<group>"; };
 		4C42507820619383000FF622 /* SudokuPerfTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuPerfTests.swift; sourceTree = "<group>"; };
-		4C62194D204DCDCF0082AF70 /* ConstraintElimination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstraintElimination.swift; sourceTree = "<group>"; };
 		4CBDF96C20821C2E00A0754E /* Transformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformations.swift; sourceTree = "<group>"; };
 		4CC0B0FB1F588A9B00C2576C /* SudokuSolver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SudokuSolver; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CC0B0FE1F588A9B00C2576C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -95,19 +89,6 @@
 			path = SudokuTests;
 			sourceTree = "<group>";
 		};
-		4C38A1312067925D001A8724 /* ConstraintElimination */ = {
-			isa = PBXGroup;
-			children = (
-				4C62194D204DCDCF0082AF70 /* ConstraintElimination.swift */,
-				4C09949820CD7EC300F4F6F3 /* RandomBoard.swift */,
-				4C38A13320679861001A8724 /* PossibleCellValues.swift */,
-				4C38A12F20679253001A8724 /* FixedArray81.swift */,
-				4CBDF96C20821C2E00A0754E /* Transformations.swift */,
-				4C38A13920699191001A8724 /* PrecalculatedValues.swift */,
-			);
-			path = ConstraintElimination;
-			sourceTree = "<group>";
-		};
 		4CC0B0F21F588A9B00C2576C = {
 			isa = PBXGroup;
 			children = (
@@ -132,8 +113,11 @@
 				4CC0B0FE1F588A9B00C2576C /* main.swift */,
 				4C1100401F588ACB00F0745D /* SudokuBoard.swift */,
 				4C1100441F5C29CD00F0745D /* SudokuCell.swift */,
+				4C09949820CD7EC300F4F6F3 /* RandomBoard.swift */,
+				4C38A12F20679253001A8724 /* FixedArray81.swift */,
+				4CBDF96C20821C2E00A0754E /* Transformations.swift */,
+				4C38A13920699191001A8724 /* PrecalculatedValues.swift */,
 				4C11004A1F5DCE5D00F0745D /* Utils.swift */,
-				4C38A1312067925D001A8724 /* ConstraintElimination */,
 			);
 			path = SudokuSolver;
 			sourceTree = "<group>";
@@ -182,7 +166,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Michael Holmgren";
 				TargetAttributes = {
 					4C11004F1F5DDC2800F0745D = {
@@ -231,11 +215,9 @@
 				4CBDF96E20821CB700A0754E /* Transformations.swift in Sources */,
 				4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */,
 				4C1100591F5DDC7900F0745D /* SudokuBoard.swift in Sources */,
-				4C38A1352067986E001A8724 /* PossibleCellValues.swift in Sources */,
 				4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */,
 				4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */,
 				4C11005A1F5DDC7C00F0745D /* SudokuCell.swift in Sources */,
-				4C62194F204DCDF80082AF70 /* ConstraintElimination.swift in Sources */,
 				4C1100531F5DDC2800F0745D /* SudokuTests.swift in Sources */,
 				4C09949A20CD7EF500F4F6F3 /* RandomBoard.swift in Sources */,
 				4C38A13220679499001A8724 /* FixedArray81.swift in Sources */,
@@ -248,8 +230,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C62194E204DCDCF0082AF70 /* ConstraintElimination.swift in Sources */,
-				4C38A13420679861001A8724 /* PossibleCellValues.swift in Sources */,
 				4C09949920CD7EC300F4F6F3 /* RandomBoard.swift in Sources */,
 				4C38A13020679253001A8724 /* FixedArray81.swift in Sources */,
 				4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */,
@@ -408,6 +388,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
@@ -418,6 +399,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;

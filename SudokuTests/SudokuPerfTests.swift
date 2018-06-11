@@ -16,7 +16,7 @@ class SudokuPerfTests: XCTestCase {
     }
     
     func testPerfRandomFullyFilledBoard() {
-        var board = SudokuBoard()
+        var board = SudokuBoard.empty
         self.measure {
             var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
@@ -30,7 +30,7 @@ class SudokuPerfTests: XCTestCase {
     }
     
     func testPerfRandomStartingBoard() {
-        var board = SudokuBoard()
+        var board = SudokuBoard.empty
         self.measure {
             var rng = Xoroshiro()
             for _ in 0..<10 {
