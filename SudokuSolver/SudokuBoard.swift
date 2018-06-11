@@ -11,17 +11,20 @@ struct SudokuBoard: Equatable {
     init<S: StringProtocol>(_ numbers: S) {
         precondition(numbers.count == 81, "Must pass in 81 SudokuCell elements")
         self = SudokuBoard.empty
-        for (i, j) in zip(self.indices, numbers.indices) {
-            switch numbers[j] {
-                
-            case ".":
-                self[i] = .allTrue
-                
-            case "1"..."9":
-                self[i] = SudokuCell(solved: Int(String(numbers[j]))!)
-                
-            default:
-                preconditionFailure("Unexpected character in string sequence")
+        //TODO: Can we do this without index magic?
+        for (i, number) in zip(self.indices, numbers) {
+            switch number {
+            case ".": self[i] = .allTrue
+            case "1": self[i] = SudokuCell(solved: 1)
+            case "2": self[i] = SudokuCell(solved: 2)
+            case "3": self[i] = SudokuCell(solved: 3)
+            case "4": self[i] = SudokuCell(solved: 4)
+            case "5": self[i] = SudokuCell(solved: 5)
+            case "6": self[i] = SudokuCell(solved: 6)
+            case "7": self[i] = SudokuCell(solved: 7)
+            case "8": self[i] = SudokuCell(solved: 8)
+            case "9": self[i] = SudokuCell(solved: 9)
+            default: preconditionFailure("Unexpected character in string sequence")
             }
         }
         
