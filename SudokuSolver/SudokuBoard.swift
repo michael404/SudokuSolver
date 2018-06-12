@@ -11,10 +11,9 @@ struct SudokuBoard: Equatable {
     init<S: StringProtocol>(_ numbers: S) {
         precondition(numbers.count == 81, "Must pass in 81 SudokuCell elements")
         self = SudokuBoard.empty
-        //TODO: Can we do this without index magic?
         for (i, number) in zip(self.indices, numbers) {
             switch number {
-            case ".": self[i] = .allTrue
+            case ".": break
             case "1": self[i] = SudokuCell(solved: 1)
             case "2": self[i] = SudokuCell(solved: 2)
             case "3": self[i] = SudokuCell(solved: 3)
