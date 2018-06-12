@@ -5,8 +5,8 @@
 /// one bit set.
 struct SudokuCell: Hashable {
     
-    /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
-    /// Bits 0 to 6 are padding and should always be set to 0.
+    /// Bits 6 through 14 contains  the bit set info for numbers 1 to 9.
+    /// Bits 0 through 5 and 15 are padding and should always be set to 0.
     /// The set is considered "solved" if only one bit is set.
     fileprivate var storage: UInt16
     
