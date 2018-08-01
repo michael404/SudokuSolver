@@ -1,7 +1,8 @@
 extension SudokuBoard {
     
     static func randomStartingBoard() -> SudokuBoard {
-        return randomStartingBoard(rng: &Random.default)
+        var rng = SystemRandomNumberGenerator()
+        return randomStartingBoard(rng: &rng)
     }
     
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
@@ -15,7 +16,8 @@ extension SudokuBoard {
 internal extension SudokuBoard {
     
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
-        return randomStartingPositionFromFullyFilledBoard(rng: &Random.default)
+        var rng = SystemRandomNumberGenerator()
+        return randomStartingPositionFromFullyFilledBoard(rng: &rng)
     }
     
     func randomStartingPositionFromFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {

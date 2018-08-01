@@ -22,7 +22,8 @@ extension SudokuBoard {
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
-        return randomFullyFilledBoard(rng: &Random.default)
+        var rng = SystemRandomNumberGenerator()
+        return randomFullyFilledBoard(rng: &rng)
     }
     
     static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
@@ -87,7 +88,8 @@ fileprivate extension SudokuBoard {
     
     mutating func guessAndEliminate<T: SudokuCellTransformation>(
         at index: Int, unsolvedIndicies: [Int], transformation: T.Type) throws -> SudokuBoard {
-        return try guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &Random.default)
+        var rng = SystemRandomNumberGenerator()
+        return try guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
     }
     
     mutating func guessAndEliminate<T: SudokuCellTransformation, R: RNG>(
