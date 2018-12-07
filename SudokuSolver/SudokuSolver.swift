@@ -149,17 +149,11 @@ fileprivate extension SudokuBoard {
     
     mutating func _eliminateNakedPairs(value: SudokuCell, for indicies: ArraySlice<Int>) throws {
         assert(value.count == 2)
-        // The body of this for loop will only be executed once, since it returns at the end
-        for index in indicies where self[index] == value {
-            // Found a duplicate. Loop over all indicies, exept the current one and remove from that
-            for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
-                guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
-                try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
-            }
-            // Once we have found a naked pair and tried to remove based on it, we return
-            // since we do not need to find any additional equal pairs. If we had tried that
-            // and found annother equal pair, that would have indicated that the board is unsolvable.
-            return
+        guard let index = indicies.first(where: { self[$0] == value }) else { return }
+        // Found a duplicate. Loop over all indicies, exept the current one and remove from that
+        for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
+            guard value != self[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
+            try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
         }
     }
     
