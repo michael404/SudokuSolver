@@ -109,7 +109,7 @@ fileprivate extension SudokuBoard {
                 continue
             }
         }
-        // Only fail an throw if we have tried all possible values for the current cell and all of those
+        // Only fail and throw if we have tried all possible values for the current cell and all of those
         // branches failed and throwed.
         throw SudokuSolverError.unsolvable
     }
