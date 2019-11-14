@@ -5,7 +5,7 @@ protocol SudokuCellTransformation {
 
 enum Normal: SudokuCellTransformation {
     static func transform<R: RNG>(_ possibleCellValues: SudokuCell, rng: inout R) -> SudokuCell {
-        return possibleCellValues
+        possibleCellValues
     }
 }
 
@@ -19,6 +19,6 @@ enum Shuffle: SudokuCellTransformation {
 
 enum Reverse: SudokuCellTransformation {
     static func transform<R: RNG>(_ possibleCellValues: SudokuCell, rng: inout R) -> SudokuCellReversedIterator {
-        return SudokuCellReversedIterator(possibleCellValues)
+        SudokuCellReversedIterator(possibleCellValues)
     }
 }

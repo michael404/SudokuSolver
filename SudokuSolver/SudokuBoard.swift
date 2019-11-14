@@ -32,31 +32,23 @@ struct SudokuBoard: Equatable {
     /// Indicates if this Sudoku is valid
     /// If it is not solvable, or violates any of the row/box/column
     /// requirements, or has multiple solutions, it is considered non-valid
-    var isValid: Bool {
-        return numberOfSolutions() == .one
-    }
+    var isValid: Bool { numberOfSolutions() == .one }
     
-    var isFullyFilled: Bool {
-        for cell in self where !cell.isSolved { return false }
-        return true
-    }
+    var isFullyFilled: Bool { self.allSatisfy { $0.isSolved } }
     
-    var clues: Int {
-        return lazy.filter({ $0.isSolved }).count
-    }
+    var clues: Int { lazy.filter({ $0.isSolved }).count }
     
 }
 
 extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
     subscript(position: Int) -> SudokuCell {
-        @inline(__always) get { return cells[position] }
+        @inline(__always) get { cells[position] }
         @inline(__always) set { cells[position] = newValue }
     }
     
-    var startIndex: Int { return cells.startIndex }
-    
-    var endIndex: Int { return cells.endIndex }
+    var startIndex: Int { cells.startIndex }
+    var endIndex: Int { cells.endIndex }
     
 }
 
@@ -83,7 +75,7 @@ extension SudokuBoard: CustomStringConvertible {
 extension SudokuBoard: CustomDebugStringConvertible {
 
     var debugDescription: String {
-        return reduce(into: "") { result, cell in
+        reduce(into: "") { result, cell in
             result.append(cell.debugDescription)
         }
     }

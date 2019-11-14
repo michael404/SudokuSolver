@@ -7,7 +7,7 @@ extension SudokuBoard {
     
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         //TODO: check if it is more effective to not generate a full filled board first
-        return randomFullyFilledBoard(rng: &rng).randomStartingPositionFromFullyFilledBoard(rng: &rng)
+        randomFullyFilledBoard(rng: &rng).randomStartingPositionFromFullyFilledBoard(rng: &rng)
     }
 
 

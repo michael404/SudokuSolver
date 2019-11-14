@@ -22,23 +22,19 @@ struct SudokuCell: Hashable {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
         // While `storage.nonzeroBitCount` should be mapped to SSE instructions, it seems to
         // be a little bit slower
-        return (numericCast(storage) * 0x200040008001 & 0x111111111111111) % 0xf
+        (numericCast(storage) * 0x200040008001 & 0x111111111111111) % 0xf
     }
     
     var isSolved: Bool {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
         // Note that 0 is incorrectly considered a power of 2, but that does not matter in this context
         // since _storage should never be 0
-        return (storage & (storage - 1)) == 0
+        (storage & (storage - 1)) == 0
     }
     
-    var solvedValue: SudokuCell? {
-        return isSolved ? self : nil
-    }
+    var solvedValue: SudokuCell? { isSolved ? self : nil }
     
-    func contains(_ value: SudokuCell) -> Bool {
-        return (storage & value.storage) != 0
-    }
+    func contains(_ value: SudokuCell) -> Bool { (storage & value.storage) != 0 }
     
     /// Returns true if a value was removed
     /// Throws if the last value was removed
@@ -54,9 +50,7 @@ struct SudokuCell: Hashable {
 
 extension SudokuCell: Sequence {
     
-    func makeIterator() -> SudokuCellIterator {
-        return SudokuCellIterator(self)
-    }
+    func makeIterator() -> SudokuCellIterator { SudokuCellIterator(self) }
 }
 
 struct SudokuCellIterator: IteratorProtocol, Sequence {
@@ -94,15 +88,11 @@ struct SudokuCellReversedIterator: IteratorProtocol, Sequence {
 }
 
 extension SudokuCell: CustomStringConvertible {
-    var description: String {
-        return isSolved ? String(Int(self)) : " "
-    }
+    var description: String { isSolved ? String(Int(self)) : " " }
 }
 
 extension SudokuCell: CustomDebugStringConvertible {
-    var debugDescription: String {
-        return isSolved ? String(Int(self)) : "."
-    }
+    var debugDescription: String { isSolved ? String(Int(self)) : "." }
 }
 
 extension SudokuCell: ExpressibleByIntegerLiteral {

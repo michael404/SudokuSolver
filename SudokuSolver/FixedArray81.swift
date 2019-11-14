@@ -29,9 +29,8 @@ struct FixedArray81<T> {
 
 extension FixedArray81 : RandomAccessCollection, MutableCollection {
     
-    var startIndex : Int { return 0 }
-    
-    var endIndex : Int { return 81 }
+    var startIndex : Int { 0 }
+    var endIndex : Int { 81 }
     
     subscript(i: Int) -> T {
         @inline(__always)
@@ -57,14 +56,13 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         }
     }
     
-    func index(after i: Int) -> Int { return i + 1 }
-    
-    func index(before i: Int) -> Int { return i - 1 }
+    func index(after i: Int) -> Int { i + 1 }
+    func index(before i: Int) -> Int { i - 1 }
 }
 
 extension FixedArray81: Equatable where T: Equatable {
     static func == (lhs: FixedArray81<T>, rhs: FixedArray81<T>) -> Bool {
-        return lhs.elementsEqual(rhs)
+        lhs.elementsEqual(rhs)
     }
 }
 
