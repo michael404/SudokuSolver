@@ -36,10 +36,7 @@ extension FixedArray81 : RandomAccessCollection, MutableCollection {
         @inline(__always)
         get {
             assert((startIndex..<endIndex).contains(i))
-            // As of Swift 4.2 and SE-0205 we should be able to just pass `storage` as
-            // a non-inout argument, but for some reason, that degrades performance
-            var copy = storage
-            return withUnsafeBytes(of: &copy) { rawPointer in
+            return withUnsafeBytes(of: storage) { rawPointer in
                 let pointer = rawPointer.baseAddress!.assumingMemoryBound(to: T.self)
                 let bufferPointer = UnsafeBufferPointer(start: pointer, count: 81)
                 return bufferPointer[i]
