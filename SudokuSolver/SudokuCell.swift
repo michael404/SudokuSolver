@@ -18,12 +18,7 @@ struct SudokuCell: Hashable {
         self.storage = 0b1 << value
     }
     
-    var count: Int {
-        // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSet64
-        // While `storage.nonzeroBitCount` should be mapped to SSE instructions, it seems to
-        // be a little bit slower
-        (numericCast(storage) * 0x200040008001 & 0x111111111111111) % 0xf
-    }
+    var count: Int { storage.nonzeroBitCount }
     
     var isSolved: Bool {
         // Borrowed from http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
