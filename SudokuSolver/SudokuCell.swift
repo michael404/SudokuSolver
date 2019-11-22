@@ -8,7 +8,7 @@ struct SudokuCell: Hashable {
     /// Bits 6 through 14 contains  the bit set info for numbers 1 to 9.
     /// Bits 0 through 5 and 15 are padding and should always be set to 0.
     /// The set is considered "solved" if only one bit is set.
-    fileprivate var storage: UInt16
+    fileprivate(set) var storage: UInt16
     
     static let allTrue: SudokuCell = SudokuCell(allTrue: ())
     private init(allTrue: ()) { self.storage = 0b0000001111111110 }
