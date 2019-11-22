@@ -11,14 +11,7 @@ extension SudokuBoard {
         var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
         
-        guard let index = unsolvedIndicies.first else {
-            // Either the Sudoku was already solved or we solved it
-            // with the first round of eliminatePossibilities in the
-            // SudokuBoard initializer
-            return board
-        }
-        
-        return try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
+        return try board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
@@ -29,8 +22,7 @@ extension SudokuBoard {
     static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = SudokuBoard.empty
         let unsolvedIndicies = Array(board.indices)
-        let index = unsolvedIndicies.first!
-        return try! board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Shuffle.self, rng: &rng)
+        return try! board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Shuffle.self, rng: &rng)
     }
     
     enum NumberOfSolutions {
@@ -43,16 +35,10 @@ extension SudokuBoard {
         guard var board = try? SudokuBoard(eliminating: self) else { return .none }
         var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
         unsolvedIndicies.sort { board[$0].count < board[$1].count }
-        guard let index = unsolvedIndicies.first else {
-            // Either the Sudoku was already solved or we solved it
-            // with the first round of eliminatePossibilities in the
-            // SudokuBoard initializer
-            return .one
-        }
         do {
             //TODO: Can this be done in paralell?
-            let first = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
-            let last = try board.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: Reverse.self)
+            let first = try board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
+            let last = try board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Reverse.self)
             return first == last ? .one : .multiple
         } catch {
             return .none
@@ -87,23 +73,23 @@ fileprivate extension SudokuBoard {
     }
     
     mutating func guessAndEliminate<T: SudokuCellTransformation>(
-        at index: Int, unsolvedIndicies: [Int], transformation: T.Type) throws -> SudokuBoard {
+        unsolvedIndicies: [Int], transformation: T.Type) throws -> SudokuBoard {
         var rng = SystemRandomNumberGenerator()
-        return try guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
+        return try guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
     }
     
     mutating func guessAndEliminate<T: SudokuCellTransformation, R: RNG>(
-        at index: Int, unsolvedIndicies: [Int], transformation: T.Type, rng: inout R) throws -> SudokuBoard {
-        var unsolvedIndicies = unsolvedIndicies
+        unsolvedIndicies: [Int], transformation: T.Type, rng: inout R) throws -> SudokuBoard {
+        guard let index = unsolvedIndicies.first else { return self }
         for guess in T.transform(self[index], rng: &rng) {
             do {
                 var newBoard = self
                 newBoard[index] = guess
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 try newBoard.findAllHiddenSingles()
+                var unsolvedIndicies = unsolvedIndicies
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
-                guard let index = unsolvedIndicies.first else { return newBoard }
-                return try newBoard.guessAndEliminate(at: index, unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
+                return try newBoard.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
                 continue
