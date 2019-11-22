@@ -12,6 +12,8 @@ enum TestData {
     
         static let string = ".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7."
         
+        static let solution = SudokuBoard("497236581651897324283541769934182657825769413176354298519673842748925136362418975")
+        
         static let solutionString = """
             +-----+-----+-----+
             |4 9 7|2 3 6|5 8 1|
@@ -37,7 +39,9 @@ enum TestData {
         // http://sw-amt.ws/sudoku/worlds-hardest-sudoku/xx-world-hardest-sudoku.html
         static let board = SudokuBoard("8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..")
         
-            static let solutionString = """
+        static let solution = SudokuBoard("812753649943682175675491283154237896369845721287169534521974368438526917796318452")
+        
+        static let solutionString = """
             +-----+-----+-----+
             |8 1 2|7 5 3|6 4 9|
             |9 4 3|6 8 2|1 7 5|
