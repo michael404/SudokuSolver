@@ -143,30 +143,10 @@ extension SudokuBoardSIMD2x64 {
     
     private static let colMaskS2 = makeMasks(indicies: colIndiciesS2)
     
-    mutating func solveConstraintsAndPrintEachIteration() throws {
-        
-        var last = self
-        while true {
-            try self.solveConstraintsOneRound()
-            if self == last { return }
-            print()
-            print(self)
-            print()
-            if self.isSolved {
-                print("SOLVED!")
-                print()
-                return
-            }
-            last = self
-        }
-    }
-    
     mutating func solveConstraints() throws {
         var last = self
         while true {
             try self.solveConstraintsOneRound()
-            // TODO: Consider if this should run last in SolveConstraints / solveConstraintsForeignColumns or only here
-//            try checkIfAnyCellsHaveNoValidValuesLeft()
             if self.isSolved || self == last { return }
             last = self
         }
