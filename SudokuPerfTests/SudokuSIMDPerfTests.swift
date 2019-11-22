@@ -19,13 +19,23 @@ class SudokuSIMDPerfTests: XCTestCase {
     }
     
     func testHard() {
-        let board = SudokuBoardSIMD2x64(TestData.Hard1.string)
+        let board = SudokuBoardSIMD2x64(TestData.Hard1.board)
         var result = SudokuBoardSIMD2x64.empty
         self.measure {
             result = try! board.findFirstSolution()
         }
-        let solution = TestData.Hard1.solutionString
-        XCTAssertEqual(result.description, solution)
+        let solution = SudokuBoardSIMD2x64(TestData.Hard1.solution)
+        XCTAssertEqual(result, solution)
+    }
+    
+    func testHard2() {
+        let board = SudokuBoardSIMD2x64(TestData.Hard2.board)
+        var result = SudokuBoardSIMD2x64.empty
+        self.measure {
+            result = try! board.findFirstSolution()
+        }
+        let solution = SudokuBoardSIMD2x64(TestData.Hard2.solution)
+        XCTAssertEqual(result, solution)
     }
     
 }
