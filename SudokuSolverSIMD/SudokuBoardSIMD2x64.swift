@@ -27,7 +27,7 @@ struct SudokuBoardSIMD2x64: Equatable {
     init(_ board: SudokuBoard) {
         self = .empty
         for (i, cell) in zip(0..<81, board) {
-            self[i] = cell.storage
+            self[i] = cell.storage >> 1
         }
     }
     
