@@ -10,7 +10,6 @@ class SudokuSIMDPerfTests: XCTestCase {
             for board in boards {
                 let solvedBoard = try! board.findFirstSolution()
                 results.append(solvedBoard)
-                print("Solved!")
             }
         }
         let solutions = TestData.PerfTestSuite.solutions[subset].map(SudokuBoardSIMD2x64.init)
