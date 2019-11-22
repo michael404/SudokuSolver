@@ -9,19 +9,7 @@ extension Array {
 extension SudokuBoardSIMD2x64: CustomStringConvertible {
     
     var description: String {
-        var i = makeIterator()
-        var description = "+-----+-----+-----+\n"
-        for _ in 1...3 {
-            for _ in 1...3 {
-                description += """
-                    |\(i.next()!.solvedValue!) \(i.next()!.solvedValue!) \(i.next()!.solvedValue!)|\
-                    \(i.next()!.solvedValue!) \(i.next()!.solvedValue!) \(i.next()!.solvedValue!)|\
-                    \(i.next()!.solvedValue!) \(i.next()!.solvedValue!) \(i.next()!.solvedValue!)|\n
-                    """
-            }
-            description += "+-----+-----+-----+\n"
-        }
-        return description
+        map { $0.solvedValue.flatMap(String.init) ?? "." }.joined()
     }
 }
 
