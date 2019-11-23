@@ -138,11 +138,8 @@ extension SudokuBoardSIMD2x64 {
                 update &= Self.inverseRepeated[Int(truncatingIfNeeded: solvedValue)]
             }
             
-            // Add back the solved values (which were accidentaly deleted)
-            update.replace(with: original, where: isSolvedMask)
-            
-            // Add back all other rows/boxes/columns
-            update.replace(with: original, where: masks[number])
+            // Add back the solved values and all other rows/boxes/cols
+            update.replace(with: original, where: isSolvedMask .| masks[number])
         }
     }
     

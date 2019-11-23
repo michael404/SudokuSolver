@@ -151,11 +151,9 @@ extension SudokuBoardSIMD3x32 {
                 update &= Storage(repeating: ~solvedValue)
             }
             
-            // Add back the solved values (which were accidentaly deleted)
-            update.replace(with: original, where: isSolvedMask)
+            // Add back the solved values and all other rows/boxes/cols
+            update.replace(with: original, where: isSolvedMask .| masks[number])
             
-            // Add back all other rows/boxes/columns
-            update.replace(with: original, where: masks[number])
         }
     }
     
