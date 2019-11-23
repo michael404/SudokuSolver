@@ -59,6 +59,46 @@
 					<string>Local Baseline</string>
 				</dict>
 			</dict>
+			<key>testHard2_2x64()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>4.0038</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
+				</dict>
+			</dict>
+			<key>testHard2_3x32()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>1.2053</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
+				</dict>
+			</dict>
+			<key>testHard_2x64()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.021846</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
+				</dict>
+			</dict>
+			<key>testHard_3x32()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.00591</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
 			<key>testPerfSuiteSubset()</key>
 			<dict>
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
@@ -67,6 +107,36 @@
 					<real>1.4674</real>
 					<key>baselineIntegrationDisplayName</key>
 					<string>22 Nov 2019 at 22:14:49</string>
+				</dict>
+			</dict>
+			<key>test_16()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.0022953</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
+				</dict>
+			</dict>
+			<key>test_32()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.054155</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
+				</dict>
+			</dict>
+			<key>test_64()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.48107</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>23 Nov 2019 at 15:08:51</string>
 				</dict>
 			</dict>
 		</dict>
