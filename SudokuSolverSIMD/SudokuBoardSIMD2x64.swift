@@ -31,6 +31,11 @@ struct SudokuBoardSIMD2x64: Equatable {
         }
     }
     
+    init(_ s1: Storage, _ s2: Storage) {
+        self.s1 = s1
+        self.s2 = s2
+    }
+    
     private static let allSetS1 = Storage(
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -173,9 +178,15 @@ extension SudokuBoardSIMD2x64 {
         }
     }
     
+    //TODO: Also filter out solved values here
+    func sort(indicies: inout [Int]) {
+        let nonZeroCountBoard = Self(self.s1.nonzeroBitCount, self.s2.nonzeroBitCount)
+        indicies.sort { nonZeroCountBoard[$0] < nonZeroCountBoard[$1] }
+    }
+    
     func unsolvedIndiciesSorted() -> [Int] {
         var result = (0..<81).filter { !self[$0].isSolved }
-        result.sort { a, b in self[a].nonzeroBitCount < self[b].nonzeroBitCount }
+        self.sort(indicies: &result)
         return result
     }
     
@@ -187,8 +198,8 @@ extension SudokuBoardSIMD2x64 {
                 newBoard[index] = guess
                 try newBoard.solveConstraints()
                 var unsolvedIndicies = unsolvedIndicies
-                //TODO: Can we SIMDify this operation, e.g. by precomputing an isSolved-vector?
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
+                self.sort(indicies: &unsolvedIndicies)
                 return try newBoard.backtrack(unsolvedIndicies: unsolvedIndicies)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index

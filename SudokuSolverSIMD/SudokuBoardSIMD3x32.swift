@@ -28,6 +28,10 @@ struct SudokuBoardSIMD3x32 {
         }
     }
     
+    init(storage: (Storage, Storage, Storage)) {
+        self.storage = storage
+    }
+    
     private static let allSet = Storage(
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 9, 9, 9, 9)
@@ -187,9 +191,15 @@ extension SudokuBoardSIMD3x32 {
         }
     }
     
+    //TODO: Also filter out solved values here
+    func sort(indicies: inout [Int]) {
+        let nonZeroCountBoard = Self(storage: (self.storage.0.nonzeroBitCount, self.storage.1.nonzeroBitCount, self.storage.2.nonzeroBitCount))
+        indicies.sort { nonZeroCountBoard[$0] < nonZeroCountBoard[$1] }
+    }
+    
     func unsolvedIndiciesSorted() -> [Int] {
         var result = (0..<81).filter { !self[$0].isSolved }
-        result.sort { a, b in self[a].nonzeroBitCount < self[b].nonzeroBitCount }
+        self.sort(indicies: &result)
         return result
     }
     
@@ -201,8 +211,9 @@ extension SudokuBoardSIMD3x32 {
                 newBoard[index] = guess
                 try newBoard.solveConstraints()
                 var unsolvedIndicies = unsolvedIndicies
-                //TODO: Can we SIMDify this operation, e.g. by precomputing an isSolved-vector?
+                //TODO: Drop this and move it to a (renamed) sort function (SIMD-ified)
                 unsolvedIndicies.removeAll { newBoard[$0].isSolved }
+                self.sort(indicies: &unsolvedIndicies)
                 return try newBoard.backtrack(unsolvedIndicies: unsolvedIndicies)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
