@@ -60,5 +60,7 @@ extension SudokuBoardSIMD2x64 {
         .map { $0.map { $0 - 54 } }  //TODO: Precalculate this
 
     static let colMasksS2 = makeMasks(indicies: colIndiciesS2)
+    
+    static let inverseRepeated = (0..<512).map { Storage(repeating: ~$0) }
 
 }

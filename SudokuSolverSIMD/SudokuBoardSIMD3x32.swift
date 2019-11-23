@@ -146,8 +146,9 @@ extension SudokuBoardSIMD3x32 {
                 // Register this solved value
                 solvedValuesFound |= solvedValue
                 
-                // Delete it from all the other cells in the same row/col/box
-                update &= ~Storage(repeating: solvedValue)
+                // Delete it from all the other cells in the same row/col/box.
+                // Precalculating this value did not improve performance for SIMD32
+                update &= Storage(repeating: ~solvedValue)
             }
             
             // Add back the solved values (which were accidentaly deleted)

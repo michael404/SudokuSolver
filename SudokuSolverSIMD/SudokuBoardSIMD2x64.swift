@@ -134,7 +134,8 @@ extension SudokuBoardSIMD2x64 {
                 solvedValuesFound |= solvedValue
                 
                 // Delete it from all the other cells in the same row/col/box
-                update &= ~Storage(repeating: solvedValue)
+                // Precalculating is faster for SIMD64
+                update &= Self.inverseRepeated[Int(truncatingIfNeeded: solvedValue)]
             }
             
             // Add back the solved values (which were accidentaly deleted)

@@ -2,22 +2,6 @@ import XCTest
 
 class SudokuSIMDPerfTests: XCTestCase {
     
-    func testPerfSuiteSubset() {
-        let subset = 1..<4
-        var results = [SudokuBoardSIMD2x64]()
-        let boards = TestData.PerfTestSuite.boards[subset].map(SudokuBoardSIMD2x64.init)
-        self.measure {
-            for board in boards {
-                let solvedBoard = try! board.findFirstSolution()
-                results.append(solvedBoard)
-            }
-        }
-        let solutions = TestData.PerfTestSuite.solutions[subset].map(SudokuBoardSIMD2x64.init)
-        for (solvedBoard, expectedSolution) in zip(results, solutions) {
-            XCTAssertEqual(solvedBoard, expectedSolution)
-        }
-    }
-    
     func testHard_2x64() {
         let board = SudokuBoardSIMD2x64(TestData.Hard1.board)
         var result = SudokuBoardSIMD2x64.empty
@@ -57,11 +41,12 @@ class SudokuSIMDPerfTests: XCTestCase {
          let solution = SudokuBoardSIMD3x32(TestData.Hard2.solution)
          XCTAssertEqual(result, solution)
      }
-    
+        
     func test_64() {
         var update = SIMD64<UInt16>(511, 256, 511, 511, 511, 511, 16, 511, 511, 511, 511, 1, 128, 256, 511, 511, 2, 8, 511, 511, 511, 511, 511, 511, 64, 511, 256, 511, 511, 8, 511, 128, 2, 511, 511, 511, 128, 511, 511, 511, 32, 511, 511, 511, 4, 511, 511, 511, 4, 16, 511, 2, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511)
         let masks = SudokuBoardSIMD2x64.rowMasksS1
         let indicies = SudokuBoardSIMD2x64.rowIndiciesS1
+        let inverseRepeated = (0..<512).map { ~SIMD64<UInt16>(repeating: $0) }
         var fakeThrow = 0
         self.measure {
             for _ in 0..<10000 {
@@ -73,7 +58,7 @@ class SudokuSIMDPerfTests: XCTestCase {
                         let solvedValue = original[i]
                         guard (solvedValue & solvedValuesFound) == .zero else { fakeThrow += 1; continue }
                         solvedValuesFound |= solvedValue
-                        update &= ~SIMD64<UInt16>(repeating: solvedValue)
+                        update &= inverseRepeated[Int(truncatingIfNeeded: solvedValue)]
                     }
                     update.replace(with: original, where: isSolvedMask)
                     update.replace(with: original, where: masks[number])
