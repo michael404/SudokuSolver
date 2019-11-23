@@ -98,17 +98,17 @@ extension SudokuBoardSIMD2x64 {
         var (s1, s2) = (self.s1, self.s2)
         
         // Rows
-        try solveConstraints(update: &s1, masks: Self.rowMaskS1, indicies: Self.rowIndiciesS1)
-        try solveConstraints(update: &s2, masks: Self.rowMaskS2, indicies: Self.rowIndiciesS2)
+        try solveConstraints(update: &s1, masks: Self.rowMasksS1, indicies: Self.rowIndiciesS1)
+        try solveConstraints(update: &s2, masks: Self.rowMasksS2, indicies: Self.rowIndiciesS2)
 
         // Boxes
-        try solveConstraints(update: &s1, masks: Self.boxMaskS1, indicies: Self.boxIndiciesS1)
-        try solveConstraints(update: &s2, masks: Self.boxMaskS2, indicies: Self.boxIndiciesS2)
+        try solveConstraints(update: &s1, masks: Self.boxMasksS1, indicies: Self.boxIndiciesS1)
+        try solveConstraints(update: &s2, masks: Self.boxMasksS2, indicies: Self.boxIndiciesS2)
         
         // Columns
-        try solveConstraints(update: &s1, masks: Self.colMaskS1, indicies: Self.colIndiciesS1)
-        try solveConstraintsForeignColumns(update: &s1, updateMasks: Self.colMaskS1, basedOn: s2, basedOnIndicies: Self.colIndiciesS2)
-        try solveConstraintsForeignColumns(update: &s2, updateMasks: Self.colMaskS2, basedOn: s1, basedOnIndicies: Self.colIndiciesS1)
+        try solveConstraints(update: &s1, masks: Self.colMasksS1, indicies: Self.colIndiciesS1)
+        try solveConstraintsForeignColumns(update: &s1, updateMasks: Self.colMasksS1, basedOn: s2, basedOnIndicies: Self.colIndiciesS2)
+        try solveConstraintsForeignColumns(update: &s2, updateMasks: Self.colMasksS2, basedOn: s1, basedOnIndicies: Self.colIndiciesS1)
         // No need to update s2 based on s2, as that is already covered by the box check
         
         (self.s1, self.s2) = (s1, s2)

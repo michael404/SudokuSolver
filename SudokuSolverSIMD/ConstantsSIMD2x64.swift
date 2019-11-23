@@ -13,11 +13,11 @@ extension SudokuBoardSIMD2x64 {
     }
 
     static let rowIndiciesS1 = [Array(0..<9), Array(9..<18), Array(18..<27), Array(27..<36), Array(36..<45), Array(45..<54)]
-    static let rowMaskS1 = makeMasks(indicies: rowIndiciesS1)
+    static let rowMasksS1 = makeMasks(indicies: rowIndiciesS1)
 
     static let rowIndiciesS2 = [Array(54..<63), Array(63..<72), Array(72..<81)]
         .map { $0.map { $0 - 54 } } //TODO: Precalculate this
-    static let rowMaskS2 = makeMasks(indicies: rowIndiciesS2)
+    static let rowMasksS2 = makeMasks(indicies: rowIndiciesS2)
 
     static let boxIndiciesS1 = [
         [ 0,  1,  2,  9, 10, 11, 18, 19, 20],
@@ -26,14 +26,14 @@ extension SudokuBoardSIMD2x64 {
         [27, 28, 29, 36, 37, 38, 45, 46, 47],
         [30, 31, 32, 39, 40, 41, 48, 49, 50],
         [33, 34, 35, 42, 43, 44, 51, 52, 53]]
-    static let boxMaskS1 = makeMasks(indicies: boxIndiciesS1)
+    static let boxMasksS1 = makeMasks(indicies: boxIndiciesS1)
 
     static let boxIndiciesS2 = [
         [54, 55, 56, 63, 64, 65, 72, 73, 74],
         [57, 58, 59, 66, 67, 68, 75, 76, 77],
         [60, 61, 62, 69, 70, 71, 78, 79, 80]]
         .map { $0.map { $0 - 54 } } //TODO: Precalculate this
-    static let boxMaskS2 = makeMasks(indicies: boxIndiciesS2)
+    static let boxMasksS2 = makeMasks(indicies: boxIndiciesS2)
 
     static let colIndiciesS1 = [
         [0,  9, 18, 27, 36, 45],
@@ -45,7 +45,7 @@ extension SudokuBoardSIMD2x64 {
         [6, 15, 24, 33, 42, 51],
         [7, 16, 25, 34, 43, 52],
         [8, 17, 26, 35, 44, 53]]
-    static let colMaskS1 = makeMasks(indicies: colIndiciesS1)
+    static let colMasksS1 = makeMasks(indicies: colIndiciesS1)
 
     static let colIndiciesS2 = [
         [54, 63, 72],
@@ -59,6 +59,6 @@ extension SudokuBoardSIMD2x64 {
         [62, 71, 80]]
         .map { $0.map { $0 - 54 } }  //TODO: Precalculate this
 
-    static let colMaskS2 = makeMasks(indicies: colIndiciesS2)
+    static let colMasksS2 = makeMasks(indicies: colIndiciesS2)
 
 }
