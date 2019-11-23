@@ -100,7 +100,7 @@ class SudokuSIMDPerfTests: XCTestCase {
                         let solvedValue = original[i]
                         guard (solvedValue & solvedValuesFound) == .zero else { fakeThrow += 1; continue }
                         solvedValuesFound |= solvedValue
-                        update &= ~SIMD32<UInt16>(repeating: solvedValue)
+                        update &= SIMD32<UInt16>(repeating: ~solvedValue)
                     }
                     update.replace(with: original, where: isSolvedMask)
                     update.replace(with: original, where: masks[number])
@@ -143,7 +143,7 @@ class SudokuSIMDPerfTests: XCTestCase {
                         let solvedValue = original[i]
                         guard (solvedValue & solvedValuesFound) == .zero else { fakeThrow += 1; continue }
                         solvedValuesFound |= solvedValue
-                        update &= ~SIMD16<UInt16>(repeating: solvedValue)
+                        update &= SIMD16<UInt16>(repeating: ~solvedValue)
                     }
                     update.replace(with: original, where: isSolvedMask)
                     update.replace(with: original, where: masks[number])
