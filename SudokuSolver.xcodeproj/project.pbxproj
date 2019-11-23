@@ -47,6 +47,9 @@
 		4CBDF96D20821C2E00A0754E /* Transformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBDF96C20821C2E00A0754E /* Transformations.swift */; };
 		4CBDF96E20821CB700A0754E /* Transformations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBDF96C20821C2E00A0754E /* Transformations.swift */; };
 		4CC0B0FF1F588A9B00C2576C /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B0FE1F588A9B00C2576C /* main.swift */; };
+		4CC30241238958B800403DAA /* ConstantsSIMD2x64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC30240238958B800403DAA /* ConstantsSIMD2x64.swift */; };
+		4CC30242238958C700403DAA /* ConstantsSIMD2x64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC30240238958B800403DAA /* ConstantsSIMD2x64.swift */; };
+		4CC30243238958C800403DAA /* ConstantsSIMD2x64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC30240238958B800403DAA /* ConstantsSIMD2x64.swift */; };
 		4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +87,7 @@
 		4CBDF96C20821C2E00A0754E /* Transformations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformations.swift; sourceTree = "<group>"; };
 		4CC0B0FB1F588A9B00C2576C /* SudokuSolver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SudokuSolver; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CC0B0FE1F588A9B00C2576C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		4CC30240238958B800403DAA /* ConstantsSIMD2x64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantsSIMD2x64.swift; sourceTree = "<group>"; };
 		4CD2143A2025EF8100018125 /* SudokuTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTestData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,6 +133,7 @@
 				4C71A7F72388805C0078851C /* SudokuBoardSIMD2x64.swift */,
 				4C71A7FB238880DD0078851C /* UInt16Utils.swift */,
 				4C71A7FD238881000078851C /* Formatting.swift */,
+				4CC30240238958B800403DAA /* ConstantsSIMD2x64.swift */,
 			);
 			path = SudokuSolverSIMD;
 			sourceTree = "<group>";
@@ -302,6 +307,7 @@
 				4C71A7F9238880830078851C /* SudokuBoardSIMD2x64.swift in Sources */,
 				4CBDF96E20821CB700A0754E /* Transformations.swift in Sources */,
 				4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */,
+				4CC30242238958C700403DAA /* ConstantsSIMD2x64.swift in Sources */,
 				4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */,
 				4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */,
 				4C71A803238882F80078851C /* UInt16Utils.swift in Sources */,
@@ -323,6 +329,7 @@
 				4CB864B2237F2931005DFFB7 /* SudokuPerfTests.swift in Sources */,
 				4C71A802238882AB0078851C /* SudokuSIMDPerfTests.swift in Sources */,
 				4C23C5A8237F2A0700A31101 /* SudokuBoard.swift in Sources */,
+				4CC30243238958C800403DAA /* ConstantsSIMD2x64.swift in Sources */,
 				4C23C5AF237F2A1B00A31101 /* Utils.swift in Sources */,
 				4C23C5AA237F2A0C00A31101 /* SudokuCell.swift in Sources */,
 				4C71A804238882F80078851C /* UInt16Utils.swift in Sources */,
@@ -352,6 +359,7 @@
 				4CBDF96D20821C2E00A0754E /* Transformations.swift in Sources */,
 				4C71A7FC238880DD0078851C /* UInt16Utils.swift in Sources */,
 				4C38A142206E70C2001A8724 /* SudokuTestData.swift in Sources */,
+				4CC30241238958B800403DAA /* ConstantsSIMD2x64.swift in Sources */,
 				4C1100451F5C29CD00F0745D /* SudokuCell.swift in Sources */,
 				4C11004B1F5DCE5D00F0745D /* Utils.swift in Sources */,
 			);
