@@ -9,7 +9,7 @@ extension Array {
 extension SudokuBoardSIMD2x64: CustomStringConvertible {
     
     var description: String {
-        map { $0.solvedValue.flatMap(String.init) ?? "." }.joined()
+        map { $0.solvedValueAsNumber.flatMap(String.init) ?? "." }.joined()
     }
 }
 

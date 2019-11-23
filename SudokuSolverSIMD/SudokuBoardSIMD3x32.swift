@@ -221,3 +221,10 @@ extension SudokuBoardSIMD3x32 {
     }
     
 }
+
+extension SudokuBoardSIMD3x32: CustomStringConvertible {
+    
+    var description: String {
+        map { $0.solvedValueAsNumber.flatMap(String.init) ?? "." }.joined()
+    }
+}

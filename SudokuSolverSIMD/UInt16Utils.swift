@@ -26,25 +26,16 @@ extension UInt16 {
         return self.nonzeroBitCount == 1
     }
     
-    var solvedValue: UInt16? {
-        switch self {
-        case 0b1:         return 1
-        case 0b10:        return 2
-        case 0b100:       return 3
-        case 0b1000:      return 4
-        case 0b10000:     return 5
-        case 0b100000:    return 6
-        case 0b1000000:   return 7
-        case 0b10000000:  return 8
-        case 0b100000000: return 9
-        default:          return nil
-        }
+    var solvedValueAsNumber: UInt16? {
+        let trailingZeroBitCount = UInt16(truncatingIfNeeded: self.trailingZeroBitCount)
+        guard self.nonzeroBitCount == 1 && trailingZeroBitCount <= 8 else { return nil }
+        return trailingZeroBitCount + 1
     }
     
     var sudokuDescription: String {
         if self == Self.allPossibilities { return "(all)" }
-        guard let solvedValue = self.solvedValue else {
-            return "(\(self.map({ $0.solvedValue! }).map(String.init).joined(separator: " ")))"
+        guard let solvedValue = self.solvedValueAsNumber else {
+            return "(\(self.map({ $0.solvedValueAsNumber! }).map(String.init).joined(separator: " ")))"
         }
         return "[\(solvedValue)]"
         
