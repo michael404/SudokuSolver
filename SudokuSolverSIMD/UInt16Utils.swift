@@ -35,7 +35,7 @@ extension UInt16 {
     var sudokuDescription: String {
         if self == Self.allPossibilities { return "(all)" }
         guard let solvedValue = self.solvedValueAsNumber else {
-            return "(\(self.map({ $0.solvedValueAsNumber! }).map(String.init).joined(separator: " ")))"
+            return "(\(self.lazy.map({ $0.solvedValueAsNumber! }).map(String.init).joined(separator: " ")))"
         }
         return "[\(solvedValue)]"
         
@@ -54,7 +54,7 @@ extension UInt16: Sequence {
         init(_ base: UInt16) { self.base = base }
         
         public mutating func next() -> UInt16? {
-            while mask != 0b10000000000 {
+            while mask != 0b1000000000 {
                 defer { mask <<= 1 }
                 if (base & mask) != 0 { return mask }
             }
