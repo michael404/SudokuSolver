@@ -10,7 +10,7 @@ class SudokuTests: XCTestCase {
             let solution = try! TestData.Hard1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData.Hard1.solutionString)
+            XCTAssertEqual(solution, TestData.Hard1.solution)
         }
     }
     
