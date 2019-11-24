@@ -139,6 +139,7 @@ extension SudokuBoardSIMD3x32 {
         for number in indicies.indices {
             
             let original = update
+            var accumulatedDeletion: UInt16 = UInt16.allPossibilities
             var solvedValuesFound: UInt16 = .zero
             
             for i in indicies[number] where isSolvedMask[i] {
@@ -151,10 +152,12 @@ extension SudokuBoardSIMD3x32 {
                 // Register this solved value
                 solvedValuesFound |= solvedValue
                 
-                // Delete it from all the other cells in the same row/col/box.
-                // Precalculating this value did not improve performance for SIMD32
-                update &= Storage(repeating: ~solvedValue)
+                accumulatedDeletion &= ~solvedValue
+                
             }
+            
+            // Create the deletion vector and remove
+            update &= Storage(repeating: accumulatedDeletion)
             
             // Add back the solved values and all other rows/boxes/cols
             update.replace(with: original, where: isSolvedMask .| masks[number])
@@ -170,6 +173,7 @@ extension SudokuBoardSIMD3x32 {
         for number in basedOnIndicies.indices {
             
             let original = update
+            var accumulatedDeletion: UInt16 = UInt16.allPossibilities
             var solvedValuesFound: UInt16 = .zero
             
             for i in basedOnIndicies[number] where isSolvedMask[i] {
@@ -182,9 +186,11 @@ extension SudokuBoardSIMD3x32 {
                 // Register this solved value
                 solvedValuesFound |= solvedValue
                 
-                // Delete it from all the other cells in the same row/col/box
-                update &= ~Storage(repeating: solvedValue)
+                accumulatedDeletion &= ~solvedValue
             }
+            
+            // Create the deletion vector and remove
+            update &= Storage(repeating: accumulatedDeletion)
             
             // Add back all other columns
             update.replace(with: original, where: updateMasks[number])
