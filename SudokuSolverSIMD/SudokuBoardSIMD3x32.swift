@@ -191,16 +191,10 @@ extension SudokuBoardSIMD3x32 {
         }
     }
     
-    //TODO: Also filter out solved values here
-    func sort(indicies: inout [Int]) {
+    func removedSolvedAndSort(indicies: inout [Int]) {
         let nonZeroCountBoard = Self(storage: (self.storage.0.nonzeroBitCount, self.storage.1.nonzeroBitCount, self.storage.2.nonzeroBitCount))
+        indicies.removeAll { nonZeroCountBoard[$0] == 1 }
         indicies.sort { nonZeroCountBoard[$0] < nonZeroCountBoard[$1] }
-    }
-    
-    func unsolvedIndiciesSorted() -> [Int] {
-        var result = (0..<81).filter { !self[$0].isSolved }
-        self.sort(indicies: &result)
-        return result
     }
     
     mutating func backtrack(unsolvedIndicies: [Int]) throws -> SudokuBoardSIMD3x32 {
@@ -211,9 +205,7 @@ extension SudokuBoardSIMD3x32 {
                 newBoard[index] = guess
                 try newBoard.solveConstraints()
                 var unsolvedIndicies = unsolvedIndicies
-                //TODO: Drop this and move it to a (renamed) sort function (SIMD-ified)
-                unsolvedIndicies.removeAll { newBoard[$0].isSolved }
-                self.sort(indicies: &unsolvedIndicies)
+                self.removedSolvedAndSort(indicies: &unsolvedIndicies)
                 return try newBoard.backtrack(unsolvedIndicies: unsolvedIndicies)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
@@ -228,7 +220,10 @@ extension SudokuBoardSIMD3x32 {
     func findFirstSolution() throws -> SudokuBoardSIMD3x32 {
         var newBoard = self
         try newBoard.solveConstraints()
-        return try newBoard.backtrack(unsolvedIndicies: newBoard.unsolvedIndiciesSorted())
+        var unsolvedIndicies = Array(0..<81)
+        //TODO:Remove
+        self.removedSolvedAndSort(indicies: &unsolvedIndicies)
+        return try newBoard.backtrack(unsolvedIndicies: unsolvedIndicies)
     }
     
 }

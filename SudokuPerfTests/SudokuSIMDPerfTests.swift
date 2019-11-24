@@ -22,6 +22,20 @@ class SudokuSIMDPerfTests: XCTestCase {
         XCTAssertEqual(result, solution)
     }
     
+    func testPerfSuite_3x32() {
+        var solutions = [SudokuBoardSIMD3x32]()
+        let boards = TestData.PerfTestSuite.boards.map(SudokuBoardSIMD3x32.init)
+        self.measure {
+            for board in boards {
+                let solvedBoard = try! board.findFirstSolution()
+                solutions.append(solvedBoard)
+            }
+        }
+        for (solvedBoard, expectedSolution) in zip(solutions, TestData.PerfTestSuite.solutions.map(SudokuBoardSIMD3x32.init)) {
+            XCTAssertEqual(solvedBoard, expectedSolution)
+        }
+    }
+    
     func testHard_3x32() {
          let board = SudokuBoardSIMD3x32(TestData.Hard1.board)
          var result = SudokuBoardSIMD3x32.empty
@@ -41,6 +55,16 @@ class SudokuSIMDPerfTests: XCTestCase {
          let solution = SudokuBoardSIMD3x32(TestData.Hard2.solution)
          XCTAssertEqual(result, solution)
      }
+    
+    func testHardToBruteForce_3x32() {
+        let board = SudokuBoardSIMD3x32(TestData.HardToBruteForce.board)
+        var result = SudokuBoardSIMD3x32.empty
+        self.measure {
+            result = try! board.findFirstSolution()
+        }
+        let solution = SudokuBoardSIMD3x32(TestData.HardToBruteForce.solution)
+        XCTAssertEqual(result, solution)
+    }
         
     func test_64() {
         var update = SIMD64<UInt16>(511, 256, 511, 511, 511, 511, 16, 511, 511, 511, 511, 1, 128, 256, 511, 511, 2, 8, 511, 511, 511, 511, 511, 511, 64, 511, 256, 511, 511, 8, 511, 128, 2, 511, 511, 511, 128, 511, 511, 511, 32, 511, 511, 511, 4, 511, 511, 511, 4, 16, 511, 2, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511, 511)
