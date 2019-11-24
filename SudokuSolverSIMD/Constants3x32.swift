@@ -35,3 +35,8 @@ extension SudokuBoardSIMD3x32 {
     static let colMasks = makeMasks(indicies: colIndicies)
 
 }
+
+
+extension SudokuBoardSIMD3x32.Storage {
+    static let max = SIMD32<UInt16>(repeating: UInt16.max)
+}

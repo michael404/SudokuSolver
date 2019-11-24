@@ -138,13 +138,12 @@ extension SudokuBoardSIMD3x32 {
         
         for number in indicies.indices {
             
-            let original = update
             var accumulatedDeletion: UInt16 = UInt16.allPossibilities
             var solvedValuesFound: UInt16 = .zero
             
             for i in indicies[number] where isSolvedMask[i] {
                 
-                let solvedValue = original[i]
+                let solvedValue = update[i]
                 
                 // We have identified a solved value. Check if this value has already been found before, in which case we are in an invalid state
                 guard (solvedValue & solvedValuesFound) == .zero else { throw Error.unsolvable }
@@ -156,11 +155,10 @@ extension SudokuBoardSIMD3x32 {
                 
             }
             
-            // Create the deletion vector and remove
-            update &= Storage(repeating: accumulatedDeletion)
-            
-            // Add back the solved values and all other rows/boxes/cols
-            update.replace(with: original, where: isSolvedMask .| masks[number])
+            // Create the deletion vector and remove from update
+            var deletionVector = Storage.max
+            deletionVector.replace(with: accumulatedDeletion, where: .!(isSolvedMask .| masks[number]))
+            update &= deletionVector
             
         }
     }
@@ -172,7 +170,6 @@ extension SudokuBoardSIMD3x32 {
         
         for number in basedOnIndicies.indices {
             
-            let original = update
             var accumulatedDeletion: UInt16 = UInt16.allPossibilities
             var solvedValuesFound: UInt16 = .zero
             
@@ -189,11 +186,10 @@ extension SudokuBoardSIMD3x32 {
                 accumulatedDeletion &= ~solvedValue
             }
             
-            // Create the deletion vector and remove
-            update &= Storage(repeating: accumulatedDeletion)
-            
-            // Add back all other columns
-            update.replace(with: original, where: updateMasks[number])
+            // Create the deletion vector and remove from update
+            var deletionVector = Storage.max
+            deletionVector.replace(with: accumulatedDeletion, where: .!updateMasks[number])
+            update &= deletionVector
             
         }
     }
