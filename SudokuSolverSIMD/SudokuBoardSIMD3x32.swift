@@ -134,10 +134,11 @@ extension SudokuBoardSIMD3x32 {
     
     private mutating func solveConstraints(update: inout Storage, masks: [Mask], indicies: [[Int]]) throws {
         
+        let isSolvedMask = update.nonzeroBitCount .== 1
+        
         for number in indicies.indices {
             
             let original = update
-            let isSolvedMask = update.nonzeroBitCount .== 1
             var solvedValuesFound: UInt16 = .zero
             
             for i in indicies[number] where isSolvedMask[i] {
@@ -164,12 +165,12 @@ extension SudokuBoardSIMD3x32 {
     // TODO: Consider if we can merge the two solveConstrains methods or have one forward to the other
     private mutating func solveConstraintsForeignColumns(update: inout Storage, updateMasks: [Mask], basedOn: Storage, basedOnIndicies: [[Int]]) throws {
         
+        let isSolvedMask = basedOn.nonzeroBitCount .== 1
+        
         for number in basedOnIndicies.indices {
             
             let original = update
-            let isSolvedMask = basedOn.nonzeroBitCount .== 1
             var solvedValuesFound: UInt16 = .zero
-            
             
             for i in basedOnIndicies[number] where isSolvedMask[i] {
                 
@@ -191,6 +192,7 @@ extension SudokuBoardSIMD3x32 {
         }
     }
     
+    //TODO: Consider using a fixedArray81<UInt8> (or even fewer, given the minimum clues) for the indicies and an offset for the first non-solved Index
     func removedSolvedAndSort(indicies: inout [Int]) {
         let nonZeroCountBoard = Self(storage: (self.storage.0.nonzeroBitCount, self.storage.1.nonzeroBitCount, self.storage.2.nonzeroBitCount))
         indicies.removeAll { nonZeroCountBoard[$0] == 1 }
