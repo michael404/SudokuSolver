@@ -57,6 +57,9 @@
 		4CC3024A2389726900403DAA /* Constants3x32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC30246238970EB00403DAA /* Constants3x32.swift */; };
 		4CC3024B2389726900403DAA /* Constants3x32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC30246238970EB00403DAA /* Constants3x32.swift */; };
 		4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* SudokuTestData.swift */; };
+		4CF82513238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF82512238A9F580098EE0E /* UnsolvedIndicies.swift */; };
+		4CF82514238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF82512238A9F580098EE0E /* UnsolvedIndicies.swift */; };
+		4CF82515238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF82512238A9F580098EE0E /* UnsolvedIndicies.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -97,6 +100,7 @@
 		4CC3024423896E6D00403DAA /* SudokuBoardSIMD3x32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuBoardSIMD3x32.swift; sourceTree = "<group>"; };
 		4CC30246238970EB00403DAA /* Constants3x32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants3x32.swift; sourceTree = "<group>"; };
 		4CD2143A2025EF8100018125 /* SudokuTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTestData.swift; sourceTree = "<group>"; };
+		4CF82512238A9F580098EE0E /* UnsolvedIndicies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsolvedIndicies.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +195,7 @@
 				4CBDF96C20821C2E00A0754E /* Transformations.swift */,
 				4C38A13920699191001A8724 /* PrecalculatedValues.swift */,
 				4C11004A1F5DCE5D00F0745D /* Utils.swift */,
+				4CF82512238A9F580098EE0E /* UnsolvedIndicies.swift */,
 			);
 			path = SudokuSolver;
 			sourceTree = "<group>";
@@ -323,6 +328,7 @@
 				4C38A13B20699191001A8724 /* PrecalculatedValues.swift in Sources */,
 				4C71A803238882F80078851C /* UInt16Utils.swift in Sources */,
 				4C11005A1F5DDC7C00F0745D /* SudokuCell.swift in Sources */,
+				4CF82514238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */,
 				4C1100531F5DDC2800F0745D /* SudokuTests.swift in Sources */,
 				4C09949A20CD7EF500F4F6F3 /* RandomBoard.swift in Sources */,
 				4C38A13220679499001A8724 /* FixedArray81.swift in Sources */,
@@ -347,6 +353,7 @@
 				4C23C5AA237F2A0C00A31101 /* SudokuCell.swift in Sources */,
 				4C71A804238882F80078851C /* UInt16Utils.swift in Sources */,
 				4C23C5B0237F2A2900A31101 /* SudokuTestData.swift in Sources */,
+				4CF82515238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */,
 				4C23C5AC237F2A1300A31101 /* FixedArray81.swift in Sources */,
 				4C23C5A9237F2A0900A31101 /* SudokuSolver.swift in Sources */,
 				4C23C5AE237F2A1800A31101 /* PrecalculatedValues.swift in Sources */,
@@ -378,6 +385,7 @@
 				4CC30241238958B800403DAA /* ConstantsSIMD2x64.swift in Sources */,
 				4C1100451F5C29CD00F0745D /* SudokuCell.swift in Sources */,
 				4C11004B1F5DCE5D00F0745D /* Utils.swift in Sources */,
+				4CF82513238A9F580098EE0E /* UnsolvedIndicies.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,7 +402,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -408,7 +417,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

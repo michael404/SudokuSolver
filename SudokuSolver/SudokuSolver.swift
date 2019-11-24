@@ -1,17 +1,8 @@
 extension SudokuBoard {
     
     func findFirstSolution() throws -> SudokuBoard {
-        
         var board = try SudokuBoard(eliminating: self)
-        
-        // Find the relevant indicies and sort them according to the number of
-        // possible values the cell can have. We do not re-sort this array later,
-        // so the sorting might not be 100% correct later on, but it is a good
-        // approximation, and re-sorting leads to worse performance
-        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
-        unsolvedIndicies.sort { board[$0].count < board[$1].count }
-        
-        return try board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
+        return try board.guessAndEliminate(unsolvedIndicies: UnsolvedIndicies(basedOn: board), transformation: Normal.self)
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
@@ -21,8 +12,7 @@ extension SudokuBoard {
     
     static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         var board = SudokuBoard.empty
-        let unsolvedIndicies = Array(board.indices)
-        return try! board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Shuffle.self, rng: &rng)
+        return try! board.guessAndEliminate(unsolvedIndicies: UnsolvedIndicies(basedOn: board), transformation: Shuffle.self, rng: &rng)
     }
     
     enum NumberOfSolutions {
@@ -33,8 +23,7 @@ extension SudokuBoard {
     
     func numberOfSolutions() -> NumberOfSolutions {
         guard var board = try? SudokuBoard(eliminating: self) else { return .none }
-        var unsolvedIndicies = board.indices.filter { !board[$0].isSolved }
-        unsolvedIndicies.sort { board[$0].count < board[$1].count }
+        let unsolvedIndicies = UnsolvedIndicies(basedOn: board)
         do {
             //TODO: Can this be done in paralell?
             let first = try board.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: Normal.self)
@@ -73,13 +62,13 @@ fileprivate extension SudokuBoard {
     }
     
     mutating func guessAndEliminate<T: SudokuCellTransformation>(
-        unsolvedIndicies: [Int], transformation: T.Type) throws -> SudokuBoard {
+        unsolvedIndicies: UnsolvedIndicies, transformation: T.Type) throws -> SudokuBoard {
         var rng = SystemRandomNumberGenerator()
         return try guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
     }
     
     mutating func guessAndEliminate<T: SudokuCellTransformation, R: RNG>(
-        unsolvedIndicies: [Int], transformation: T.Type, rng: inout R) throws -> SudokuBoard {
+        unsolvedIndicies: UnsolvedIndicies, transformation: T.Type, rng: inout R) throws -> SudokuBoard {
         guard let index = unsolvedIndicies.first else { return self }
         for guess in T.transform(self[index], rng: &rng) {
             do {
@@ -88,7 +77,7 @@ fileprivate extension SudokuBoard {
                 try newBoard.eliminatePossibilitites(basedOnChangeOf: index)
                 try newBoard.findAllHiddenSingles()
                 var unsolvedIndicies = unsolvedIndicies
-                unsolvedIndicies.removeAll { newBoard[$0].isSolved }
+                unsolvedIndicies.removeAndSort(basedOn: newBoard)
                 return try newBoard.guessAndEliminate(unsolvedIndicies: unsolvedIndicies, transformation: transformation, rng: &rng)
             } catch {
                 // Ignore the error and move on to testing the next possible value for the current index
