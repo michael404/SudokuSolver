@@ -18,9 +18,9 @@ class SudokuPerfTests: XCTestCase {
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard.empty
         self.measure {
-            var rng = Xoroshiro(seed: (42, 42))
+            let rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoard(rng: &rng)
+                board = SudokuBoard.randomFullyFilledBoard(using: rng)
             }
         }
         XCTAssertEqual(board, SudokuBoard("651439728437825691928176435573261984289743516146958372395682147762314859814597263"))

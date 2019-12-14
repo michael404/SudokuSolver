@@ -7,7 +7,7 @@ extension SudokuBoard {
     
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
         //TODO: check if it is more effective to not generate a full filled board first
-        randomFullyFilledBoard(rng: &rng).randomStartingPositionFromFullyFilledBoard(rng: &rng)
+        randomFullyFilledBoard(using: rng).randomStartingPositionFromFullyFilledBoard(using: rng)
     }
 
 
@@ -16,12 +16,12 @@ extension SudokuBoard {
 internal extension SudokuBoard {
     
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
-        var rng = Xoroshiro()
-        return randomStartingPositionFromFullyFilledBoard(rng: &rng)
+        return randomStartingPositionFromFullyFilledBoard(using: Xoroshiro())
     }
     
-    func randomStartingPositionFromFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
+    func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
         var board = self
+        var rng = rng
         for index in board.indices.shuffled(using: &rng) {
             let cellAtIndex = board[index]
             board[index] = .allTrue

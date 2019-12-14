@@ -1,16 +1,19 @@
 extension SudokuBoard {
     
     func findFirstSolution() throws -> SudokuBoard {
-        var solver = try SudokuSolver(eliminating: self, rng: Xoroshiro())
+        try findFirstSolution(using: Xoroshiro())
+    }
+    
+    func findFirstSolution<R: RNG>(using rng: R) throws -> SudokuBoard {
+        var solver = try SudokuSolver(eliminating: self, rng: rng)
         return try solver.guessAndEliminate(transformation: Normal.self)
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
-        var rng = Xoroshiro()
-        return randomFullyFilledBoard(rng: &rng)
+        return randomFullyFilledBoard(using: Xoroshiro())
     }
     
-    static func randomFullyFilledBoard<R: RNG>(rng: inout R) -> SudokuBoard {
+    static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
         var solver = try! SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
         return try! solver.guessAndEliminate(transformation: Shuffle.self)
     }
@@ -137,14 +140,5 @@ struct SudokuSolver<R: RNG> {
             try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
         }
     }
-    
-}
-
-extension SudokuSolver where R == SystemRandomNumberGenerator {
-    
-    init(eliminating board: SudokuBoard) throws {
-        try self.init(eliminating: board, rng: SystemRandomNumberGenerator())
-    }
-
     
 }

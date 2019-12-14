@@ -12,7 +12,7 @@ struct Xoroshiro: RNG {
     
     var state: State
     
-    /// Initializes the Xoroshiro PRNG with a seed from Random.default
+    /// Initializes the Xoroshiro PRNG with a seed from the `SystemRandomNumberGenerator`
     init() {
         var rng = SystemRandomNumberGenerator()
         self.init(seed: (rng.next(), rng.next()))
