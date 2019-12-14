@@ -18,6 +18,7 @@ struct SudokuCell: Hashable {
         self.storage = 0b1 << value
     }
     
+    /// The number of possible values for this cell
     var count: Int { storage.nonzeroBitCount }
     
     var isSolved: Bool { storage.nonzeroBitCount == 1 }

@@ -34,6 +34,18 @@ class SudokuSolverTests: XCTestCase {
         XCTAssertEqual(TestData.Hard2.board.numberOfSolutions(), .one)
         XCTAssertEqual(TestData.MultipleSolutions.board.numberOfSolutions(), .multiple)
         XCTAssertEqual(TestData.Invalid.board.numberOfSolutions(), .none)
+        XCTAssertEqual(SudokuBoard("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.").numberOfSolutions(), .multiple)
+        XCTAssertEqual(SudokuBoard("63.8..142.........5..4.239...4.8..6.....6..2..6.7..435.5....98.4...9.....2.......").numberOfSolutions(), .multiple)
+
+    }
+    
+    func testRandomFullyFilledBoard() {
+        do {
+            let board = SudokuBoard.randomFullyFilledBoard()
+            XCTAssertEqual(board.numberOfSolutions(), .one)
+            XCTAssertTrue(board.isValid)
+            XCTAssertTrue(board.isFullyFilled)
+        }
     }
     
     func testRandomStartingBoard() {
@@ -51,7 +63,6 @@ class SudokuSolverTests: XCTestCase {
         do {
             var rng = Xoroshiro()
             let board = SudokuBoard.randomStartingBoard(rng: &rng)
-            
             XCTAssertEqual(board.numberOfSolutions(), .one)
             XCTAssertTrue(board.isValid)
             XCTAssertFalse(board.isFullyFilled)

@@ -1,9 +1,9 @@
-extension SudokuBoard {
+enum Constants {
     
-    func indiciesAffectedBy(index: Int) -> ArraySlice<Int> {
+    static func indiciesAffectedBy(index: Int) -> ArraySlice<Int> {
         let start = index * 20
         let end = start + 20
-        return SudokuBoard._indiciesAffectedByIndex[start..<end]
+        return Self._indiciesAffectedByIndex[start..<end]
     }
     
     /// The 20 indicies that need to be checked when chaning an index.
@@ -92,22 +92,22 @@ extension SudokuBoard {
         7, 16, 25, 34, 43, 52, 60, 61, 62, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 80,
         8, 17, 26, 35, 44, 53, 60, 61, 62, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
     
-    func indiciesInSameRowAs(index: Int) -> ArraySlice<Int> {
+    static func indiciesInSameRowAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24
         let end = start + 8
-        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
+        return Self._indiciesInSameUnitAsIndex[start..<end]
     }
     
-    func indiciesInSameColumnAs(index: Int) -> ArraySlice<Int> {
+    static func indiciesInSameColumnAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24 + 8
         let end = start + 8
-        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
+        return Self._indiciesInSameUnitAsIndex[start..<end]
     }
     
-    func indiciesInSameBoxAs(index: Int) -> ArraySlice<Int> {
+    static func indiciesInSameBoxAs(index: Int) -> ArraySlice<Int> {
         let start = index * 24 + 16
         let end = start + 8
-        return SudokuBoard._indiciesInSameUnitAsIndex[start..<end]
+        return Self._indiciesInSameUnitAsIndex[start..<end]
     }
     
     private static let _indiciesInSameUnitAsIndex: [Int] = [
@@ -194,22 +194,22 @@ extension SudokuBoard {
         72, 73, 74, 75, 76, 77, 78, 80,  7, 16, 25, 34, 43, 52, 61, 70, 60, 61, 62, 69, 70, 71, 78, 80,
         72, 73, 74, 75, 76, 77, 78, 79,  8, 17, 26, 35, 44, 53, 62, 71, 60, 61, 62, 69, 70, 71, 78, 79]
     
-    func allIndiciesInRow(number: Int) -> ArraySlice<Int> {
+    static func allIndiciesInRow(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return SudokuBoard._allIndiciesInRowNr[start..<end]
+        return Self._allIndiciesInRowNr[start..<end]
     }
     
-    func allIndiciesInColumn(number: Int) -> ArraySlice<Int> {
+    static func allIndiciesInColumn(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return SudokuBoard._allIndiciesInColumnNr[start..<end]
+        return Self._allIndiciesInColumnNr[start..<end]
     }
     
-    func allIndiciesInBox(number: Int) -> ArraySlice<Int> {
+    static func allIndiciesInBox(number: Int) -> ArraySlice<Int> {
         let start = number * 9
         let end = start + 9
-        return SudokuBoard._allIndiciesInBoxNr[start..<end]
+        return Self._allIndiciesInBoxNr[start..<end]
     }
     
     private static let _allIndiciesInBoxNr: [Int] = [
@@ -247,7 +247,7 @@ extension SudokuBoard {
     
 }
 
-extension SudokuBoard {
+extension SudokuSolver {
     
     /// Prints the static data that generates `_indiciesAffectedByIndex`
     static func printIndiciesToRemoveFrom() {
@@ -275,9 +275,9 @@ extension SudokuBoard {
         var result = [[Int]]()
         for i in 0...80 {
             var tempResult = [Int]()
-            tempResult.append(contentsOf: SudokuBoard.indiciesInSameRow(as: i).filter { $0 != i })
-            tempResult.append(contentsOf: SudokuBoard.indiciesInSameColumn(as: i).filter { $0 != i })
-            tempResult.append(contentsOf: SudokuBoard.indiciesInSameBox(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: Self.indiciesInSameRow(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: Self.indiciesInSameColumn(as: i).filter { $0 != i })
+            tempResult.append(contentsOf: Self.indiciesInSameBox(as: i).filter { $0 != i })
             result.append(tempResult)
         }
         for line in result {
@@ -290,7 +290,7 @@ extension SudokuBoard {
     }
     
     static func printBoxes() {
-        let result = (0...80).map(SudokuBoard.indiciesInSameRow)
+        let result = (0...80).map(Self.indiciesInSameRow)
         for line in result {
             for index in line {
                 let leadingspace = index < 10 ? " " :  ""
