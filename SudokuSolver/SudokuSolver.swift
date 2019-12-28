@@ -73,7 +73,7 @@ struct SudokuSolver<R: RNG> {
     }
     
     mutating func unsolvedIndexWithMostConstraints() -> SudokuBoard.Index? {
-        for possibleValues in 2...9 as ClosedRange<UInt8> {
+        for possibleValues in 2...9 {
             let boardCopy = self.board
             if let index = board.indices.lazy.filter({ boardCopy[$0].count == possibleValues }).randomElement(using: &self.rng) { return index }
         }
