@@ -37,6 +37,10 @@ struct SudokuBoard: Equatable {
     
     var clues: Int { lazy.filter({ $0.isSolved }).count }
     
+    var counts: FixedArray81<UInt8> {
+        self.cells.map { UInt8(truncatingIfNeeded: $0.count) }
+    }
+    
 }
 
 extension SudokuBoard: MutableCollection, RandomAccessCollection {
