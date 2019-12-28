@@ -48,13 +48,16 @@ class SudokuTests: XCTestCase {
         // A filled board should return itself as a solution
         XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
     }
-    
-
-    
+        
     func testFilledCells() {
         XCTAssertEqual(TestData.Hard1.board.clues, 27)
         XCTAssertEqual(TestData.Hard2.board.clues, 21)
         XCTAssertEqual(TestData.Empty.board.clues, 0)
+    }
+    
+    func testDescription() {
+        XCTAssertEqual(TestData.Hard1.board.description, TestData.Hard1.description)
+        XCTAssertEqual(TestData.Hard1.board.debugDescription, TestData.Hard1.string)
     }
     
 }
