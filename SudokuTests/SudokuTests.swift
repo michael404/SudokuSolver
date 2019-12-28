@@ -2,18 +2,6 @@ import XCTest
 
 class SudokuTests: XCTestCase {
     
-    func testSudokuSolverEndToEnd() {
-        XCTAssertFalse(TestData.Hard1.board.isFullyFilled)
-        XCTAssertTrue(TestData.Hard1.board.isValid)
-        
-        do {
-            let solution = try! TestData.Hard1.board.findFirstSolution()
-            XCTAssertTrue(solution.isValid)
-            XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution, TestData.Hard1.solution)
-        }
-    }
-    
     func testInitFromString() {
         let board = SudokuBoard(TestData.Hard1.string)
         XCTAssertEqual(board, TestData.Hard1.board)
