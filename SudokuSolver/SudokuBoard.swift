@@ -10,22 +10,21 @@ struct SudokuBoard: Equatable {
     
     init<S: StringProtocol>(_ numbers: S) {
         precondition(numbers.count == 81, "Must pass in 81 SudokuCell elements")
-        self = SudokuBoard.empty
-        for (i, number) in zip(self.indices, numbers) {
-            switch number {
-            case ".": break
-            case "1": self[i] = SudokuCell(solved: 1)
-            case "2": self[i] = SudokuCell(solved: 2)
-            case "3": self[i] = SudokuCell(solved: 3)
-            case "4": self[i] = SudokuCell(solved: 4)
-            case "5": self[i] = SudokuCell(solved: 5)
-            case "6": self[i] = SudokuCell(solved: 6)
-            case "7": self[i] = SudokuCell(solved: 7)
-            case "8": self[i] = SudokuCell(solved: 8)
-            case "9": self[i] = SudokuCell(solved: 9)
+        self.cells = FixedArray81(numbers.lazy.map({
+            switch $0 {
+            case ".": return SudokuCell.allTrue
+            case "1": return SudokuCell(solved: 1)
+            case "2": return SudokuCell(solved: 2)
+            case "3": return SudokuCell(solved: 3)
+            case "4": return SudokuCell(solved: 4)
+            case "5": return SudokuCell(solved: 5)
+            case "6": return SudokuCell(solved: 6)
+            case "7": return SudokuCell(solved: 7)
+            case "8": return SudokuCell(solved: 8)
+            case "9": return SudokuCell(solved: 9)
             default: preconditionFailure("Unexpected character in string sequence")
             }
-        }
+        }))
         
     }
     
