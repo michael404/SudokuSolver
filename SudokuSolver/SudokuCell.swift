@@ -5,17 +5,17 @@
 /// one bit set.
 struct SudokuCell: Hashable {
     
-    /// Bits 6 through 14 contains  the bit set info for numbers 1 to 9.
-    /// Bits 0 through 5 and 15 are padding and should always be set to 0.
+    /// Bits 7 through 15 contains  the bit set info for numbers 1 to 9.
+    /// Bits 0 through 6  are padding and should always be set to 0.
     /// The set is considered "solved" if only one bit is set.
     fileprivate(set) var storage: UInt16
     
     static let allTrue: SudokuCell = SudokuCell(allTrue: ())
-    private init(allTrue: ()) { self.storage = 0b0000001111111110 }
+    private init(allTrue: ()) { self.storage = 0b111111111 }
     
     init(solved value: Int) {
         assert((1...9).contains(value))
-        self.storage = 0b1 << value
+        self.storage = 0b1 << (value - 1) as UInt16
     }
     
     /// The number of possible values for this cell
@@ -52,7 +52,7 @@ struct SudokuCellIterator: IteratorProtocol, Sequence {
     init(_ base: SudokuCell) { self.base = base }
     
     mutating func next() -> SudokuCell? {
-        while mask.storage != 0b10000000000 {
+        while mask.storage != 0b1000000000 {
             defer { mask.storage <<= 1 }
             if base.contains(mask) { return mask }
         }
@@ -69,7 +69,7 @@ struct SudokuCellReversedIterator: IteratorProtocol, Sequence {
     init(_ base: SudokuCell) { self.base = base }
     
     mutating func next() -> SudokuCell? {
-        while mask.storage != 0b1 {
+        while mask.storage != 0 {
             defer { mask.storage >>= 1 }
             if base.contains(mask) { return mask }
         }
@@ -96,17 +96,7 @@ extension SudokuCell: ExpressibleByIntegerLiteral {
 extension Int {
     
     init(_ value: SudokuCell) {
-        switch value.storage {
-        case 0b10:         self.init(1)
-        case 0b100:        self.init(2)
-        case 0b1000:       self.init(3)
-        case 0b10000:      self.init(4)
-        case 0b100000:     self.init(5)
-        case 0b1000000:    self.init(6)
-        case 0b10000000:   self.init(7)
-        case 0b100000000:  self.init(8)
-        case 0b1000000000: self.init(9)
-        default: preconditionFailure()
-        }
+        precondition(value.isSolved, "Int must be initialized with a solved value")
+        self = value.storage.trailingZeroBitCount + 1
     }
 }
