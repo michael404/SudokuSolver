@@ -29,13 +29,15 @@ extension SudokuBoard {
     }
     
     func numberOfSolutions<R: RNG>(using rng: R) -> NumberOfSolutions {
-        guard var solver1 = try? SudokuSolver(eliminating: self, rng: rng) else { return .none }
-        guard var solver2 = try? SudokuSolver(eliminating: self, rng: rng) else { return .none }
         do {
+            var solver1 = try SudokuSolver(eliminating: self, rng: rng)
+            var solver2 = solver1 // No need to recompute the inital elimination
+            
             //TODO: Can this be done in paralell?
-            let first = try solver1.guessAndEliminate(transformation: Normal.self)
-            let last = try solver2.guessAndEliminate(transformation: Reverse.self)
-            return first == last ? .one : .multiple
+            let firstSolution = try solver1.guessAndEliminate(transformation: Normal.self)
+            let lastSolution = try solver2.guessAndEliminate(transformation: Reverse.self)
+            
+            return firstSolution == lastSolution ? .one : .multiple
         } catch {
             return .none
         }
