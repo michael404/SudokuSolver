@@ -43,34 +43,35 @@ class SudokuCellTests: XCTestCase {
     
     func testCellCollection() {
         var cell = SudokuCell.allTrue
-        XCTAssertEqual(cell.endIndex, 1 << 10)
+        XCTAssertEqual(cell.endIndex.storage, 1 << 10)
         
         var i = cell.startIndex
-        XCTAssertEqual(i, 1)
+        XCTAssertEqual(i, SudokuCell(solved: 1))
         i = cell.index(after: i)
-        XCTAssertEqual(i, 1 << 1)
+        XCTAssertEqual(i, SudokuCell(solved: 2))
         i = cell.index(after: i)
-        XCTAssertEqual(i, 1 << 2)
+        XCTAssertEqual(i, SudokuCell(solved: 3))
 
-        XCTAssertEqual(Array(cell.indices), (1...9).map { 1 << ($0 - 1) } )
+        XCTAssertEqual(Array(cell.indices), (1...9).map { SudokuCell(solved: $0) } )
         XCTAssertEqual(Array(cell), (1...9).map { SudokuCell(solved: $0) })
         
+        // Leave [2, 5, 8]
         for i in [1, 3, 4, 6, 7, 9] {
             try! _ = cell.remove(SudokuCell(solved: i))
         }
         
-        XCTAssertEqual(cell.endIndex, 1 << 10)
+        XCTAssertEqual(cell.endIndex.storage, 1 << 10)
         
         i = cell.startIndex
-        XCTAssertEqual(i, 1 << 1)
+        XCTAssertEqual(i, SudokuCell(solved: 2))
         i = cell.index(after: i)
-        XCTAssertEqual(i, 1 << 4)
+        XCTAssertEqual(i, SudokuCell(solved: 5))
         i = cell.index(after: i)
-        XCTAssertEqual(i, 1 << 7)
+        XCTAssertEqual(i, SudokuCell(solved: 8))
         i = cell.index(after: i)
         XCTAssertEqual(i, cell.endIndex)
         
-        XCTAssertEqual(Array(cell.indices), [2, 5, 8].map { 1 << ($0 - 1) } )
+        XCTAssertEqual(Array(cell.indices), [2, 5, 8].map { SudokuCell(solved: $0) } )
         XCTAssertEqual(Array(cell), [2, 5, 8].map { SudokuCell(solved: $0) })
         
     }

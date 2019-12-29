@@ -43,38 +43,45 @@ struct SudokuCell: Hashable {
     
 }
 
+// Needed to be able to use SudokuCell as its own index type
+extension SudokuCell: Comparable {
+    static func < (lhs: SudokuCell, rhs: SudokuCell) -> Bool {
+        lhs.storage < rhs.storage
+    }
+}
+
 extension SudokuCell: BidirectionalCollection {
     
-    var startIndex: UInt16 { 1 << self.storage.trailingZeroBitCount }
-    var endIndex: UInt16 { 1 << 10 }
+    var startIndex: SudokuCell { SudokuCell(storage: 1 << self.storage.trailingZeroBitCount) }
+    var endIndex: SudokuCell { SudokuCell(storage: 1 << 10) }
     
-    func index(after i: UInt16) -> UInt16 {
-        assert(i.nonzeroBitCount == 1)
+    func index(after i: SudokuCell) -> SudokuCell {
+        assert(i.count == 1)
         assert(i != endIndex)
         var i = i
         while i != endIndex {
-            i <<= 1
-            if self.contains(SudokuCell(storage: i)) { return i }
+            i.storage <<= 1
+            if self.contains(i) { return i }
         }
         return endIndex
     }
     
-    func index(before i: UInt16) -> UInt16 {
-        assert(i.nonzeroBitCount == 1)
+    func index(before i: SudokuCell) -> SudokuCell {
+        assert(i.count == 1)
         assert(i != startIndex)
         var i = i
         while i != startIndex {
-            i >>= 1
-            if self.contains(SudokuCell(storage: i)) { return i }
+            i.storage >>= 1
+            if self.contains(i) { return i }
         }
         return startIndex
 
     }
     
-    subscript(i: UInt16) -> SudokuCell {
-        assert(i.nonzeroBitCount == 1)
-        assert(self.contains(SudokuCell(storage: i)))
-        return SudokuCell(storage: i)
+    subscript(i: SudokuCell) -> SudokuCell {
+        assert(i.count == 1)
+        assert(self.contains(i))
+        return i
     }
     
 }
