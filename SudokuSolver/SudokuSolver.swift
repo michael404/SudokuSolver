@@ -102,7 +102,7 @@ struct SudokuSolver<R: RNG> {
     
     mutating func findAllHiddenSingles() throws {
         for unit in 0...8 {
-            try _findHiddenSingles(for: Constants.allIndiciesInBox(number: unit))
+            try _findHiddenSingles(for: Constants.allIndiciesInRow(number: unit))
             try _findHiddenSingles(for: Constants.allIndiciesInColumn(number: unit))
             try _findHiddenSingles(for: Constants.allIndiciesInBox(number: unit))
         }
