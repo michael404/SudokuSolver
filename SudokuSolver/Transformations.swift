@@ -18,7 +18,7 @@ enum Shuffle: SudokuCellTransformation {
 }
 
 enum Reverse: SudokuCellTransformation {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuCell, rng: inout R) -> SudokuCellReversedIterator {
-        SudokuCellReversedIterator(possibleCellValues)
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell, rng: inout R) -> ReversedCollection<SudokuCell> {
+        possibleCellValues.reversed()
     }
 }

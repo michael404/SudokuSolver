@@ -13,6 +13,10 @@ struct SudokuCell: Hashable {
     static let allTrue: SudokuCell = SudokuCell(allTrue: ())
     private init(allTrue: ()) { self.storage = 0b111111111 }
     
+    private init(storage: UInt16) {
+        self.storage = storage
+    }
+    
     init(solved value: Int) {
         assert((1...9).contains(value))
         self.storage = 0b1 << (value - 1) as UInt16
@@ -39,41 +43,38 @@ struct SudokuCell: Hashable {
     
 }
 
-extension SudokuCell: Sequence {
+extension SudokuCell: BidirectionalCollection {
     
-    func makeIterator() -> SudokuCellIterator { SudokuCellIterator(self) }
-}
-
-struct SudokuCellIterator: IteratorProtocol, Sequence {
+    var startIndex: UInt16 { 1 << self.storage.trailingZeroBitCount }
+    var endIndex: UInt16 { 1 << 10 }
     
-    var base: SudokuCell
-    private var mask = SudokuCell(solved: 1)
-    
-    init(_ base: SudokuCell) { self.base = base }
-    
-    mutating func next() -> SudokuCell? {
-        while mask.storage != 0b1000000000 {
-            defer { mask.storage <<= 1 }
-            if base.contains(mask) { return mask }
+    func index(after i: UInt16) -> UInt16 {
+        assert(i.nonzeroBitCount == 1)
+        assert(i != endIndex)
+        var i = i
+        while i != endIndex {
+            i <<= 1
+            if self.contains(SudokuCell(storage: i)) { return i }
         }
-        return nil
+        return endIndex
     }
     
-}
-
-struct SudokuCellReversedIterator: IteratorProtocol, Sequence {
-    
-    var base: SudokuCell
-    private var mask = SudokuCell(solved: 9)
-    
-    init(_ base: SudokuCell) { self.base = base }
-    
-    mutating func next() -> SudokuCell? {
-        while mask.storage != 0 {
-            defer { mask.storage >>= 1 }
-            if base.contains(mask) { return mask }
+    func index(before i: UInt16) -> UInt16 {
+        assert(i.nonzeroBitCount == 1)
+        assert(i != startIndex)
+        var i = i
+        while i != startIndex {
+            i >>= 1
+            if self.contains(SudokuCell(storage: i)) { return i }
         }
-        return nil
+        return startIndex
+
+    }
+    
+    subscript(i: UInt16) -> SudokuCell {
+        assert(i.nonzeroBitCount == 1)
+        assert(self.contains(SudokuCell(storage: i)))
+        return SudokuCell(storage: i)
     }
     
 }

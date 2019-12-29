@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C049E7123B91AC70061F72C /* SudokuCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C049E7023B91AC70061F72C /* SudokuCellTests.swift */; };
 		4C09949920CD7EC300F4F6F3 /* RandomBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C09949820CD7EC300F4F6F3 /* RandomBoard.swift */; };
 		4C09949A20CD7EF500F4F6F3 /* RandomBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C09949820CD7EC300F4F6F3 /* RandomBoard.swift */; };
 		4C1100411F588ACB00F0745D /* SudokuBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100401F588ACB00F0745D /* SudokuBoard.swift */; };
@@ -72,6 +73,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C049E7023B91AC70061F72C /* SudokuCellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCellTests.swift; sourceTree = "<group>"; };
 		4C09949820CD7EC300F4F6F3 /* RandomBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomBoard.swift; sourceTree = "<group>"; };
 		4C1100401F588ACB00F0745D /* SudokuBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuBoard.swift; sourceTree = "<group>"; };
 		4C1100441F5C29CD00F0745D /* SudokuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCell.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 			children = (
 				4CD2143A2025EF8100018125 /* SudokuTestData.swift */,
 				4C1100521F5DDC2800F0745D /* SudokuTests.swift */,
+				4C049E7023B91AC70061F72C /* SudokuCellTests.swift */,
 				4C425076206192A9000FF622 /* SudokuSolverTests.swift */,
 				4C1100541F5DDC2800F0745D /* Info.plist */,
 			);
@@ -330,6 +333,7 @@
 				4C18617E20CE6BEB00D478E2 /* SudokuSolver.swift in Sources */,
 				4C71A805238882FB0078851C /* Formatting.swift in Sources */,
 				4C23C5A7237F2A0600A31101 /* SudokuBoard.swift in Sources */,
+				4C049E7123B91AC70061F72C /* SudokuCellTests.swift in Sources */,
 				4CC3024A2389726900403DAA /* Constants3x32.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
