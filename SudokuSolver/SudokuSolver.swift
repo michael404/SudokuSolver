@@ -53,23 +53,24 @@ struct SudokuSolver<R: RNG> {
         self.board = board
         self.rng = rng
         for (index, cell) in zip(self.board.indices, self.board) where cell.isSolved {
-            try eliminatePossibilitites(basedOnChangeOf: index)
+            try eliminatePossibilitites(basedOnSolvedIndex: index)
         }
     }
     
     /// Throws if we are in an impossible situation
-    mutating func eliminatePossibilitites(basedOnChangeOf index: Int) throws {
-        guard let valueToRemove = board[index].solvedValue else { return }
+    mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
+        assert(board[index].isSolved)
         for indexToRemoveFrom in Constants.indiciesAffectedBy(index: index) {
-            try removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom)
+            try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
     
     mutating func removeAndApplyConstraints(valueToRemove: SudokuCell, indexToRemoveFrom: Int) throws {
         if try board[indexToRemoveFrom].remove(valueToRemove) {
-            try eliminatePossibilitites(basedOnChangeOf: indexToRemoveFrom)
-            if board[indexToRemoveFrom].count == 2 {
-                try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
+            switch board[indexToRemoveFrom].count {
+            case 1: try eliminatePossibilitites(basedOnSolvedIndex: indexToRemoveFrom)
+            case 2: try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
+            default: break
             }
         }
     }
@@ -88,7 +89,7 @@ struct SudokuSolver<R: RNG> {
             do {
                 var newSolver = self
                 newSolver.board[index] = guess
-                try newSolver.eliminatePossibilitites(basedOnChangeOf: index)
+                try newSolver.eliminatePossibilitites(basedOnSolvedIndex: index)
                 try newSolver.findAllHiddenSingles()
                 return try newSolver.guessAndEliminate(transformation: transformation)
             } catch {
@@ -122,7 +123,7 @@ struct SudokuSolver<R: RNG> {
             guard let foundIndex = potentialFoundIndex else { throw SudokuSolverError.unsolvable }
             // We have identified a hidden single, and can set the cell to that value
             board[foundIndex] = cellValue
-            try eliminatePossibilitites(basedOnChangeOf: foundIndex)
+            try eliminatePossibilitites(basedOnSolvedIndex: foundIndex)
         }
     }
     
@@ -135,9 +136,10 @@ struct SudokuSolver<R: RNG> {
     
     mutating func _eliminateNakedPairs(value: SudokuCell, for indicies: ArraySlice<Int>) throws {
         assert(value.count == 2)
-        guard let index = indicies.first(where: { board[$0] == value }) else { return }
+        guard let cellWithSameTwoValues = indicies.first(where: { board[$0] == value }) else { return }
         // Found a duplicate. Loop over all indicies, exept the current one and remove from that
-        for indexToRemoveFrom in indicies where indexToRemoveFrom != index {
+        for indexToRemoveFrom in indicies where indexToRemoveFrom != cellWithSameTwoValues {
+            // If more than two cells only have the same two possibilities, this is unsolvable
             guard value != board[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
             try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)
         }
