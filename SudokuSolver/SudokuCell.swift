@@ -10,8 +10,7 @@ struct SudokuCell: Hashable {
     /// The set is considered "solved" if only one bit is set.
     fileprivate(set) var storage: UInt16
     
-    static let allTrue: SudokuCell = SudokuCell(allTrue: ())
-    private init(allTrue: ()) { self.storage = 0b111111111 }
+    static let allTrue: SudokuCell = SudokuCell(storage: 0b111111111)
     
     private init(storage: UInt16) {
         self.storage = storage
