@@ -259,7 +259,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1120;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Michael Holmgren";
 				TargetAttributes = {
 					4C11004F1F5DDC2800F0745D = {
@@ -282,6 +282,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 4CC0B0F21F588A9B00C2576C;
 			productRefGroup = 4CC0B0FC1F588A9B00C2576C /* Products */;
