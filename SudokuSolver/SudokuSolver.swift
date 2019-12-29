@@ -90,6 +90,9 @@ struct SudokuSolver<R: RNG> {
                 var newSolver = self
                 newSolver.board[index] = guess
                 try newSolver.eliminatePossibilitites(basedOnSolvedIndex: index)
+                // While it would make sense to check for hidden singles only in rows/columns/boxes where a possibility
+                // has just been removed, benchmarking shows that it is more efficient to run this once per guess for the
+                //whole board
                 try newSolver.findAllHiddenSingles()
                 return try newSolver.guessAndEliminate(transformation: transformation)
             } catch {
