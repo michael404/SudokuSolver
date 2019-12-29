@@ -13,16 +13,8 @@ struct SudokuBoard: Equatable {
         self.cells = FixedArray81(numbers.lazy.map({
             switch $0 {
             case ".": return SudokuCell.allTrue
-            case "1": return SudokuCell(solved: 1)
-            case "2": return SudokuCell(solved: 2)
-            case "3": return SudokuCell(solved: 3)
-            case "4": return SudokuCell(solved: 4)
-            case "5": return SudokuCell(solved: 5)
-            case "6": return SudokuCell(solved: 6)
-            case "7": return SudokuCell(solved: 7)
-            case "8": return SudokuCell(solved: 8)
-            case "9": return SudokuCell(solved: 9)
-            default: preconditionFailure("Unexpected character in string sequence")
+            case "1"..."9": return SudokuCell(solved: Int(String($0))!)
+            default: preconditionFailure("Unexpected character \($0) in string sequence")
             }
         }))
         
