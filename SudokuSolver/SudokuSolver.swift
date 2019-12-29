@@ -110,16 +110,16 @@ struct SudokuSolver<R: RNG> {
     
     mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
         cellValueLoop: for cellValue in SudokuCell.allTrue {
-            var foundIndex = -1
+            var potentialFoundIndex: Int? = nil
             for index in indicies where board[index].contains(cellValue) {
                 // If we have already found one value in this unit, it is not a candiadate for a hidden single
-                guard foundIndex == -1 else { continue cellValueLoop }
+                guard potentialFoundIndex == nil else { continue cellValueLoop }
                 // If we have found a solved value, that is not a candidate for a hidden single
                 guard !board[index].isSolved else { continue cellValueLoop }
-                foundIndex = index
+                potentialFoundIndex = index
             }
             // If we did not find the value at all, the board is unsolvable
-            guard foundIndex != -1 else { throw SudokuSolverError.unsolvable }
+            guard let foundIndex = potentialFoundIndex else { throw SudokuSolverError.unsolvable }
             // We have identified a hidden single, and can set the cell to that value
             board[foundIndex] = cellValue
             try eliminatePossibilitites(basedOnChangeOf: foundIndex)
