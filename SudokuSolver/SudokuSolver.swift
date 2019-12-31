@@ -33,7 +33,8 @@ extension SudokuBoard {
             var solver1 = try SudokuSolver(eliminating: self, rng: rng)
             var solver2 = solver1 // No need to recompute the inital elimination
             
-            //TODO: Can this be done in paralell?
+            // This does not seem to benefit by being run in paralell, potentially because that
+            // eliminates the possibility to exit early by throwing if the board is unsolvable
             let firstSolution = try solver1.guessAndEliminate(transformation: Normal.self)
             let lastSolution = try solver2.guessAndEliminate(transformation: Reverse.self)
             
