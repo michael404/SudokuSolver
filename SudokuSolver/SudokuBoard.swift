@@ -47,7 +47,7 @@ extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
 }
 
-extension SudokuBoard: CustomStringConvertible {
+extension SudokuBoard: CustomStringConvertible, CustomDebugStringConvertible {
 
     var description: String {
         var i = makeIterator()
@@ -64,15 +64,66 @@ extension SudokuBoard: CustomStringConvertible {
         }
         return description
     }
-
-}
-
-extension SudokuBoard: CustomDebugStringConvertible {
-
+    
     var debugDescription: String {
         reduce(into: "") { result, cell in
             result.append(cell.debugDescription)
         }
     }
+    
+    private static var detailedDescriptionEmpty: [Character] {
+        """
+        ███████████████████████████████████████████████████████
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        ███████████████████████████████████████████████████████
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        ███████████████████████████████████████████████████████
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        █-----+-----+-----█-----+-----+-----█-----+-----+-----█
+        █     |     |     █     |     |     █     |     |     █
+        █     |     |     █     |     |     █     |     |     █
+        ███████████████████████████████████████████████████████
+        """.map { $0 }
+    }
 
+    var detailedDescription: String {
+
+        var result = Self.detailedDescriptionEmpty
+        
+        for cell in 0..<81 {
+            let boxStartIndex = 57 + (6 * cell) + (114 * (cell / 9))
+            for cellValue in 1...5 {
+                if self[cell].contains(SudokuCell(solved: cellValue)) {
+                    result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
+                }
+            }
+            for cellValue in 6...9 {
+                if self[cell].contains(SudokuCell(solved: cellValue)) {
+                    result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
+                }
+            }
+        }
+
+        return String(result)
+        
+    }
 }
+
