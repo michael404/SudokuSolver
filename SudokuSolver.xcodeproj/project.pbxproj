@@ -164,10 +164,10 @@
 		4CC0B0F21F588A9B00C2576C = {
 			isa = PBXGroup;
 			children = (
-				4C71A7F6238880370078851C /* SudokuSolverSIMD */,
 				4CC0B0FD1F588A9B00C2576C /* SudokuSolver */,
 				4C1100511F5DDC2800F0745D /* SudokuTests */,
 				4CB864B0237F2931005DFFB7 /* SudokuPerfTests */,
+				4C71A7F6238880370078851C /* SudokuSolverSIMD */,
 				4CC0B0FC1F588A9B00C2576C /* Products */,
 			);
 			sourceTree = "<group>";
