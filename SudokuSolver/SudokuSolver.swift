@@ -105,6 +105,7 @@ struct SudokuSolver<R: RNG> {
     }
     
     mutating func findAllHiddenSingles() throws {
+        //TODO: Can each unit be run in paralell?
         for unit in 0...8 {
             try _findHiddenSingles(for: Constants.allIndiciesInRow(number: unit))
             try _findHiddenSingles(for: Constants.allIndiciesInColumn(number: unit))
