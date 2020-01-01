@@ -93,10 +93,8 @@ struct SudokuSolver<R: RNG> {
                 try newSolver.eliminatePossibilitites(basedOnSolvedIndex: index)
                 // While it would make sense to check for hidden singles only in rows/columns/boxes where a possibility
                 // has just been removed, benchmarking shows that it is more efficient to run this once per guess for the
-                //whole board
-                
-                //TODO: Should this be moved to before the guess?
-                //TODO: Should this run in a loop until no further changes are found? Perhaps returning a value indicating changed?
+                // whole board. In theory this could also be run in a loop until there are no more changes, but that does
+                // not improve performance either.
                 try newSolver.findAllHiddenSingles()
                 return try newSolver.guessAndEliminate(transformation: transformation)
             } catch {
