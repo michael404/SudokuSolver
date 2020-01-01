@@ -4,6 +4,7 @@ class SudokuPerfTests: XCTestCase {
     
     func testPerfSuite() {
         var solutions = [SudokuBoard]()
+        solutions.reserveCapacity(TestData.PerfTestSuite.boards.count * 10)
         self.measure {
             for board in TestData.PerfTestSuite.boards {
                 let solvedBoard = try! board.findFirstSolution()
