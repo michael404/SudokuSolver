@@ -1,6 +1,5 @@
 import Foundation
 
-
 func generateMinimalSudokusAsync(iterations: Int, maxClues: Int, handler: @escaping (SudokuBoard) -> ()) {
     let serialQueue = DispatchQueue(label: "se.michaelholmgren.SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
@@ -33,7 +32,7 @@ func generateHardToBruteForceSudokusAsync(iterations: Int, maxTimeNanoseconds: I
     }
 }
 
-generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 28) { board in
+generateMinimalSudokusAsync(iterations: 1_000_000, maxClues: 20) { board in
     print("--> \(board.debugDescription) <-- \(board.clues) clues")
 }
 
