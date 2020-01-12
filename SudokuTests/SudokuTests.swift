@@ -33,6 +33,8 @@ class SudokuTests: XCTestCase {
             XCTAssertFalse(nonValid.isValid)
         }
         
+        XCTAssertFalse(TestData.Empty.board.isValid)
+        
         XCTAssertFalse(TestData.MultipleSolutions.board.isValid)
         
         for board in TestData.PerfTestSuite.boards {
