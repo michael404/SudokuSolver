@@ -1,9 +1,7 @@
 enum Constants16 {
 
-    static func indiciesAffected(by index: Int) -> ArraySlice<Int> {
-        let start = index * 39
-        let end = start + 39
-        return Self._indiciesAffectedByIndex[start..<end]
+    static func indiciesAffected(by index: Int) -> [Int] {
+        return Self._indiciesAffectedByIndex[index]
     }
     
     static func indiciesInSameRow(as index: Int) -> ArraySlice<Int> {
@@ -50,9 +48,9 @@ private extension Constants16 {
     /// (15 in the same row, 15 in the same column and then 9 remaining in the box)
     /// Laid out as a countinous array of 349indexes. Use the helper
     /// method to access the values.
-    static let _indiciesAffectedByIndex: [Int] = {
-        var result: [Int] = []
-        result.reserveCapacity(39 * 256)
+    static let _indiciesAffectedByIndex: [[Int]] = {
+        var result: [[Int]] = []
+        result.reserveCapacity(256)
         for index in 0...255 {
             var indicies = Set<Int>()
             Self._indiciesInSameRow(as: index).forEach { indicies.insert($0) }
@@ -61,9 +59,8 @@ private extension Constants16 {
             //Remove self
             indicies.remove(index)
             //TODO: Consider if sorting is needed for deterministic tests here
-            result.append(contentsOf: Array(indicies).sorted())
+            result.append(Array(indicies).sorted())
         }
-        assert(result.count == 39 * 256)
         return result
     }()
     

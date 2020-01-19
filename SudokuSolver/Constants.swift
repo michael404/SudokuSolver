@@ -1,3 +1,7 @@
+
+//TODO: Check if we can drop the long literals and precalculate the value once per runtime
+//TODO: Move the "by" and "as" suffixes into argument labels
+
 enum Constants {
     
     static func indiciesAffectedBy(index: Int) -> ArraySlice<Int> {
