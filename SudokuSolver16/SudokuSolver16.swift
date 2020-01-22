@@ -61,7 +61,7 @@ struct SudokuSolver16<R: RNG> {
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
         assert(board[index].isSolved)
-        for indexToRemoveFrom in Constants16.indiciesAffected(by: index) {
+        for indexToRemoveFrom in Constants16.indiciesAffectedByIndex[index] {
             try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
@@ -110,13 +110,13 @@ struct SudokuSolver16<R: RNG> {
     
     mutating func findAllHiddenSingles() throws {
         for unit in 0..<16 {
-            try _findHiddenSingles(for: Constants16.allIndiciesInRow(number: unit))
-            try _findHiddenSingles(for: Constants16.allIndiciesInColumn(number: unit))
-            try _findHiddenSingles(for: Constants16.allIndiciesInBox(number: unit))
+            try _findHiddenSingles(for: Constants16.allIndiciesInBox[unit])
+            try _findHiddenSingles(for: Constants16.allIndiciesInColumn[unit])
+            try _findHiddenSingles(for: Constants16.allIndiciesInBox[unit])
         }
     }
 
-    mutating func _findHiddenSingles(for indicies: ArraySlice<Int>) throws {
+    mutating func _findHiddenSingles(for indicies: [Int]) throws {
         cellValueLoop: for cellValue in SudokuCell16.allTrue {
             var potentialFoundIndex: Int? = nil
             for index in indicies where board[index].contains(cellValue) {
@@ -136,12 +136,12 @@ struct SudokuSolver16<R: RNG> {
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = board[index]
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameRow(as: index))
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameColumn(as: index))
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameBox(as: index))
+        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameRowExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameColumnExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameBoxExclusive[index])
     }
 
-    mutating func _eliminateNakedPairs(value: SudokuCell16, for indicies: ArraySlice<Int>) throws {
+    mutating func _eliminateNakedPairs(value: SudokuCell16, for indicies: [Int]) throws {
         assert(value.count == 2)
         guard let cellWithSameTwoValues = indicies.first(where: { board[$0] == value }) else { return }
         // Found a duplicate. Loop over all indicies, exept the current one and remove from that
