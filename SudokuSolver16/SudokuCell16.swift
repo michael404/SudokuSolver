@@ -88,12 +88,10 @@ extension SudokuCell16: BidirectionalCollection {
         switch i {
         case startIndex:
             fatalError("Tried to advance before startIndex")
+        case .end where self.contains(SudokuCell16(solved: 15)):
+            return .index(SudokuCell16(solved: 15))
         case .end:
-            if self.contains(SudokuCell16(solved: 15)) {
-                return .index(SudokuCell16(solved: 15))
-            } else {
-                return _before(cell: SudokuCell16(solved: 15))
-            }
+            return _before(cell: SudokuCell16(solved: 15))
         case .index(let cell):
             assert(cell.count == 1)
             return _before(cell: cell)
