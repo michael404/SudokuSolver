@@ -64,37 +64,27 @@ extension SudokuCell16: BidirectionalCollection {
         switch i {
         case .end:
             fatalError("Tried to advance beyond endIndex")
+        case .index(let cell) where cell == SudokuCell16(solved: 15):
+            return endIndex
         case .index(var cell):
             assert(cell.count == 1)
-            while cell != SudokuCell16(solved: 15) {
-                cell.storage <<= 1
-                if self.contains(cell) { return .index(cell) }
-            }
-            return endIndex
+            cell.storage <<= 1
+            return self.contains(cell) ? .index(cell) : index(after: .index(cell))
         }
     }
     
     func index(before i: Index) -> Index {
-        
-        func _before(cell: SudokuCell16) -> Index {
-            var cell = cell
-            while cell != SudokuCell16(solved: 1) {
-                cell.storage >>= 1
-                if self.contains(cell) { return .index(cell) }
-            }
-            return startIndex
-        }
-        
         switch i {
         case startIndex:
             fatalError("Tried to advance before startIndex")
         case .end where self.contains(SudokuCell16(solved: 15)):
             return .index(SudokuCell16(solved: 15))
         case .end:
-            return _before(cell: SudokuCell16(solved: 15))
-        case .index(let cell):
+            return index(before: .index(SudokuCell16(solved: 15)))
+        case .index(var cell):
             assert(cell.count == 1)
-            return _before(cell: cell)
+            cell.storage >>= 1
+            return self.contains(cell) ? .index(cell) : index(before: .index(cell))
         }
 
     }
