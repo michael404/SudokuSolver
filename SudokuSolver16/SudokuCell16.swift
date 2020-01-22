@@ -89,7 +89,11 @@ extension SudokuCell16: BidirectionalCollection {
         case startIndex:
             fatalError("Tried to advance before startIndex")
         case .end:
-            return _before(cell: SudokuCell16(solved: 15))
+            if self.contains(SudokuCell16(solved: 15)) {
+                return .index(SudokuCell16(solved: 15))
+            } else {
+                return _before(cell: SudokuCell16(solved: 15))
+            }
         case .index(let cell):
             assert(cell.count == 1)
             return _before(cell: cell)
@@ -102,7 +106,7 @@ extension SudokuCell16: BidirectionalCollection {
         case .end: fatalError("Subscripted with .end")
         case .index(let i):
             assert(i.count == 1)
-            assert(self.contains(i))
+            assert(self.contains(i), "Tried to subscript with \(i) in cell which contains only \(map { $0.description })")
             return i
         }
     }

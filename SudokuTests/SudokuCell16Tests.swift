@@ -56,6 +56,9 @@ class SudokuCell16Tests: XCTestCase {
         XCTAssertEqual(Array(cell.indices), expectedIndicies1)
         XCTAssertEqual(Array(cell), (0...15).map { SudokuCell16(solved: $0) })
         
+        XCTAssertEqual(Array(cell.reversed()),
+                       [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
+        
         // Leave [0, 5, 8, 14]
         for i in [1, 2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 15] {
             try! _ = cell.remove(SudokuCell16(solved: i))
@@ -78,6 +81,7 @@ class SudokuCell16Tests: XCTestCase {
         XCTAssertEqual(Array(cell.indices), expectedIndicies2)
         XCTAssertEqual(Array(cell), [0, 5, 8, 14].map { SudokuCell16(solved: $0) })
         
+        XCTAssertEqual(Array(cell.reversed()), [14, 8, 5, 0])
     }
 
 }
