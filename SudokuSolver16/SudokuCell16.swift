@@ -3,7 +3,7 @@
 /// The implementation uses a bit array as the underlying storage.
 /// A solved value is represented with the same type, but with only
 /// one bit set.
-struct SudokuCell16: Hashable {
+struct SudokuCell16: SudokuCellProtocol {
     
     /// A bitset representing the 16 possible values.
     /// The set is considered "solved" if only one bit is set.
@@ -18,6 +18,20 @@ struct SudokuCell16: Hashable {
     init(solved value: Int) {
         assert((0..<16).contains(value))
         self.storage = 1 << value
+    }
+    
+    init(character: Character) {
+        switch character {
+        case ".": self = Self.allTrue
+        case "0"..."9": self = Self(solved: Int(String(character))!)
+        case "A": self = Self(solved: 10)
+        case "B": self = Self(solved: 11)
+        case "C": self = Self(solved: 12)
+        case "D": self = Self(solved: 13)
+        case "E": self = Self(solved: 14)
+        case "F": self = Self(solved: 15)
+        default: preconditionFailure("Unexpected character \(character) in string sequence")
+        }
     }
     
     /// The number of possible values for this cell
