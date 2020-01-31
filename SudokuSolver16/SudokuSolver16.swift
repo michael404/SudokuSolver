@@ -61,7 +61,7 @@ struct SudokuSolver16<R: RNG> {
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
         assert(board[index].isSolved)
-        for indexToRemoveFrom in Constants16.indiciesAffectedByIndex[index] {
+        for indexToRemoveFrom in Sudoku16.constants.indiciesAffectedByIndex[index] {
             try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
@@ -110,9 +110,9 @@ struct SudokuSolver16<R: RNG> {
     
     mutating func findAllHiddenSingles() throws {
         for unit in 0..<16 {
-            try _findHiddenSingles(for: Constants16.allIndiciesInBox[unit])
-            try _findHiddenSingles(for: Constants16.allIndiciesInColumn[unit])
-            try _findHiddenSingles(for: Constants16.allIndiciesInBox[unit])
+            try _findHiddenSingles(for: Sudoku16.constants.allIndiciesInBox[unit])
+            try _findHiddenSingles(for: Sudoku16.constants.allIndiciesInColumn[unit])
+            try _findHiddenSingles(for: Sudoku16.constants.allIndiciesInBox[unit])
         }
     }
 
@@ -136,9 +136,9 @@ struct SudokuSolver16<R: RNG> {
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = board[index]
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameRowExclusive[index])
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameColumnExclusive[index])
-        try _eliminateNakedPairs(value: value, for: Constants16.indiciesInSameBoxExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku16.constants.indiciesInSameRowExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku16.constants.indiciesInSameColumnExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku16.constants.indiciesInSameBoxExclusive[index])
     }
 
     mutating func _eliminateNakedPairs(value: SudokuCell16, for indicies: [Int]) throws {

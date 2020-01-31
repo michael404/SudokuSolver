@@ -61,7 +61,7 @@ struct SudokuSolver<R: RNG> {
     /// Throws if we are in an impossible situation
     mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
         assert(board[index].isSolved)
-        for indexToRemoveFrom in Constants.indiciesAffectedByIndex[index] {
+        for indexToRemoveFrom in Sudoku9.constants.indiciesAffectedByIndex[index] {
             try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
@@ -109,9 +109,9 @@ struct SudokuSolver<R: RNG> {
     mutating func findAllHiddenSingles() throws {
         //TODO: Can each unit be run in paralell?
         for unit in 0...8 {
-            try _findHiddenSingles(for: Constants.allIndiciesInRow[unit])
-            try _findHiddenSingles(for: Constants.allIndiciesInColumn[unit])
-            try _findHiddenSingles(for: Constants.allIndiciesInBox[unit])
+            try _findHiddenSingles(for: Sudoku9.constants.allIndiciesInRow[unit])
+            try _findHiddenSingles(for: Sudoku9.constants.allIndiciesInColumn[unit])
+            try _findHiddenSingles(for: Sudoku9.constants.allIndiciesInBox[unit])
         }
     }
     
@@ -135,9 +135,9 @@ struct SudokuSolver<R: RNG> {
     
     mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = board[index]
-        try _eliminateNakedPairs(value: value, for: Constants.indiciesInSameRowExclusive[index])
-        try _eliminateNakedPairs(value: value, for: Constants.indiciesInSameColumnExclusive[index])
-        try _eliminateNakedPairs(value: value, for: Constants.indiciesInSameBoxExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku9.constants.indiciesInSameRowExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku9.constants.indiciesInSameColumnExclusive[index])
+        try _eliminateNakedPairs(value: value, for: Sudoku9.constants.indiciesInSameBoxExclusive[index])
     }
     
     mutating func _eliminateNakedPairs(value: SudokuCell, for indicies: [Int]) throws {
