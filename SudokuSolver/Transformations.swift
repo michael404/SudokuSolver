@@ -22,7 +22,7 @@ enum ShuffleGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGen
 }
 
 enum ReverseGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGeneric {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuType.Cell.ReverseSequence {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuCellReverseSequence<SudokuType.Cell> {
         possibleCellValues.makeReverseSequence()
     }
 }

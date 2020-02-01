@@ -5,15 +5,6 @@ enum SudokuSolverError: Error {
 
 typealias RNG = RandomNumberGenerator
 
-#warning("Do we need this, or can this just be part of SudokuCellProtocol?")
-protocol BidirectionalSequence: Sequence {
-    
-    associatedtype ReverseSequence: Sequence where Element == ReverseSequence.Element
-    
-    func makeReverseSequence() -> ReverseSequence
-    
-}
-
 // Adapted from https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlRandom.swift
 struct Xoroshiro: RNG {
     

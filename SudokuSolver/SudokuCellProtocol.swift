@@ -1,4 +1,4 @@
-protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, BidirectionalSequence where Element == Self {
+protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, Sequence where Element == Self {
     
     associatedtype Storage: BinaryInteger & FixedWidthInteger
     associatedtype IteratorStorage: SudokuCellIteratorStorageProtocol
