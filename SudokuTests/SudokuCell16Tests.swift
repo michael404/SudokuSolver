@@ -43,17 +43,12 @@ class SudokuCell16Tests: XCTestCase {
     
     func testCellCollection() {
         var cell = SudokuCell16.allTrue
-        XCTAssertEqual(cell.endIndex, .end)
         
-        var i = cell.startIndex
-        XCTAssertEqual(i, .inRange(0b1111111111111111))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, .inRange(0b1111111111111110))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, .inRange(0b1111111111111100))
+        var i = cell.makeIterator()
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 0))
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 1))
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 2))
         
-        XCTAssertEqual(cell.index(after: .inRange(0b1000000000000000)), .end)
-
         XCTAssertEqual(Array(cell), (0...15).map { SudokuCell16(solved: $0) })
 
         XCTAssertEqual(Array(cell.reversed()),
@@ -64,21 +59,14 @@ class SudokuCell16Tests: XCTestCase {
             try! _ = cell.remove(SudokuCell16(solved: i))
         }
 
-        XCTAssertEqual(cell.endIndex, .end)
+        i = cell.makeIterator()
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 0))
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 5))
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 8))
+        XCTAssertEqual(i.next(), SudokuCell16(solved: 14))
+        XCTAssertNil(i.next())
 
-        i = cell.startIndex
-        XCTAssertEqual(i, .inRange(0b0100000100100001))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, .inRange(0b0100000100100000))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, .inRange(0b0100000100000000))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, .inRange(0b0100000000000000))
-        i = cell.index(after: i)
-        XCTAssertEqual(i, cell.endIndex)
 
-        let expectedIndicies2: [SudokuCell16.Index] = [0b0100000100100001, 0b0100000100100000, 0b0100000100000000, 0b0100000000000000].map { .inRange($0) }
-        XCTAssertEqual(Array(cell.indices), expectedIndicies2)
         XCTAssertEqual(Array(cell), [0, 5, 8, 14].map { SudokuCell16(solved: $0) })
 
         XCTAssertEqual(Array(cell.reversed()), [14, 8, 5, 0])

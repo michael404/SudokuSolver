@@ -16,6 +16,14 @@ class Sudoku9PerfTests: XCTestCase {
         }
     }
     
+    func testIsValid() {
+        self.measure {
+            for board in TestData9.PerfTestSuite.boards {
+                XCTAssertTrue(board.isValid)
+            }
+        }
+    }
+    
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard9.empty
         self.measure {

@@ -21,10 +21,8 @@ enum ShuffleGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGen
     }
 }
 
-#warning("can we get a reversedcollection here?")
 enum ReverseGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGeneric {
-//    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> ReversedCollection<SudokuType.Cell> {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> [SudokuType.Cell] {
-        possibleCellValues.reversed()
+    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuType.Cell.ReverseSequence {
+        possibleCellValues.makeReverseSequence()
     }
 }

@@ -5,6 +5,14 @@ enum SudokuSolverError: Error {
 
 typealias RNG = RandomNumberGenerator
 
+protocol BidirectionalSequence: Sequence {
+    
+    associatedtype ReverseSequence: Sequence where Element == ReverseSequence.Element
+    
+    func makeReverseSequence() -> ReverseSequence
+    
+}
+
 // Adapted from https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlRandom.swift
 struct Xoroshiro: RNG {
     
@@ -30,4 +38,33 @@ struct Xoroshiro: RNG {
         state.1 = (x << k2) | (x >> (l - k2))
         return result
     }
+}
+
+extension Int16 {
+    
+    var highestSetBit: Int16 {
+        assert(self != 0)
+        var result = self | self >> 1
+        result |= result >> 2
+        result |= result >> 4
+        result |= result >> 8
+        result += 1
+        return result >> 1
+    }
+    
+}
+
+extension Int32 {
+    
+    var highestSetBit: Int32 {
+        assert(self != 0)
+        var result = self | self >> 1
+        result |= result >> 2
+        result |= result >> 4
+        result |= result >> 8
+        result |= result >> 16
+        result += 1
+        return result >> 1
+    }
+    
 }

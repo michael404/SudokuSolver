@@ -55,66 +55,56 @@ struct SudokuCell16: SudokuCellProtocol {
     
 }
 
-#warning("restore bidirectional")
-extension SudokuCell16: Collection {
+extension SudokuCell16: Sequence {
     
-    enum Index: Comparable {
-        case inRange(UInt16)
-        case end
+    func makeIterator() -> Iterator { Iterator(self) }
+    
+    struct Iterator: IteratorProtocol {
+
+        private var remaining: Int32
         
-        static func < (lhs: Index, rhs: Index) -> Bool {
-            switch (lhs, rhs) {
-            case (.end, _): return false
-            case (.inRange, .end): return true
-            case let (.inRange(i1), .inRange(i2)): return i1 < i2
+        init(_ cell: SudokuCell16) {
+            self.remaining = Int32(truncatingIfNeeded: cell.storage)
+        }
+        
+        mutating func next() -> SudokuCell16? {
+            guard remaining != 0 else { return nil }
+            let lowestBitSet = remaining & -remaining
+            self.remaining ^= lowestBitSet
+            return SudokuCell16(storage: UInt16(truncatingIfNeeded: lowestBitSet))
+        }
+        
+    }
+
+}
+
+extension SudokuCell16: BidirectionalSequence {
+    
+    func makeReverseSequence() -> ReverseSequence { ReverseSequence(cell: self) }
+    
+    struct ReverseSequence: Sequence {
+        
+        let cell: SudokuCell16
+        
+        func makeIterator() -> Iterator { Iterator(cell) }
+        
+        struct Iterator: IteratorProtocol {
+            
+            private var remaining: Int32
+            
+            init(_ cell: SudokuCell16) {
+                self.remaining = Int32(truncatingIfNeeded: cell.storage)
             }
+            
+            mutating func next() -> SudokuCell16? {
+                guard remaining != 0 else { return nil }
+                let highestSetBit = remaining.highestSetBit
+                self.remaining ^= highestSetBit
+                return SudokuCell16(storage: UInt16(truncatingIfNeeded: highestSetBit))
+            }
+            
         }
         
-    }
-    
-    var startIndex: Index { .inRange(self.storage) }
-    var endIndex: Index { .end }
-    
-    func index(after i: Index) -> Index {
-        switch i {
-        case .end:
-            fatalError("Tried to advance beyond endIndex")
-        case .inRange(let value):
-            assert(value != 0)
-            let value = Int32(value)
-            //TODO: do we need 32 signed here?
-            let lowestBitSet = value & -value
-            let lowestBitRemoved = value ^ lowestBitSet
-            if lowestBitRemoved == 0 { return .end }
-            return .inRange(UInt16(truncatingIfNeeded: lowestBitRemoved))
-        }
-    }
-    
-    #warning("improve this implementations")
-//    func index(before i: Index) -> Index {
-//        switch i {
-//        case startIndex:
-//            fatalError("Tried to advance before startIndex")
-//        case .end where self.contains(SudokuCell16(solved: 15)):
-//            return .index(SudokuCell16(solved: 15))
-//        case .end:
-//            return index(before: .index(SudokuCell16(solved: 15)))
-//        case .index(var cell):
-//            assert(cell.count == 1)
-//            cell.storage >>= 1
-//            return self.contains(cell) ? .index(cell) : index(before: .index(cell))
-//        }
-//    }
-    
-    subscript(i: Index) -> SudokuCell16 {
-        switch i {
-        case .end: fatalError("Subscripted with .end")
-        case .inRange(let i):
-            assert(i != 0)
-            return Self(solved: i.trailingZeroBitCount)
-//            assert(self.contains(i), "Tried to subscript with \(i) in cell which contains only \(map { $0.description })")
-//            return i
-        }
     }
     
 }

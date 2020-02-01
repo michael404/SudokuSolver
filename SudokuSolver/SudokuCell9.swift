@@ -57,40 +57,56 @@ extension SudokuCell9: Comparable {
     }
 }
 
-extension SudokuCell9: BidirectionalCollection {
+extension SudokuCell9: Sequence {
     
-    var startIndex: SudokuCell9 { SudokuCell9(storage: 1 << self.storage.trailingZeroBitCount) }
-    var endIndex: SudokuCell9 { SudokuCell9(storage: 1 << 10) }
+    func makeIterator() -> Iterator { Iterator(self) }
     
-    #warning("Can this be improved as well?")
-    func index(after i: SudokuCell9) -> SudokuCell9 {
-        assert(i.count == 1)
-        assert(i != endIndex)
-        var i = i
-        while i != endIndex {
-            i.storage <<= 1
-            if self.contains(i) { return i }
-        }
-        return endIndex
-    }
-    
-    #warning("Can this be improved as well?")
-    func index(before i: SudokuCell9) -> SudokuCell9 {
-        assert(i.count == 1)
-        assert(i != startIndex)
-        var i = i
-        while i != startIndex {
-            i.storage >>= 1
-            if self.contains(i) { return i }
-        }
-        return startIndex
+    struct Iterator: IteratorProtocol {
 
+        private var remaining: Int16
+        
+        init(_ cell: SudokuCell9) {
+            self.remaining = Int16(truncatingIfNeeded: cell.storage)
+        }
+        
+        mutating func next() -> SudokuCell9? {
+            guard remaining != 0 else { return nil }
+            let lowestBitSet = remaining & -remaining
+            self.remaining ^= lowestBitSet
+            return SudokuCell9(storage: UInt16(truncatingIfNeeded: lowestBitSet))
+        }
+        
     }
     
-    subscript(i: SudokuCell9) -> SudokuCell9 {
-        assert(i.count == 1)
-        assert(self.contains(i))
-        return i
+}
+
+extension SudokuCell9: BidirectionalSequence {
+    
+    func makeReverseSequence() -> ReverseSequence { ReverseSequence(cell: self) }
+    
+    struct ReverseSequence: Sequence {
+        
+        let cell: SudokuCell9
+        
+        func makeIterator() -> Iterator { Iterator(cell) }
+        
+        struct Iterator: IteratorProtocol {
+            
+            private var remaining: Int16
+            
+            init(_ cell: SudokuCell9) {
+                self.remaining = Int16(truncatingIfNeeded: cell.storage)
+            }
+            
+            mutating func next() -> SudokuCell9? {
+                guard remaining != 0 else { return nil }
+                let highestSetBit = remaining.highestSetBit
+                self.remaining ^= highestSetBit
+                return SudokuCell9(storage: UInt16(truncatingIfNeeded: highestSetBit))
+            }
+            
+        }
+        
     }
     
 }

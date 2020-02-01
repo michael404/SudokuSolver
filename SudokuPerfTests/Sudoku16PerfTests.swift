@@ -17,4 +17,12 @@ class Sudoku16PerfTests: XCTestCase {
         XCTAssertEqual(solution.description, TestData16.Hard1.solutionString)
     }
     
+    func testIsValid() {
+        self.measure {
+            for _ in 0..<50 {
+                XCTAssertTrue(TestData16.Hard1.board.isValid)
+            }
+        }
+    }
+    
 }

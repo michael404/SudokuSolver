@@ -1,5 +1,4 @@
-#warning("restore bidirectional")
-protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, Collection where Element == Self {
+protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, BidirectionalSequence where Element == Self {
     init(solved: Int)
     init(character: Character)
     var isSolved: Bool { get }
