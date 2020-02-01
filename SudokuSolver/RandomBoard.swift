@@ -10,7 +10,6 @@ extension SudokuBoard {
         randomFullyFilledBoard(using: rng).randomStartingPositionFromFullyFilledBoard(using: rng)
     }
 
-
 }
 
 internal extension SudokuBoard {

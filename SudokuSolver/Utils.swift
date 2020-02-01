@@ -36,6 +36,19 @@ protocol SudokuCellIteratorStorageProtocol: SignedInteger & BinaryInteger {
     var highestSetBit: Self { get }
 }
 
+extension Int8: SudokuCellIteratorStorageProtocol {
+    
+    var highestSetBit: Int8 {
+        assert(self != 0)
+        var result = self | self >> 1
+        result |= result >> 2
+        result |= result >> 4
+        result += 1
+        return result >> 1
+    }
+    
+}
+
 extension Int16: SudokuCellIteratorStorageProtocol {
     
     var highestSetBit: Int16 {
