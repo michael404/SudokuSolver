@@ -4,13 +4,13 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol> {
     /// (15 in the same row, 15 in the same column and then 9 remaining in the box)
     /// Laid out as a countinous array of 349indexes. Use the helper
     /// method to access the values.
-    let indiciesAffectedByIndex: [[Int]]
-    let indiciesInSameRowExclusive: [[Int]]
-    let indiciesInSameColumnExclusive: [[Int]]
-    let indiciesInSameBoxExclusive: [[Int]]
-    let allIndiciesInRow: [[Int]]
-    let allIndiciesInColumn: [[Int]]
-    let allIndiciesInBox: [[Int]]
+    private let indiciesAffectedByIndex: [[Int]]
+    private let indiciesInSameRowExclusive: [[Int]]
+    private let indiciesInSameColumnExclusive: [[Int]]
+    private let indiciesInSameBoxExclusive: [[Int]]
+    private let allIndiciesInRow: [[Int]]
+    private let allIndiciesInColumn: [[Int]]
+    private let allIndiciesInBox: [[Int]]
     
     init() {
         
@@ -71,6 +71,46 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol> {
     private static func boxOffsets() -> [Int] {
         stride(from: 0, to: SudokuType.possibilities * SudokuType.sideOfBox, by: SudokuType.possibilities)
         .flatMap { $0..<($0 + SudokuType.sideOfBox) }
+    }
+    
+    // This function escapes pointers to underlying arrays, since that avoids a lot of ARC overhead
+    // We can do this because we know that the whole ConstantsStorage variable is keep alive in a global static variable
+    // and that the underlying arrays don't change, but be very carefull when using this method.
+    private func unsafeExportHelper(_ i: Int, _ array: [[Int]]) -> UnsafeBufferPointer<Int> {
+        assert(array.indices.contains(i))
+        return array.withUnsafeBufferPointer {
+            return $0[i].withUnsafeBufferPointer {
+                return $0
+            }
+        }
+    }
+    
+    func allIndiciesInRow(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, allIndiciesInRow)
+    }
+    
+    func allIndiciesInColumn(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, allIndiciesInColumn)
+    }
+    
+    func allIndiciesInBox(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, allIndiciesInBox)
+    }
+    
+    func indiciesAffectedByIndex(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, indiciesAffectedByIndex)
+    }
+    
+    func indiciesInSameRowExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, indiciesInSameRowExclusive)
+    }
+    
+    func indiciesInSameColumnExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, indiciesInSameColumnExclusive)
+    }
+    
+    func indiciesInSameBoxExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        unsafeExportHelper(i, indiciesInSameBoxExclusive)
     }
     
 }
