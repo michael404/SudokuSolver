@@ -5,6 +5,9 @@
 /// one bit set.
 struct SudokuCell9: SudokuCellProtocol {
     
+    typealias Storage = UInt16
+    typealias IteratorStorage = Int16
+    
     /// The lowest 9 bits  contains the bit set info for numbers 1 to 9.
     /// The higest 7 bits are padding and should always be set to 0.
     /// The set is considered "solved" if only one bit is set.
@@ -12,7 +15,7 @@ struct SudokuCell9: SudokuCellProtocol {
     
     static let allTrue: SudokuCell9 = SudokuCell9(storage: 0b111111111)
     
-    private init(storage: UInt16) {
+    init(storage: UInt16) {
         self.storage = storage
     }
     
@@ -55,60 +58,6 @@ extension SudokuCell9: Comparable {
     static func < (lhs: SudokuCell9, rhs: SudokuCell9) -> Bool {
         lhs.storage < rhs.storage
     }
-}
-
-extension SudokuCell9: Sequence {
-    
-    func makeIterator() -> Iterator { Iterator(self) }
-    
-    struct Iterator: IteratorProtocol {
-
-        private var remaining: Int16
-        
-        init(_ cell: SudokuCell9) {
-            self.remaining = Int16(truncatingIfNeeded: cell.storage)
-        }
-        
-        mutating func next() -> SudokuCell9? {
-            guard remaining != 0 else { return nil }
-            let lowestBitSet = remaining & -remaining
-            self.remaining ^= lowestBitSet
-            return SudokuCell9(storage: UInt16(truncatingIfNeeded: lowestBitSet))
-        }
-        
-    }
-    
-}
-
-extension SudokuCell9: BidirectionalSequence {
-    
-    func makeReverseSequence() -> ReverseSequence { ReverseSequence(cell: self) }
-    
-    struct ReverseSequence: Sequence {
-        
-        let cell: SudokuCell9
-        
-        func makeIterator() -> Iterator { Iterator(cell) }
-        
-        struct Iterator: IteratorProtocol {
-            
-            private var remaining: Int16
-            
-            init(_ cell: SudokuCell9) {
-                self.remaining = Int16(truncatingIfNeeded: cell.storage)
-            }
-            
-            mutating func next() -> SudokuCell9? {
-                guard remaining != 0 else { return nil }
-                let highestSetBit = remaining.highestSetBit
-                self.remaining ^= highestSetBit
-                return SudokuCell9(storage: UInt16(truncatingIfNeeded: highestSetBit))
-            }
-            
-        }
-        
-    }
-    
 }
 
 extension SudokuCell9: CustomStringConvertible {

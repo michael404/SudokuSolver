@@ -5,6 +5,7 @@ enum SudokuSolverError: Error {
 
 typealias RNG = RandomNumberGenerator
 
+#warning("Do we need this, or can this just be part of SudokuCellProtocol?")
 protocol BidirectionalSequence: Sequence {
     
     associatedtype ReverseSequence: Sequence where Element == ReverseSequence.Element
@@ -40,7 +41,11 @@ struct Xoroshiro: RNG {
     }
 }
 
-extension Int16 {
+protocol HighestSetBitProtocol: SignedInteger & BinaryInteger {
+    var highestSetBit: Self { get }
+}
+
+extension Int16: HighestSetBitProtocol {
     
     var highestSetBit: Int16 {
         assert(self != 0)
@@ -54,7 +59,7 @@ extension Int16 {
     
 }
 
-extension Int32 {
+extension Int32: HighestSetBitProtocol {
     
     var highestSetBit: Int32 {
         assert(self != 0)

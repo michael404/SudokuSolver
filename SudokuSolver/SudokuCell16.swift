@@ -5,13 +5,16 @@
 /// one bit set.
 struct SudokuCell16: SudokuCellProtocol {
     
+    typealias Storage = UInt16
+    typealias IteratorStorage = Int32
+    
     /// A bitset representing the 16 possible values.
     /// The set is considered "solved" if only one bit is set.
     fileprivate(set) var storage: UInt16
     
     static let allTrue: SudokuCell16 = SudokuCell16(storage: UInt16.max)
     
-    private init(storage: UInt16) {
+    init(storage: UInt16) {
         self.storage = storage
     }
     
@@ -55,59 +58,7 @@ struct SudokuCell16: SudokuCellProtocol {
     
 }
 
-extension SudokuCell16: Sequence {
-    
-    func makeIterator() -> Iterator { Iterator(self) }
-    
-    struct Iterator: IteratorProtocol {
 
-        private var remaining: Int32
-        
-        init(_ cell: SudokuCell16) {
-            self.remaining = Int32(truncatingIfNeeded: cell.storage)
-        }
-        
-        mutating func next() -> SudokuCell16? {
-            guard remaining != 0 else { return nil }
-            let lowestBitSet = remaining & -remaining
-            self.remaining ^= lowestBitSet
-            return SudokuCell16(storage: UInt16(truncatingIfNeeded: lowestBitSet))
-        }
-        
-    }
-
-}
-
-extension SudokuCell16: BidirectionalSequence {
-    
-    func makeReverseSequence() -> ReverseSequence { ReverseSequence(cell: self) }
-    
-    struct ReverseSequence: Sequence {
-        
-        let cell: SudokuCell16
-        
-        func makeIterator() -> Iterator { Iterator(cell) }
-        
-        struct Iterator: IteratorProtocol {
-            
-            private var remaining: Int32
-            
-            init(_ cell: SudokuCell16) {
-                self.remaining = Int32(truncatingIfNeeded: cell.storage)
-            }
-            
-            mutating func next() -> SudokuCell16? {
-                guard remaining != 0 else { return nil }
-                let highestSetBit = remaining.highestSetBit
-                self.remaining ^= highestSetBit
-                return SudokuCell16(storage: UInt16(truncatingIfNeeded: highestSetBit))
-            }
-            
-        }
-        
-    }
-    
-}
 
 extension SudokuCell16: CustomStringConvertible {
     var description: String { isSolved ? String(Character(self)) : " " }
