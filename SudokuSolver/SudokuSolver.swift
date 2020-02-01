@@ -5,8 +5,8 @@ extension SudokuBoard {
     }
     
     func findFirstSolution<R: RNG>(using rng: R) throws -> SudokuBoard {
-        var solver = try SudokuSolverGeneric(eliminating: self, rng: rng)
-        return try solver.guessAndEliminate(transformation: NormalGeneric.self)
+        var solver = try SudokuSolver(eliminating: self, rng: rng)
+        return try solver.guessAndEliminate(transformation: Normal.self)
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
@@ -14,8 +14,8 @@ extension SudokuBoard {
     }
     
     static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
-        var solver = try! SudokuSolverGeneric(eliminating: SudokuBoard.empty, rng: rng)
-        return try! solver.guessAndEliminate(transformation: ShuffleGeneric.self)
+        var solver = try! SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
+        return try! solver.guessAndEliminate(transformation: Shuffle.self)
     }
     
     enum NumberOfSolutions { case none, one, multiple }
@@ -26,13 +26,13 @@ extension SudokuBoard {
     
     func numberOfSolutions<R: RNG>(using rng: R) -> NumberOfSolutions {
         do {
-            var solver1 = try SudokuSolverGeneric(eliminating: self, rng: rng)
+            var solver1 = try SudokuSolver(eliminating: self, rng: rng)
             var solver2 = solver1 // No need to recompute the inital elimination
             
             // This does not seem to benefit by being run in paralell, potentially because that
             // eliminates the possibility to exit early by throwing if the board is unsolvable
-            let firstSolution = try solver1.guessAndEliminate(transformation: NormalGeneric.self)
-            let lastSolution = try solver2.guessAndEliminate(transformation: ReverseGeneric.self)
+            let firstSolution = try solver1.guessAndEliminate(transformation: Normal.self)
+            let lastSolution = try solver2.guessAndEliminate(transformation: Reverse.self)
             
             return firstSolution == lastSolution ? .one : .multiple
         } catch {
@@ -41,7 +41,7 @@ extension SudokuBoard {
     }
 }
 
-struct SudokuSolverGeneric<SudokuType: SudokuTypeProtocol, R: RNG> {
+struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     typealias Board = SudokuBoard<SudokuType>
     typealias Cell = SudokuType.Cell
@@ -84,7 +84,7 @@ struct SudokuSolverGeneric<SudokuType: SudokuTypeProtocol, R: RNG> {
         return nil
     }
     
-    mutating func guessAndEliminate<T: SudokuCellTransformationGeneric>(transformation: T.Type) throws -> Board
+    mutating func guessAndEliminate<T: SudokuCellTransformation>(transformation: T.Type) throws -> Board
         where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
         guard let index = self.unsolvedIndexWithMostConstraints() else { return board }
         for guess in T.transform(board[index], rng: &rng) {
