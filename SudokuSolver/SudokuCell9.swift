@@ -11,7 +11,7 @@ struct SudokuCell9: SudokuCellProtocol {
     /// The lowest 9 bits  contains the bit set info for numbers 1 to 9.
     /// The higest 7 bits are padding and should always be set to 0.
     /// The set is considered "solved" if only one bit is set.
-    fileprivate(set) var storage: UInt16
+    var storage: UInt16
     
     static let allTrue: SudokuCell9 = SudokuCell9(storage: 0b111111111)
     
@@ -30,25 +30,6 @@ struct SudokuCell9: SudokuCellProtocol {
         case "1"..."9": self = Self(solved: Int(String(character))!)
         default: preconditionFailure("Unexpected character \(character) in string sequence")
         }
-    }
-    
-    /// The number of possible values for this cell
-    var count: Int { storage.nonzeroBitCount }
-    
-    var isSolved: Bool { storage.nonzeroBitCount == 1 }
-    
-    var solvedValue: SudokuCell9? { isSolved ? self : nil }
-    
-    func contains(_ value: SudokuCell9) -> Bool { (storage & value.storage) != 0 }
-    
-    /// Returns true if a value was removed
-    /// Throws if the last value was removed
-    /// This method supports removing multiple values at a time
-    mutating func remove(_ value: SudokuCell9) throws -> Bool {
-        let original = self
-        self.storage &= ~value.storage
-        if self.storage == 0 { throw SudokuSolverError.unsolvable }
-        return self != original
     }
     
 }

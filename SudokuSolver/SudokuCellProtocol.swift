@@ -1,11 +1,11 @@
 protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, BidirectionalSequence where Element == Self {
     
-    associatedtype Storage: BinaryInteger
+    associatedtype Storage: BinaryInteger & FixedWidthInteger
     associatedtype IteratorStorage: HighestSetBitProtocol
     init(solved: Int)
     init(storage: Storage)
     init(character: Character)
-    var storage: Storage { get }
+    var storage: Storage { get set }
     var isSolved: Bool { get }
     var count: Int { get }
     func contains(_ value: Self) -> Bool
@@ -14,7 +14,28 @@ protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStrin
     
 }
 
-//TODO: Consider if we can implement some of the methods in an extention here
+extension SudokuCellProtocol {
+    
+    /// The number of possible values for this cell
+    var count: Int { storage.nonzeroBitCount }
+    
+    var isSolved: Bool { storage.nonzeroBitCount == 1 }
+    
+    var solvedValue: Self? { isSolved ? self : nil }
+    
+    func contains(_ value: Self) -> Bool { (storage & value.storage) != 0 }
+    
+    /// Returns true if a value was removed
+    /// Throws if the last value was removed
+    /// This method supports removing multiple values at a time
+    mutating func remove(_ value: Self) throws -> Bool {
+        let original = self
+        self.storage &= ~value.storage
+        if self.storage == 0 { throw SudokuSolverError.unsolvable }
+        return self != original
+    }
+    
+}
 
 extension SudokuCellProtocol {
     

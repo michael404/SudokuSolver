@@ -10,7 +10,7 @@ struct SudokuCell16: SudokuCellProtocol {
     
     /// A bitset representing the 16 possible values.
     /// The set is considered "solved" if only one bit is set.
-    fileprivate(set) var storage: UInt16
+    var storage: UInt16
     
     static let allTrue: SudokuCell16 = SudokuCell16(storage: UInt16.max)
     
@@ -35,25 +35,6 @@ struct SudokuCell16: SudokuCellProtocol {
         case "F": self = Self(solved: 15)
         default: preconditionFailure("Unexpected character \(character) in string sequence")
         }
-    }
-    
-    /// The number of possible values for this cell
-    var count: Int { storage.nonzeroBitCount }
-    
-    var isSolved: Bool { storage.nonzeroBitCount == 1 }
-    
-    var solvedValue: SudokuCell16? { isSolved ? self : nil }
-    
-    func contains(_ value: SudokuCell16) -> Bool { (storage & value.storage) != 0 }
-    
-    /// Returns true if a value was removed
-    /// Throws if the last value was removed
-    /// This method supports removing multiple values at a time
-    mutating func remove(_ value: SudokuCell16) throws -> Bool {
-        let original = self
-        self.storage &= ~value.storage
-        if self.storage == 0 { throw SudokuSolverError.unsolvable }
-        return self != original
     }
     
 }
