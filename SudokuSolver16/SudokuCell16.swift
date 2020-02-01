@@ -16,7 +16,7 @@ struct SudokuCell16: SudokuCellProtocol {
     }
     
     init(solved value: Int) {
-        assert((0..<16).contains(value))
+        assert((0..<16).contains(value), "\(value) is not a valid value")
         self.storage = 1 << value
     }
     
@@ -55,61 +55,65 @@ struct SudokuCell16: SudokuCellProtocol {
     
 }
 
-extension SudokuCell16: BidirectionalCollection {
+#warning("restore bidirectional")
+extension SudokuCell16: Collection {
     
     enum Index: Comparable {
-        case index(SudokuCell16)
+        case inRange(UInt16)
         case end
         
         static func < (lhs: Index, rhs: Index) -> Bool {
             switch (lhs, rhs) {
             case (.end, _): return false
-            case (.index, .end): return true
-            case let (.index(i1), .index(i2)): return i1.storage < i2.storage
+            case (.inRange, .end): return true
+            case let (.inRange(i1), .inRange(i2)): return i1 < i2
             }
         }
         
     }
     
-    var startIndex: Index { .index(SudokuCell16(storage: 1 << self.storage.trailingZeroBitCount)) }
+    var startIndex: Index { .inRange(self.storage) }
     var endIndex: Index { .end }
     
     func index(after i: Index) -> Index {
         switch i {
         case .end:
             fatalError("Tried to advance beyond endIndex")
-        case .index(let cell) where cell == SudokuCell16(solved: 15):
-            return endIndex
-        case .index(var cell):
-            assert(cell.count == 1)
-            cell.storage <<= 1
-            return self.contains(cell) ? .index(cell) : index(after: .index(cell))
+        case .inRange(let value):
+            assert(value != 0)
+            let value = Int32(value)
+            //TODO: do we need 32 signed here?
+            let lowestBitSet = value & -value
+            let lowestBitRemoved = value ^ lowestBitSet
+            if lowestBitRemoved == 0 { return .end }
+            return .inRange(UInt16(truncatingIfNeeded: lowestBitRemoved))
         }
     }
     
-    func index(before i: Index) -> Index {
-        switch i {
-        case startIndex:
-            fatalError("Tried to advance before startIndex")
-        case .end where self.contains(SudokuCell16(solved: 15)):
-            return .index(SudokuCell16(solved: 15))
-        case .end:
-            return index(before: .index(SudokuCell16(solved: 15)))
-        case .index(var cell):
-            assert(cell.count == 1)
-            cell.storage >>= 1
-            return self.contains(cell) ? .index(cell) : index(before: .index(cell))
-        }
-
-    }
+    #warning("improve this implementations")
+//    func index(before i: Index) -> Index {
+//        switch i {
+//        case startIndex:
+//            fatalError("Tried to advance before startIndex")
+//        case .end where self.contains(SudokuCell16(solved: 15)):
+//            return .index(SudokuCell16(solved: 15))
+//        case .end:
+//            return index(before: .index(SudokuCell16(solved: 15)))
+//        case .index(var cell):
+//            assert(cell.count == 1)
+//            cell.storage >>= 1
+//            return self.contains(cell) ? .index(cell) : index(before: .index(cell))
+//        }
+//    }
     
     subscript(i: Index) -> SudokuCell16 {
         switch i {
         case .end: fatalError("Subscripted with .end")
-        case .index(let i):
-            assert(i.count == 1)
-            assert(self.contains(i), "Tried to subscript with \(i) in cell which contains only \(map { $0.description })")
-            return i
+        case .inRange(let i):
+            assert(i != 0)
+            return Self(solved: i.trailingZeroBitCount)
+//            assert(self.contains(i), "Tried to subscript with \(i) in cell which contains only \(map { $0.description })")
+//            return i
         }
     }
     

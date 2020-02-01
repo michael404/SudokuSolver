@@ -16,6 +16,21 @@ class SudokuPerfTests: XCTestCase {
         }
     }
     
+    
+    func testPerfSuiteGeneric() {
+        var solutions = [SudokuBoardGeneric<Sudoku9>]()
+        solutions.reserveCapacity(TestDataGeneric9.PerfTestSuite.boards.count * 10)
+        self.measure {
+            for board in TestDataGeneric9.PerfTestSuite.boards {
+                let solvedBoard = try! board.findFirstSolution()
+                solutions.append(solvedBoard)
+            }
+        }
+        for (solvedBoard, expectedSolution) in zip(solutions, TestDataGeneric9.PerfTestSuite.solutions) {
+            XCTAssertEqual(solvedBoard, expectedSolution)
+        }
+    }
+    
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard.empty
         self.measure {

@@ -17,8 +17,10 @@ enum Shuffle16: SudokuCell16Transformation {
     }
 }
 
+#warning("change back to reversedcollection")
 enum Reverse16: SudokuCell16Transformation {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuCell16, rng: inout R) -> ReversedCollection<SudokuCell16> {
+//    static func transform<R: RNG>(_ possibleCellValues: SudokuCell16, rng: inout R) -> ReversedCollection<SudokuCell16> {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell16, rng: inout R) -> [SudokuCell16] {
         possibleCellValues.reversed()
     }
 }

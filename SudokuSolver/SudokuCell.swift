@@ -62,6 +62,7 @@ extension SudokuCell: BidirectionalCollection {
     var startIndex: SudokuCell { SudokuCell(storage: 1 << self.storage.trailingZeroBitCount) }
     var endIndex: SudokuCell { SudokuCell(storage: 1 << 10) }
     
+    #warning("Can this be improved as well?")
     func index(after i: SudokuCell) -> SudokuCell {
         assert(i.count == 1)
         assert(i != endIndex)
@@ -73,6 +74,7 @@ extension SudokuCell: BidirectionalCollection {
         return endIndex
     }
     
+    #warning("Can this be improved as well?")
     func index(before i: SudokuCell) -> SudokuCell {
         assert(i.count == 1)
         assert(i != startIndex)

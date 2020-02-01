@@ -6,6 +6,8 @@ protocol SudokuCellTransformationGeneric {
 
 enum NormalGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGeneric {
     
+    @_specialize(where SudokuType == Sudoku9, R == Xoroshiro)
+    @_specialize(where SudokuType == Sudoku16, R == Xoroshiro)
     static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuType.Cell {
         possibleCellValues
     }
@@ -19,8 +21,10 @@ enum ShuffleGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGen
     }
 }
 
+#warning("can we get a reversedcollection here?")
 enum ReverseGeneric<SudokuType: SudokuTypeProtocol>: SudokuCellTransformationGeneric {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> ReversedCollection<SudokuType.Cell> {
+//    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> ReversedCollection<SudokuType.Cell> {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> [SudokuType.Cell] {
         possibleCellValues.reversed()
     }
 }

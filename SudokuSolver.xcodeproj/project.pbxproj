@@ -61,6 +61,8 @@
 		4C3ED0EB23E4C553006006A8 /* SudokuGeneric16TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ED0EA23E4C553006006A8 /* SudokuGeneric16TestData.swift */; };
 		4C3ED0ED23E4C5FB006006A8 /* SudokuSolverGeneric16Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ED0EC23E4C5FB006006A8 /* SudokuSolverGeneric16Tests.swift */; };
 		4C3ED0EE23E4C676006006A8 /* SudokuGeneric16TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ED0EA23E4C553006006A8 /* SudokuGeneric16TestData.swift */; };
+		4C3ED0F023E5C113006006A8 /* SudokuGeneric9TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ED0EF23E5C113006006A8 /* SudokuGeneric9TestData.swift */; };
+		4C3ED0F123E5C117006006A8 /* SudokuGeneric9TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3ED0EF23E5C113006006A8 /* SudokuGeneric9TestData.swift */; };
 		4C41E0AA23CAF53500CDEB5F /* SudokuCell16Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C41E0A923CAF53500CDEB5F /* SudokuCell16Tests.swift */; };
 		4C41E0AC23CAFD0600CDEB5F /* SudokuSolver16Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C41E0AB23CAFD0600CDEB5F /* SudokuSolver16Tests.swift */; };
 		4C425077206192A9000FF622 /* SudokuSolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C425076206192A9000FF622 /* SudokuSolverTests.swift */; };
@@ -114,6 +116,7 @@
 		4C3ED0E823E4C4E6006006A8 /* SudokuGenericTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuGenericTests.swift; sourceTree = "<group>"; };
 		4C3ED0EA23E4C553006006A8 /* SudokuGeneric16TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuGeneric16TestData.swift; sourceTree = "<group>"; };
 		4C3ED0EC23E4C5FB006006A8 /* SudokuSolverGeneric16Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolverGeneric16Tests.swift; sourceTree = "<group>"; };
+		4C3ED0EF23E5C113006006A8 /* SudokuGeneric9TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuGeneric9TestData.swift; sourceTree = "<group>"; };
 		4C41E0A923CAF53500CDEB5F /* SudokuCell16Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCell16Tests.swift; sourceTree = "<group>"; };
 		4C41E0AB23CAFD0600CDEB5F /* SudokuSolver16Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolver16Tests.swift; sourceTree = "<group>"; };
 		4C425076206192A9000FF622 /* SudokuSolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolverTests.swift; sourceTree = "<group>"; };
@@ -178,6 +181,7 @@
 				4C41E0AB23CAFD0600CDEB5F /* SudokuSolver16Tests.swift */,
 				4C41E0A923CAF53500CDEB5F /* SudokuCell16Tests.swift */,
 				4C3ED0EA23E4C553006006A8 /* SudokuGeneric16TestData.swift */,
+				4C3ED0EF23E5C113006006A8 /* SudokuGeneric9TestData.swift */,
 				4C3ED0E823E4C4E6006006A8 /* SudokuGenericTests.swift */,
 				4C3ED0EC23E4C5FB006006A8 /* SudokuSolverGeneric16Tests.swift */,
 			);
@@ -369,6 +373,7 @@
 				4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */,
 				4CD2143B2025EF8100018125 /* SudokuTestData.swift in Sources */,
 				4C3ED0D523E4B34E006006A8 /* SudokuTypes.swift in Sources */,
+				4C3ED0F023E5C113006006A8 /* SudokuGeneric9TestData.swift in Sources */,
 				4CDE712123CA3E6A002071E4 /* Transformations16.swift in Sources */,
 				4C3ED0DA23E4B53B006006A8 /* SudokuBoardGeneric.swift in Sources */,
 				4C38A13B20699191001A8724 /* Constants.swift in Sources */,
@@ -409,6 +414,7 @@
 				4C3ED0D623E4B34F006006A8 /* SudokuTypes.swift in Sources */,
 				4C007D6823C3CF8E00A46FDE /* Sudoku16TestData.swift in Sources */,
 				4C23C5B0237F2A2900A31101 /* SudokuTestData.swift in Sources */,
+				4C3ED0F123E5C117006006A8 /* SudokuGeneric9TestData.swift in Sources */,
 				4C3ED0E723E4BC51006006A8 /* TransformationsGeneric.swift in Sources */,
 				4CDE712023CA3E68002071E4 /* SudokuSolver16.swift in Sources */,
 				4C23C5AC237F2A1300A31101 /* FixedArray81.swift in Sources */,
