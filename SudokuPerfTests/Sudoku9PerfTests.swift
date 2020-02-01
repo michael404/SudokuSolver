@@ -1,23 +1,31 @@
 import XCTest
 
-class SudokuPerfTests: XCTestCase {
+class Sudoku9PerfTests: XCTestCase {
     
     func testPerfSuite() {
-        var solutions = [SudokuBoard]()
-        solutions.reserveCapacity(TestData.PerfTestSuite.boards.count * 10)
+        var solutions = [SudokuBoard9]()
+        solutions.reserveCapacity(TestData9.PerfTestSuite.boards.count * 10)
         self.measure {
-            for board in TestData.PerfTestSuite.boards {
+            for board in TestData9.PerfTestSuite.boards {
                 let solvedBoard = try! board.findFirstSolution()
                 solutions.append(solvedBoard)
             }
         }
-        for (solvedBoard, expectedSolution) in zip(solutions, TestData.PerfTestSuite.solutions) {
+        for (solvedBoard, expectedSolution) in zip(solutions, TestData9.PerfTestSuite.solutions) {
             XCTAssertEqual(solvedBoard, expectedSolution)
         }
     }
     
+    func testIsValid() {
+        self.measure {
+            for board in TestData9.PerfTestSuite.boards {
+                XCTAssertTrue(board.isValid)
+            }
+        }
+    }
+    
     func testPerfRandomFullyFilledBoard() {
-        var board = SudokuBoard.empty
+        var board = SudokuBoard9.empty
         self.measure {
             let rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
@@ -31,7 +39,7 @@ class SudokuPerfTests: XCTestCase {
     }
     
     func testPerfRandomStartingBoard() {
-        var board = SudokuBoard.empty
+        var board = SudokuBoard9.empty
         self.measure {
             var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {

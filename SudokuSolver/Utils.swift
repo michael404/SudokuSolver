@@ -31,3 +31,36 @@ struct Xoroshiro: RNG {
         return result
     }
 }
+
+protocol SudokuCellIteratorStorageProtocol: SignedInteger & BinaryInteger {
+    var highestSetBit: Self { get }
+}
+
+extension Int16: SudokuCellIteratorStorageProtocol {
+    
+    var highestSetBit: Int16 {
+        assert(self != 0)
+        var result = self | self >> 1
+        result |= result >> 2
+        result |= result >> 4
+        result |= result >> 8
+        result += 1
+        return result >> 1
+    }
+    
+}
+
+extension Int32: SudokuCellIteratorStorageProtocol {
+    
+    var highestSetBit: Int32 {
+        assert(self != 0)
+        var result = self | self >> 1
+        result |= result >> 2
+        result |= result >> 4
+        result |= result >> 8
+        result |= result >> 16
+        result += 1
+        return result >> 1
+    }
+    
+}
