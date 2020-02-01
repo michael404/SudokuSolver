@@ -39,8 +39,6 @@ struct SudokuCell16: SudokuCellProtocol {
     
 }
 
-
-
 extension SudokuCell16: CustomStringConvertible {
     var description: String { isSolved ? String(Character(self)) : " " }
 }

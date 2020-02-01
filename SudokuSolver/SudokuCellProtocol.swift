@@ -1,15 +1,11 @@
 protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, BidirectionalSequence where Element == Self {
     
     associatedtype Storage: BinaryInteger & FixedWidthInteger
-    associatedtype IteratorStorage: HighestSetBitProtocol
+    associatedtype IteratorStorage: SudokuCellIteratorStorageProtocol
     init(solved: Int)
     init(storage: Storage)
     init(character: Character)
     var storage: Storage { get set }
-    var isSolved: Bool { get }
-    var count: Int { get }
-    func contains(_ value: Self) -> Bool
-    mutating func remove(_ value: Self) throws -> Bool
     static var allTrue: Self { get }
     
 }

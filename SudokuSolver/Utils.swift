@@ -41,11 +41,11 @@ struct Xoroshiro: RNG {
     }
 }
 
-protocol HighestSetBitProtocol: SignedInteger & BinaryInteger {
+protocol SudokuCellIteratorStorageProtocol: SignedInteger & BinaryInteger {
     var highestSetBit: Self { get }
 }
 
-extension Int16: HighestSetBitProtocol {
+extension Int16: SudokuCellIteratorStorageProtocol {
     
     var highestSetBit: Int16 {
         assert(self != 0)
@@ -59,7 +59,7 @@ extension Int16: HighestSetBitProtocol {
     
 }
 
-extension Int32: HighestSetBitProtocol {
+extension Int32: SudokuCellIteratorStorageProtocol {
     
     var highestSetBit: Int32 {
         assert(self != 0)

@@ -34,13 +34,6 @@ struct SudokuCell9: SudokuCellProtocol {
     
 }
 
-// Needed to be able to use SudokuCell as its own index type
-extension SudokuCell9: Comparable {
-    static func < (lhs: SudokuCell9, rhs: SudokuCell9) -> Bool {
-        lhs.storage < rhs.storage
-    }
-}
-
 extension SudokuCell9: CustomStringConvertible {
     var description: String { isSolved ? String(Int(self)) : " " }
 }
