@@ -1,23 +1,19 @@
-struct SudokuBoard: Equatable {
+struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Equatable {
     
-    private var cells: FixedArray81<SudokuCell>
+    typealias Cell = SudokuType.Cell
     
-    static let empty: SudokuBoard = SudokuBoard(empty: ())
+    //TODO: Consider if we need a FixedArray here for Sudoku9, and in that case, add an associatedtype to SudokuType
+    private var cells: [Cell]
+    
+    static var empty: SudokuBoard { SudokuBoard(empty: ()) }
     
     private init(empty: ()) {
-        self.cells = FixedArray81(repeating: SudokuCell.allTrue)
+        self.cells = Array(repeating: Cell.allTrue, count: SudokuType.cells)
     }
     
     init<S: StringProtocol>(_ numbers: S) {
-        precondition(numbers.count == 81, "Must pass in 81 SudokuCell elements")
-        self.cells = FixedArray81(numbers.lazy.map({
-            switch $0 {
-            case ".": return SudokuCell.allTrue
-            case "1"..."9": return SudokuCell(solved: Int(String($0))!)
-            default: preconditionFailure("Unexpected character \($0) in string sequence")
-            }
-        }))
-        
+        precondition(numbers.count == SudokuType.cells, "Must pass in \(SudokuType.cells) elements")
+        self.cells = numbers.map(Cell.init(character:))
     }
     
     /// Indicates if this Sudoku is valid
@@ -29,46 +25,45 @@ struct SudokuBoard: Equatable {
     
     var clues: Int { lazy.filter({ $0.isSolved }).count }
     
-    var counts: FixedArray81<UInt8> {
-        self.cells.map { UInt8(truncatingIfNeeded: $0.count) }
-    }
-    
 }
 
 extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
-    subscript(position: Int) -> SudokuCell {
+    var startIndex: Int { cells.startIndex }
+    var endIndex: Int { cells.endIndex }
+    subscript(position: Int) -> Cell {
         @inline(__always) get { cells[position] }
         @inline(__always) set { cells[position] = newValue }
     }
-    
-    var startIndex: Int { cells.startIndex }
-    var endIndex: Int { cells.endIndex }
-    
+
 }
 
-extension SudokuBoard: CustomStringConvertible, CustomDebugStringConvertible {
-
-    var description: String {
-        var i = makeIterator()
-        var description = "+-----+-----+-----+\n"
-        for _ in 1...3 {
-            for _ in 1...3 {
-                description += """
-                               |\(i.next()!) \(i.next()!) \(i.next()!)|\
-                               \(i.next()!) \(i.next()!) \(i.next()!)|\
-                               \(i.next()!) \(i.next()!) \(i.next()!)|\n
-                               """
-            }
-            description += "+-----+-----+-----+\n"
-        }
-        return description
-    }
+extension SudokuBoard: CustomStringConvertible {
     
-    var debugDescription: String {
+    var description: String {
         reduce(into: "") { result, cell in
             result.append(cell.debugDescription)
         }
+    }
+    
+}
+
+extension SudokuBoard where SudokuType == Sudoku9 {
+    
+    var niceDescription: String {
+        var i = makeIterator()
+         var description = "+-----+-----+-----+\n"
+         for _ in 1...3 {
+             for _ in 1...3 {
+                 description += """
+                                |\(i.next()!) \(i.next()!) \(i.next()!)|\
+                                \(i.next()!) \(i.next()!) \(i.next()!)|\
+                                \(i.next()!) \(i.next()!) \(i.next()!)|\n
+                                """
+             }
+             description += "+-----+-----+-----+\n"
+         }
+         return description
     }
     
     private static var detailedDescriptionEmpty: [Character] {
@@ -111,12 +106,12 @@ extension SudokuBoard: CustomStringConvertible, CustomDebugStringConvertible {
         for cell in 0..<81 {
             let boxStartIndex = 57 + (6 * cell) + (114 * (cell / 9))
             for cellValue in 1...5 {
-                if self[cell].contains(SudokuCell(solved: cellValue)) {
+                if self[cell].contains(SudokuCell9(solved: cellValue)) {
                     result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
                 }
             }
             for cellValue in 6...9 {
-                if self[cell].contains(SudokuCell(solved: cellValue)) {
+                if self[cell].contains(SudokuCell9(solved: cellValue)) {
                     result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
                 }
             }
@@ -125,5 +120,5 @@ extension SudokuBoard: CustomStringConvertible, CustomDebugStringConvertible {
         return String(result)
         
     }
+    
 }
-

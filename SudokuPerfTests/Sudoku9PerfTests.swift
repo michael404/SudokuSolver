@@ -1,38 +1,23 @@
 import XCTest
 
-class SudokuPerfTests: XCTestCase {
+class Sudoku9PerfTests: XCTestCase {
     
     func testPerfSuite() {
-        var solutions = [SudokuBoard]()
-        solutions.reserveCapacity(TestData.PerfTestSuite.boards.count * 10)
+        var solutions = [SudokuBoard9]()
+        solutions.reserveCapacity(TestData9.PerfTestSuite.boards.count * 10)
         self.measure {
-            for board in TestData.PerfTestSuite.boards {
+            for board in TestData9.PerfTestSuite.boards {
                 let solvedBoard = try! board.findFirstSolution()
                 solutions.append(solvedBoard)
             }
         }
-        for (solvedBoard, expectedSolution) in zip(solutions, TestData.PerfTestSuite.solutions) {
-            XCTAssertEqual(solvedBoard, expectedSolution)
-        }
-    }
-    
-    
-    func testPerfSuiteGeneric() {
-        var solutions = [SudokuBoardGeneric<Sudoku9>]()
-        solutions.reserveCapacity(TestDataGeneric9.PerfTestSuite.boards.count * 10)
-        self.measure {
-            for board in TestDataGeneric9.PerfTestSuite.boards {
-                let solvedBoard = try! board.findFirstSolution()
-                solutions.append(solvedBoard)
-            }
-        }
-        for (solvedBoard, expectedSolution) in zip(solutions, TestDataGeneric9.PerfTestSuite.solutions) {
+        for (solvedBoard, expectedSolution) in zip(solutions, TestData9.PerfTestSuite.solutions) {
             XCTAssertEqual(solvedBoard, expectedSolution)
         }
     }
     
     func testPerfRandomFullyFilledBoard() {
-        var board = SudokuBoard.empty
+        var board = SudokuBoard9.empty
         self.measure {
             let rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {
@@ -46,7 +31,7 @@ class SudokuPerfTests: XCTestCase {
     }
     
     func testPerfRandomStartingBoard() {
-        var board = SudokuBoard.empty
+        var board = SudokuBoard9.empty
         self.measure {
             var rng = Xoroshiro(seed: (42, 42))
             for _ in 0..<10 {

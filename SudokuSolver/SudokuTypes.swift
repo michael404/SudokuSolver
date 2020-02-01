@@ -12,7 +12,7 @@ extension SudokuTypeProtocol {
 }
 
 enum Sudoku9: SudokuTypeProtocol {
-    typealias Cell = SudokuCell
+    typealias Cell = SudokuCell9
     static var sideOfBox: Int { 3 }
     static var constants: ConstantsStorage<Self> = ConstantsStorage()
 }
@@ -22,3 +22,6 @@ enum Sudoku16: SudokuTypeProtocol {
     static var sideOfBox: Int { 4 }
     static var constants: ConstantsStorage<Self> = ConstantsStorage()
 }
+
+typealias SudokuBoard9 = SudokuBoard<Sudoku9>
+typealias SudokuBoard16 = SudokuBoard<Sudoku16>
