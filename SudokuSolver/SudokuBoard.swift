@@ -1,6 +1,6 @@
 struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Equatable {
     
-    typealias Cell = SudokuType.Cell
+    typealias Cell = SudokuCell<SudokuType>
     
     //TODO: Consider if we need a FixedArray here for Sudoku9, and in that case, add an associatedtype to SudokuType
     private var cells: [Cell]
@@ -13,7 +13,7 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Equatable {
     
     init<S: StringProtocol>(_ numbers: S) {
         precondition(numbers.count == SudokuType.cells, "Must pass in \(SudokuType.cells) elements")
-        self.cells = numbers.map(Cell.init(character:))
+        self.cells = numbers.map(Cell.init)
     }
     
     /// Indicates if this Sudoku is valid
@@ -106,12 +106,12 @@ extension SudokuBoard where SudokuType == Sudoku9 {
         for cell in 0..<81 {
             let boxStartIndex = 57 + (6 * cell) + (114 * (cell / 9))
             for cellValue in 1...5 {
-                if self[cell].contains(SudokuCell9(solved: cellValue)) {
+                if self[cell].contains(SudokuCell9(String(cellValue))) {
                     result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
                 }
             }
             for cellValue in 6...9 {
-                if self[cell].contains(SudokuCell9(solved: cellValue)) {
+                if self[cell].contains(SudokuCell9(String(cellValue))) {
                     result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
                 }
             }

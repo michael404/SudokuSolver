@@ -1,18 +1,18 @@
 protocol SudokuCellTransformation {
     associatedtype SudokuType: SudokuTypeProtocol
-    associatedtype CellSequence: Sequence where CellSequence.Element == SudokuType.Cell
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> CellSequence
+    associatedtype CellSequence: Sequence where CellSequence.Element == SudokuCell<SudokuType>
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell<SudokuType>, rng: inout R) -> CellSequence
 }
 
 enum Normal<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
     
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuType.Cell {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell<SudokuType>, rng: inout R) -> SudokuCell<SudokuType> {
         possibleCellValues
     }
 }
 
 enum Shuffle<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> [SudokuType.Cell] {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell<SudokuType>, rng: inout R) -> [SudokuCell<SudokuType>] {
         var result = Array(possibleCellValues)
         result.shuffle(using: &rng)
         return result
@@ -20,7 +20,7 @@ enum Shuffle<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
 }
 
 enum Reverse<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuType.Cell, rng: inout R) -> SudokuCellReverseSequence<SudokuType.Cell> {
+    static func transform<R: RNG>(_ possibleCellValues: SudokuCell<SudokuType>, rng: inout R) -> SudokuCell<SudokuType>.ReverseSequence {
         possibleCellValues.makeReverseSequence()
     }
 }

@@ -75,36 +75,33 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(SudokuCell9(solved: i)))
+            XCTAssertTrue(allTrue.contains(SudokuCell9(String(i))))
         }
         
         var someFalse = allTrue
-        XCTAssertTrue(try someFalse.remove(1))
-        XCTAssertTrue(try someFalse.remove(7))
-        XCTAssertFalse(try someFalse.remove(7))
+        XCTAssertTrue(try someFalse.remove(SudokuCell("1")))
+        XCTAssertTrue(try someFalse.remove(SudokuCell("7")))
+        XCTAssertFalse(try someFalse.remove(SudokuCell("7")))
         XCTAssertEqual(someFalse.count, 7)
         XCTAssertFalse(someFalse.isSolved)
         XCTAssertNil(someFalse.solvedValue)
-        XCTAssertFalse(someFalse.contains(1))
-        XCTAssertFalse(someFalse.contains(7))
-        XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9])
+        XCTAssertFalse(someFalse.contains(SudokuCell("1")))
+        XCTAssertFalse(someFalse.contains(SudokuCell("7")))
+        XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9].map(String.init).map(SudokuCell.init))
         
-        XCTAssertTrue(try someFalse.remove(2))
-        XCTAssertTrue(try someFalse.remove(3))
-        XCTAssertTrue(try someFalse.remove(4))
-        XCTAssertTrue(try someFalse.remove(5))
-        XCTAssertTrue(try someFalse.remove(6))
-        XCTAssertTrue(try someFalse.remove(8))
+        for i in 2...8 {
+            XCTAssertTrue(try someFalse.remove(SudokuCell(String(i))))
+        }
         XCTAssertEqual(someFalse.count, 1)
         XCTAssertTrue(someFalse.isSolved)
-        XCTAssertEqual(someFalse.solvedValue, 9)
-        XCTAssertEqual(Array(someFalse), [9])
+        XCTAssertEqual(someFalse.solvedValue, SudokuCell("9"))
+        XCTAssertEqual(Array(someFalse), [SudokuCell("9")])
         
-        let oneValue = SudokuCell9(solved: 6)
+        let oneValue = SudokuCell9("6")
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
-        XCTAssertEqual(oneValue.solvedValue, 6)
-        XCTAssertEqual(Array(oneValue), [6])
+        XCTAssertEqual(oneValue.solvedValue, SudokuCell("6"))
+        XCTAssertEqual(Array(oneValue), [SudokuCell("6")])
     }
         
 }

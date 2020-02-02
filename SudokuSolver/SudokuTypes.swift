@@ -1,6 +1,9 @@
 protocol SudokuTypeProtocol {
-    associatedtype Cell: SudokuCellProtocol
+    associatedtype CellStorage: BinaryInteger & FixedWidthInteger
+    associatedtype CellIteratorStorage: SudokuCellIteratorStorageProtocol
+    static var allTrueCellStorage: CellStorage { get }
     static var sideOfBox: Int { get }
+    static var solvedRepresentation: [String] { get }
     static var constants: ConstantsStorage<Self> { get }
 }
 
@@ -9,26 +12,44 @@ extension SudokuTypeProtocol {
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
     static var allCells: Range<Int> { 0..<cells }
+    //TODO: Consider if this needs to be a stored property on the concrete types instead
+    static var solvedRepresentationReversed: [String: Int] {
+        assert(solvedRepresentation.count == possibilities, "solvedRepresentation count was not \(possibilities) as expected")
+        return Dictionary.init(uniqueKeysWithValues: solvedRepresentation.enumerated().map { ($1, $0) })
+    }
 }
 
 enum Sudoku4: SudokuTypeProtocol {
-    typealias Cell = SudokuCell4
+    typealias CellStorage = UInt8
+    typealias CellIteratorStorage = Int8
+    static var allTrueCellStorage: UInt8 = 0b1111
     static var sideOfBox: Int { 2 }
+    static var solvedRepresentation = (1...4).map(String.init)
     static var constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
 enum Sudoku9: SudokuTypeProtocol {
-    typealias Cell = SudokuCell9
+    typealias CellStorage = UInt16
+    typealias CellIteratorStorage = Int16
+    static var allTrueCellStorage: UInt16 = 0b111111111
     static var sideOfBox: Int { 3 }
+    static var solvedRepresentation = (1...9).map(String.init)
     static var constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
 enum Sudoku16: SudokuTypeProtocol {
-    typealias Cell = SudokuCell16
+    typealias CellStorage = UInt16
+    typealias CellIteratorStorage = Int32
+    static var allTrueCellStorage: UInt16 = 0b1111111111111111
     static var sideOfBox: Int { 4 }
+    static var solvedRepresentation = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
     static var constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
 typealias SudokuBoard4 = SudokuBoard<Sudoku4>
 typealias SudokuBoard9 = SudokuBoard<Sudoku9>
 typealias SudokuBoard16 = SudokuBoard<Sudoku16>
+
+typealias SudokuCell4 = SudokuCell<Sudoku4>
+typealias SudokuCell9 = SudokuCell<Sudoku9>
+typealias SudokuCell16 = SudokuCell<Sudoku16>

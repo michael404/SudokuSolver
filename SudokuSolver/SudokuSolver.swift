@@ -44,7 +44,7 @@ extension SudokuBoard {
 struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     typealias Board = SudokuBoard<SudokuType>
-    typealias Cell = SudokuType.Cell
+    typealias Cell = SudokuCell<SudokuType>
     var board: Board
     var rng: R
     
