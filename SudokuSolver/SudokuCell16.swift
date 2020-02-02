@@ -47,13 +47,6 @@ extension SudokuCell16: CustomDebugStringConvertible {
     var debugDescription: String { isSolved ? String(Character(self)) : "." }
 }
 
-extension SudokuCell16: ExpressibleByIntegerLiteral {
-    init(integerLiteral value: Int) {
-        self.init(solved: value)
-    }
-}
-
-
 extension Int {
     
     init(_ value: SudokuCell16) {

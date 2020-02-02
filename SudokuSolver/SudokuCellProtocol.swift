@@ -1,4 +1,4 @@
-protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, Sequence where Element == Self {
+protocol SudokuCellProtocol: Hashable, CustomStringConvertible, CustomDebugStringConvertible, ExpressibleByIntegerLiteral, Sequence where Element == Self {
     
     associatedtype Storage: BinaryInteger & FixedWidthInteger
     associatedtype IteratorStorage: SudokuCellIteratorStorageProtocol
@@ -29,6 +29,10 @@ extension SudokuCellProtocol {
         self.storage &= ~value.storage
         if self.storage == 0 { throw SudokuSolverError.unsolvable }
         return self != original
+    }
+    
+    init(integerLiteral value: Int) {
+        self.init(solved: value)
     }
     
 }
