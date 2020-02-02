@@ -89,8 +89,8 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertFalse(someFalse.contains(SudokuCell("7")))
         XCTAssertEqual(Array(someFalse), [2,3,4,5,6,8,9].map(String.init).map(SudokuCell.init))
         
-        for i in 2...8 {
-            XCTAssertTrue(try someFalse.remove(SudokuCell(String(i))))
+        for i in ["2", "3", "4", "5", "6", "8"] {
+            XCTAssertTrue(try someFalse.remove(SudokuCell(String(i))), "Expected true when removing value \(i)")
         }
         XCTAssertEqual(someFalse.count, 1)
         XCTAssertTrue(someFalse.isSolved)
