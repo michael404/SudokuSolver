@@ -3,25 +3,25 @@ import XCTest
 class SudokuSolver9Tests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
-        XCTAssertFalse(TestData9.Hard1.board.isFullyFilled)
-        XCTAssertTrue(TestData9.Hard1.board.isValid)
+        XCTAssertFalse(TestData9.hard1.board.isFullyFilled)
+        XCTAssertTrue(TestData9.hard1.board.isValid)
         
         do {
-            let solution = try! TestData9.Hard1.board.findFirstSolution()
+            let solution = try! TestData9.hard1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData9.Hard1.solutionString)
+            XCTAssertEqual(solution.description, TestData9.hard1.solutionString)
         }
         
     }
     
     func testFailingBoard() {
-        XCTAssertFalse(TestData9.Invalid.board.isValid)
-        XCTAssertThrowsError(try TestData9.Invalid.board.findFirstSolution())
+        XCTAssertFalse(TestData9.invalid.isValid)
+        XCTAssertThrowsError(try TestData9.invalid.findFirstSolution())
     }
     
     func testFullyFilled() {
-        let filledBoard = TestData9.Filled.board
+        let filledBoard = TestData9.filled
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
@@ -30,12 +30,12 @@ class SudokuSolver9Tests: XCTestCase {
     }
     
     func testNumberOfSolutions() {
-        XCTAssertEqual(TestData9.Hard1.board.numberOfSolutions(), .one)
-        XCTAssertEqual(TestData9.Hard2.board.numberOfSolutions(), .one)
-        XCTAssertEqual(TestData9.MultipleSolutions.board.numberOfSolutions(), .multiple)
-        XCTAssertEqual(TestData9.Invalid.board.numberOfSolutions(), .none)
-        XCTAssertEqual(SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.").numberOfSolutions(), .multiple)
-        XCTAssertEqual(SudokuBoard9("63.8..142.........5..4.239...4.8..6.....6..2..6.7..435.5....98.4...9.....2.......").numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData9.hard1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData9.hard1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData9.multipleSolutions.numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData9.invalid.numberOfSolutions(), .none)
+    XCTAssertEqual(SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.").numberOfSolutions(), .multiple)
+    XCTAssertEqual(SudokuBoard9("63.8..142.........5..4.239...4.8..6.....6..2..6.7..435.5....98.4...9.....2.......").numberOfSolutions(), .multiple)
 
     }
     

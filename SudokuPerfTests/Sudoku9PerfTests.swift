@@ -4,22 +4,22 @@ class Sudoku9PerfTests: XCTestCase {
     
     func testPerfSuite() {
         var solutions = [SudokuBoard9]()
-        solutions.reserveCapacity(TestData9.PerfTestSuite.boards.count * 10)
+        solutions.reserveCapacity(TestData9.perfTestSuite.count * 10)
         self.measure {
-            for board in TestData9.PerfTestSuite.boards {
-                let solvedBoard = try! board.findFirstSolution()
+            for puzzel in TestData9.perfTestSuite {
+                let solvedBoard = try! puzzel.board.findFirstSolution()
                 solutions.append(solvedBoard)
             }
         }
-        for (solvedBoard, expectedSolution) in zip(solutions, TestData9.PerfTestSuite.solutions) {
-            XCTAssertEqual(solvedBoard, expectedSolution)
+        for (solvedBoard, puzzel) in zip(solutions, TestData9.perfTestSuite) {
+            XCTAssertEqual(solvedBoard, puzzel.solution)
         }
     }
     
     func testIsValid() {
         self.measure {
-            for board in TestData9.PerfTestSuite.boards {
-                XCTAssertTrue(board.isValid)
+            for puzzel in TestData9.perfTestSuite {
+                XCTAssertTrue(puzzel.board.isValid)
             }
         }
     }

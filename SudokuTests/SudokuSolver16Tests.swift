@@ -4,42 +4,42 @@ class SudokuSolver16Tests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
 
-        XCTAssertFalse(TestData16.Easy1.board.isFullyFilled)
-        XCTAssertTrue(TestData16.Easy1.board.isValid)
+        XCTAssertFalse(TestData16.easy1.board.isFullyFilled)
+        XCTAssertTrue(TestData16.easy1.board.isValid)
         do {
-            let solution = try! TestData16.Easy1.board.findFirstSolution()
+            let solution = try! TestData16.easy1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData16.Easy1.solutionString)
+            XCTAssertEqual(solution.description, TestData16.easy1.solutionString)
         }
         
-        XCTAssertFalse(TestData16.Medium1.board.isFullyFilled)
-        XCTAssertTrue(TestData16.Medium1.board.isValid)
+        XCTAssertFalse(TestData16.medium1.board.isFullyFilled)
+        XCTAssertTrue(TestData16.medium1.board.isValid)
         do {
-            let solution = try! TestData16.Medium1.board.findFirstSolution()
+            let solution = try! TestData16.medium1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData16.Medium1.solutionString)
+            XCTAssertEqual(solution.description, TestData16.medium1.solutionString)
         }
         
-        XCTAssertFalse(TestData16.Hard1.board.isFullyFilled)
-        XCTAssertTrue(TestData16.Hard1.board.isValid)
+        XCTAssertFalse(TestData16.hard1.board.isFullyFilled)
+        XCTAssertTrue(TestData16.hard1.board.isValid)
         do {
-            let solution = try! TestData16.Hard1.board.findFirstSolution()
+            let solution = try! TestData16.hard1.board.findFirstSolution()
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
-            XCTAssertEqual(solution.description, TestData16.Hard1.solutionString)
+            XCTAssertEqual(solution.description, TestData16.hard1.solutionString)
         }
         
     }
     
     func testFailingBoard() {
-        XCTAssertFalse(TestData16.Invalid.board.isValid)
-        XCTAssertThrowsError(try TestData16.Invalid.board.findFirstSolution())
+        XCTAssertFalse(TestData16.invalid.isValid)
+        XCTAssertThrowsError(try TestData16.invalid.findFirstSolution())
     }
 
     func testFullyFilled() {
-        let filledBoard = TestData16.Hard1.solution
+        let filledBoard = TestData16.hard1.solution
         XCTAssertEqual(filledBoard.clues, 256)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
@@ -48,14 +48,14 @@ class SudokuSolver16Tests: XCTestCase {
     }
 
     func testNumberOfSolutions() {
-        XCTAssertEqual(TestData16.Easy1.board.numberOfSolutions(), .one)
-        XCTAssertEqual(TestData16.Medium1.board.numberOfSolutions(), .one)
-        XCTAssertEqual(TestData16.Hard1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData16.easy1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData16.medium1.board.numberOfSolutions(), .one)
+        XCTAssertEqual(TestData16.hard1.board.numberOfSolutions(), .one)
         
-        XCTAssertEqual(TestData16.Invalid.board.numberOfSolutions(), .none)
+        XCTAssertEqual(TestData16.invalid.numberOfSolutions(), .none)
         
-        XCTAssertEqual(TestData16.MultipleSolutions.board.numberOfSolutions(), .multiple)
-        XCTAssertEqual(TestData16.Empty.board.numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData16.multipleSolutions.numberOfSolutions(), .multiple)
+        XCTAssertEqual(TestData16.empty.numberOfSolutions(), .multiple)
         
     }
     
