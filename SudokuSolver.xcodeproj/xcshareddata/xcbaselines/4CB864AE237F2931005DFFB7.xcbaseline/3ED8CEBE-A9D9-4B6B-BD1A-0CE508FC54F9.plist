@@ -37,6 +37,29 @@
 				</dict>
 			</dict>
 		</dict>
+		<key>Sudoku25PerfTests</key>
+		<dict>
+			<key>testIsValid()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>61.645</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
+			<key>testSudokuSolverEndToEnd()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>22.402</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+				</dict>
+			</dict>
+		</dict>
 		<key>Sudoku9PerfTests</key>
 		<dict>
 			<key>testIsValid()</key>
