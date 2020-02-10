@@ -32,46 +32,18 @@ struct Xoroshiro: RNG {
     }
 }
 
-protocol SudokuCellIteratorStorageProtocol: SignedInteger & BinaryInteger {
-    var highestSetBit: Self { get }
-}
-
-extension Int8: SudokuCellIteratorStorageProtocol {
+extension FixedWidthInteger where Self: SignedInteger {
     
-    var highestSetBit: Int8 {
-        assert(self != 0)
+    var highestSetBit: Self {
+        assert(self != 0, "Cannot return a highest set bit on an empty bit set")
         var result = self | self >> 1
-        result |= result >> 2
-        result |= result >> 4
-        result += 1
-        return result >> 1
-    }
-    
-}
-
-extension Int16: SudokuCellIteratorStorageProtocol {
-    
-    var highestSetBit: Int16 {
-        assert(self != 0)
-        var result = self | self >> 1
-        result |= result >> 2
-        result |= result >> 4
-        result |= result >> 8
-        result += 1
-        return result >> 1
-    }
-    
-}
-
-extension Int32: SudokuCellIteratorStorageProtocol {
-    
-    var highestSetBit: Int32 {
-        assert(self != 0)
-        var result = self | self >> 1
-        result |= result >> 2
-        result |= result >> 4
-        result |= result >> 8
-        result |= result >> 16
+        var i: Self = 1
+        //Iterate over 1, 2, 4, 8, etc. unil you reach the last bit, which for a signed
+        //integer will be Self.min
+        while i != Self.min {
+            result |= result >> i
+            i <<= 1
+        }
         result += 1
         return result >> 1
     }

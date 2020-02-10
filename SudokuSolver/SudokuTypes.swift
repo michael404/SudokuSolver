@@ -1,6 +1,6 @@
 protocol SudokuTypeProtocol {
     associatedtype CellStorage: BinaryInteger & FixedWidthInteger
-    associatedtype CellIteratorStorage: SudokuCellIteratorStorageProtocol
+    associatedtype CellIteratorStorage: SignedInteger & FixedWidthInteger
     static var allTrueCellStorage: CellStorage { get }
     static var sideOfBox: Int { get }
     static var solvedRepresentation: [String] { get }
