@@ -4,14 +4,14 @@ class Sudoku25PerfTests: XCTestCase {
 
     func testSudokuSolverEndToEnd() {
         
-        var solution = SudokuBoard25.empty
+        var solution: SudokuBoard25?
         
         self.measure {
-            solution = try! TestData25.puzzel1.board.findFirstSolution()
+            solution = TestData25.puzzel1.board.findFirstSolution()
         }
         
-        XCTAssertTrue(solution.isFullyFilled)
-        XCTAssertEqual(solution.description, TestData25.puzzel1.solutionString)
+        XCTAssertTrue(solution!.isFullyFilled)
+        XCTAssertEqual(solution!.description, TestData25.puzzel1.solutionString)
     }
     
     func testIsValid() {

@@ -7,7 +7,7 @@ class Sudoku9PerfTests: XCTestCase {
         solutions.reserveCapacity(TestData9.perfTestSuite.count * 10)
         self.measure {
             for puzzel in TestData9.perfTestSuite {
-                let solvedBoard = try! puzzel.board.findFirstSolution()
+                let solvedBoard = puzzel.board.findFirstSolution()!
                 solutions.append(solvedBoard)
             }
         }

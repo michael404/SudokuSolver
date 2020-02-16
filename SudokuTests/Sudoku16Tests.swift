@@ -23,7 +23,7 @@ class Sudoku16Tests: XCTestCase {
         XCTAssertEqual(filledBoard.clues, 256)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
-        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
+        XCTAssertEqual(filledBoard.findFirstSolution(), filledBoard)
     }
         
     func testFilledCells() {

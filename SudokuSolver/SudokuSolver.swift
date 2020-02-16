@@ -1,14 +1,18 @@
 extension SudokuBoard {
     
-    func findFirstSolution() throws -> SudokuBoard {
-        try findFirstSolution(using: Xoroshiro())
+    func findFirstSolution() -> SudokuBoard? {
+        findFirstSolution(using: Xoroshiro())
     }
     
-    func findFirstSolution<R: RNG>(using rng: R) throws -> SudokuBoard {
-        var solver = try SudokuSolver(eliminating: self, rng: rng)
-        let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 1)
-        guard let solution = solutions.first else {throw SudokuSolverError.unsolvable }
-        return solution
+    func findFirstSolution<R: RNG>(using rng: R) -> SudokuBoard? {
+        do {
+            var solver = try SudokuSolver(eliminating: self, rng: rng)
+            let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 1)
+            guard let solution = solutions.first else {throw SudokuSolverError.unsolvable }
+            return solution
+        } catch {
+            return nil
+        }
     }
     
     func findAllSolutions() -> [SudokuBoard] {

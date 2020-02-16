@@ -7,7 +7,7 @@ class SudokuSolver16Tests: XCTestCase {
         XCTAssertFalse(TestData16.easy1.board.isFullyFilled)
         XCTAssertTrue(TestData16.easy1.board.isValid)
         do {
-            let solution = try! TestData16.easy1.board.findFirstSolution()
+            let solution = TestData16.easy1.board.findFirstSolution()!
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData16.easy1.solutionString)
@@ -16,7 +16,7 @@ class SudokuSolver16Tests: XCTestCase {
         XCTAssertFalse(TestData16.medium1.board.isFullyFilled)
         XCTAssertTrue(TestData16.medium1.board.isValid)
         do {
-            let solution = try! TestData16.medium1.board.findFirstSolution()
+            let solution = TestData16.medium1.board.findFirstSolution()!
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData16.medium1.solutionString)
@@ -25,7 +25,7 @@ class SudokuSolver16Tests: XCTestCase {
         XCTAssertFalse(TestData16.hard1.board.isFullyFilled)
         XCTAssertTrue(TestData16.hard1.board.isValid)
         do {
-            let solution = try! TestData16.hard1.board.findFirstSolution()
+            let solution = TestData16.hard1.board.findFirstSolution()!
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData16.hard1.solutionString)
@@ -35,7 +35,7 @@ class SudokuSolver16Tests: XCTestCase {
     
     func testFailingBoard() {
         XCTAssertFalse(TestData16.invalid.isValid)
-        XCTAssertThrowsError(try TestData16.invalid.findFirstSolution())
+        XCTAssertNil(TestData16.invalid.findFirstSolution())
     }
 
     func testFullyFilled() {
@@ -43,7 +43,7 @@ class SudokuSolver16Tests: XCTestCase {
         XCTAssertEqual(filledBoard.clues, 256)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
-        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
+        XCTAssertEqual(filledBoard.findFirstSolution(), filledBoard)
 
     }
 

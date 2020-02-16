@@ -7,7 +7,7 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertTrue(TestData9.hard1.board.isValid)
         
         do {
-            let solution = try! TestData9.hard1.board.findFirstSolution()
+            let solution = TestData9.hard1.board.findFirstSolution()!
             XCTAssertTrue(solution.isValid)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData9.hard1.solutionString)
@@ -17,7 +17,7 @@ class SudokuSolver9Tests: XCTestCase {
     
     func testFailingBoard() {
         XCTAssertFalse(TestData9.invalid.isValid)
-        XCTAssertThrowsError(try TestData9.invalid.findFirstSolution())
+        XCTAssertNil(TestData9.invalid.findFirstSolution())
     }
     
     func testFullyFilled() {
@@ -25,7 +25,7 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertEqual(filledBoard.clues, 81)
         XCTAssertTrue(filledBoard.isFullyFilled)
         // A filled board should return itself as a solution
-        XCTAssertEqual(try! filledBoard.findFirstSolution(), filledBoard)
+        XCTAssertEqual(filledBoard.findFirstSolution(), filledBoard)
         
     }
     
@@ -49,7 +49,7 @@ class SudokuSolver9Tests: XCTestCase {
             XCTAssertEqual(solutions, [])
         }
         do {
-            let solutions = try! SudokuBoard9("....3...174..........5.4...4.38...2...7....6.......8575...1.6..6..4.721..1...3.9.").findAllSolutions()
+            let solutions = SudokuBoard9("....3...174..........5.4...4.38...2...7....6.......8575...1.6..6..4.721..1...3.9.").findAllSolutions()
             let expectedSolutions: Set<SudokuBoard9> = [
                 SudokuBoard9("896732541745169382321584976453876129187925463962341857579218634638497215214653798"),
                 SudokuBoard9("896732541745961382321584976453876129987125463162349857579218634638497215214653798"),
