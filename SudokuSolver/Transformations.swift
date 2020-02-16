@@ -18,9 +18,3 @@ enum Shuffle<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
         return result
     }
 }
-
-enum Reverse<SudokuType: SudokuTypeProtocol>: SudokuCellTransformation {
-    static func transform<R: RNG>(_ possibleCellValues: SudokuCell<SudokuType>, rng: inout R) -> SudokuCell<SudokuType>.ReverseSequence {
-        possibleCellValues.makeReverseSequence()
-    }
-}

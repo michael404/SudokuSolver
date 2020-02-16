@@ -31,21 +31,3 @@ struct Xoroshiro: RNG {
         return result
     }
 }
-
-extension FixedWidthInteger where Self: SignedInteger {
-    
-    var highestSetBit: Self {
-        assert(self != 0, "Cannot return a highest set bit on an empty bit set")
-        var result = self | self >> 1
-        var i: Self = 1
-        //Iterate over 1, 2, 4, 8, etc. unil you reach the last bit, which for a signed
-        //integer will be Self.min
-        while i != Self.min {
-            result |= result >> i
-            i <<= 1
-        }
-        result += 1
-        return result >> 1
-    }
-    
-}

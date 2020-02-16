@@ -82,39 +82,3 @@ extension SudokuCell: Sequence {
     }
         
 }
-
-extension SudokuCell {
-    
-    func makeReverseSequence() -> ReverseSequence { ReverseSequence(cell: self) }
-
-    struct ReverseSequence: Sequence {
-        
-        let cell: SudokuCell<SudokuType>
-        
-        func makeIterator() -> Iterator { Iterator(cell) }
-        
-        struct Iterator: IteratorProtocol {
-            
-            typealias IteratorStorage = SudokuType.CellIteratorStorage
-            
-            private var remaining: IteratorStorage
-            
-            init(_ cell: SudokuCell<SudokuType>) {
-                self.remaining = IteratorStorage(truncatingIfNeeded: cell.storage)
-            }
-            
-            mutating func next() -> SudokuCell<SudokuType>? {
-                guard remaining != 0 else { return nil }
-                let highestSetBit = remaining.highestSetBit
-                self.remaining ^= highestSetBit
-                return SudokuCell<SudokuType>(storage: SudokuType.CellStorage(truncatingIfNeeded: highestSetBit))
-            }
-            
-        }
-        
-    }
-    
-}
-
-
-

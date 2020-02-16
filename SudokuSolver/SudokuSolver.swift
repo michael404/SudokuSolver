@@ -6,7 +6,24 @@ extension SudokuBoard {
     
     func findFirstSolution<R: RNG>(using rng: R) throws -> SudokuBoard {
         var solver = try SudokuSolver(eliminating: self, rng: rng)
-        return try solver.guessAndEliminate(transformation: Normal.self)
+        let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 1)
+        guard let solution = solutions.first else {throw SudokuSolverError.unsolvable }
+        return solution
+    }
+    
+    func findAllSolutions() -> [SudokuBoard] {
+        findAllSolutions(using: Xoroshiro())
+    }
+    
+    func findAllSolutions<R: RNG>(using rng: R) -> [SudokuBoard] {
+        do {
+            var solver = try SudokuSolver(eliminating: self, rng: rng)
+            let solutions = try solver.solve(transformation: Normal.self, maxSolutions: Int.max)
+            assert(!solutions.isEmpty)
+            return solutions
+        } catch {
+            return []
+        }
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
@@ -15,7 +32,7 @@ extension SudokuBoard {
     
     static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
         var solver = try! SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
-        return try! solver.guessAndEliminate(transformation: Shuffle.self)
+        return try! solver.solve(transformation: Shuffle.self, maxSolutions: 1).first!
     }
     
     enum NumberOfSolutions { case none, one, multiple }
@@ -26,15 +43,13 @@ extension SudokuBoard {
     
     func numberOfSolutions<R: RNG>(using rng: R) -> NumberOfSolutions {
         do {
-            var solver1 = try SudokuSolver(eliminating: self, rng: rng)
-            var solver2 = solver1 // No need to recompute the inital elimination
-            
-            // This does not seem to benefit by being run in paralell, potentially because that
-            // eliminates the possibility to exit early by throwing if the board is unsolvable
-            let firstSolution = try solver1.guessAndEliminate(transformation: Normal.self)
-            let lastSolution = try solver2.guessAndEliminate(transformation: Reverse.self)
-            
-            return firstSolution == lastSolution ? .one : .multiple
+            var solver = try SudokuSolver(eliminating: self, rng: rng)
+            let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 2)
+            switch solutions.count {
+            case 1: return .one
+            case 2: return .multiple
+            default: fatalError()
+            }
         } catch {
             return .none
         }
@@ -56,15 +71,22 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         }
     }
     
+    mutating func solve<T: SudokuCellTransformation>(transformation: T.Type, maxSolutions: Int) throws -> [Board]
+        where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
+        var solutions: [Board] = []
+        try guessAndEliminate(transformation: transformation, maxSolutions: maxSolutions, solutions: &solutions)
+        return solutions
+    }
+    
     /// Throws if we are in an impossible situation
-    mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
+    private mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
         assert(board[index].isSolved)
         for indexToRemoveFrom in SudokuType.constants.indiciesAffectedByIndex(index) {
             try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
     
-    mutating func removeAndApplyConstraints(valueToRemove: Cell, indexToRemoveFrom: Int) throws {
+    private mutating func removeAndApplyConstraints(valueToRemove: Cell, indexToRemoveFrom: Int) throws {
         if try board[indexToRemoveFrom].remove(valueToRemove) {
             switch board[indexToRemoveFrom].count {
             case 1: try eliminatePossibilitites(basedOnSolvedIndex: indexToRemoveFrom)
@@ -74,7 +96,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         }
     }
     
-    mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
+    private mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
         for possibleValues in 2...SudokuType.possibilities {
             let board = self.board
             if let index = self.board.indices.lazy.filter({ board[$0].count == possibleValues }).randomElement(using: &self.rng) {
@@ -84,9 +106,12 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return nil
     }
     
-    mutating func guessAndEliminate<T: SudokuCellTransformation>(transformation: T.Type) throws -> Board
+    private mutating func guessAndEliminate<T: SudokuCellTransformation>(transformation: T.Type, maxSolutions: Int, solutions: inout [Board]) throws
         where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
-        guard let index = self.unsolvedIndexWithMostConstraints() else { return board }
+        guard let index = self.unsolvedIndexWithMostConstraints() else {
+            solutions.append(self.board)
+            return
+        }
         for guess in T.transform(board[index], rng: &rng) {
             do {
                 var newSolver = self
@@ -97,17 +122,15 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 // whole board. In theory this could also be run in a loop until there are no more changes, but that does
                 // not improve performance either.
                 try newSolver.findAllHiddenSingles()
-                return try newSolver.guessAndEliminate(transformation: transformation)
+                try newSolver.guessAndEliminate(transformation: transformation, maxSolutions: maxSolutions, solutions: &solutions)
+                if solutions.count >= maxSolutions { return }
             } catch {
                 try self.removeAndApplyConstraints(valueToRemove: guess, indexToRemoveFrom: index)
             }
         }
-        // Only fail and throw if we have tried all possible values for the current cell and all of those
-        // branches failed and throwed.
-        throw SudokuSolverError.unsolvable
     }
     
-    mutating func findAllHiddenSingles() throws {
+    private mutating func findAllHiddenSingles() throws {
         for unit in SudokuType.allPossibilities {
             try _findHiddenSingles(for: SudokuType.constants.allIndiciesInRow(unit))
             try _findHiddenSingles(for: SudokuType.constants.allIndiciesInColumn(unit))
@@ -115,7 +138,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         }
     }
 
-    mutating func _findHiddenSingles(for indicies: UnsafeBufferPointer<Int>) throws {
+    private mutating func _findHiddenSingles(for indicies: UnsafeBufferPointer<Int>) throws {
         cellValueLoop: for cellValue in Cell.allTrue {
             var potentialFoundIndex: Int? = nil
             for index in indicies where board[index].contains(cellValue) {
@@ -133,14 +156,14 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         }
     }
     
-    mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
+    private mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = board[index]
         try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameRowExclusive(index))
         try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameColumnExclusive(index))
         try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameBoxExclusive(index))
     }
 
-    mutating func _eliminateNakedPairs(value: Cell, for indicies: UnsafeBufferPointer<Int>) throws {
+    private mutating func _eliminateNakedPairs(value: Cell, for indicies: UnsafeBufferPointer<Int>) throws {
         assert(value.count == 2)
         guard let cellWithSameTwoValues = indicies.first(where: { board[$0] == value }) else { return }
         // Found a duplicate. Loop over all indicies, exept the current one and remove from that

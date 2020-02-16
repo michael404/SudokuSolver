@@ -1,4 +1,4 @@
-struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Equatable {
+struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
     
     typealias Cell = SudokuCell<SudokuType>
     
