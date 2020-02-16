@@ -1,6 +1,5 @@
 enum SudokuSolverError: Error {
     case unsolvable
-    case tooManySolutions
 }
 
 typealias RNG = RandomNumberGenerator
