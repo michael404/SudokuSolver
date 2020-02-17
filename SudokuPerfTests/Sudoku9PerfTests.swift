@@ -32,7 +32,7 @@ class Sudoku9PerfTests: XCTestCase {
                 board = SudokuBoard.randomFullyFilledBoard(using: rng)
             }
         }
-        XCTAssertEqual(board, SudokuBoard("164783259873925641259461783491857326725634918638192475382546197947318562516279834"))
+        XCTAssertEqual(board, SudokuBoard("861345297479216538235798416526473189784961352193852764342189675957634821618527943"))
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)

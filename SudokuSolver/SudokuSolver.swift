@@ -102,8 +102,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     private mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
         for possibleValues in 2...SudokuType.possibilities {
-            let board = self.board
-            if let index = self.board.indices.lazy.filter({ board[$0].count == possibleValues }).randomElement(using: &self.rng) {
+            if let index = board.indices.randomElement(using: &self.rng, where: { board[$0].count == possibleValues }) {
                 return index
             }
         }
