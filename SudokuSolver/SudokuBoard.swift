@@ -20,9 +20,9 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
     /// requirements, or has multiple solutions, it is considered non-valid
     var isValid: Bool { numberOfSolutions() == .one }
     
-    var isFullyFilled: Bool { self.allSatisfy { $0.isSolved } }
+    var isFullyFilled: Bool { self.allSatisfy(\.isSolved) }
     
-    var clues: Int { lazy.filter({ $0.isSolved }).count }
+    var clues: Int { lazy.filter(\.isSolved).count }
     
 }
 
