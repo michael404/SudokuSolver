@@ -12,7 +12,7 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
     
     init<S: StringProtocol>(_ numbers: S) {
         precondition(numbers.count == SudokuType.cells, "Must pass in \(SudokuType.cells) elements")
-        self.cells = numbers.map(Cell.init)
+        self.cells = numbers.map { Cell(String($0)) }
     }
     
     /// Indicates if this Sudoku is valid

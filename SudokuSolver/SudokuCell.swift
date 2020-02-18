@@ -10,21 +10,14 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable {
         self.storage = storage
     }
     
-    init(_ character: Character) {
-        if character == "." {
+    init(_ string: String) {
+        if string == "." {
             self = .allTrue
-        } else if let value = SudokuType.solvedRepresentationReversed[String(character)] {
+        } else if let value = SudokuType.solvedRepresentationReversed[string] {
             self.storage = 1 << value
         } else {
-            fatalError("Tried to initialize cell for \(SudokuType.self) with character \(character)")
+            fatalError("Tried to initialize cell for \(SudokuType.self) with invalid string \(string)")
         }
-    }
-    
-    init(_ string: String) {
-        guard string.count == 1 else {
-            fatalError("Cannot initialize SudokuCell with string of length \(string.count). Expected length 1")
-        }
-        self.init(string.first!)
     }
     
     /// The number of possible values for this cell
