@@ -33,7 +33,7 @@ struct Xoroshiro: RNG {
 
 extension Collection {
     
-    func randomElement<R: RandomNumberGenerator>(using rng: inout R, where predicate: (Element) -> Bool) -> Element? {
+    func randomElement<R: RNG>(using rng: inout R, where predicate: (Element) -> Bool) -> Element? {
         var result: Element?
         var count = 0
         for element in self where predicate(element) {
