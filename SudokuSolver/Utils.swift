@@ -33,6 +33,8 @@ struct Xoroshiro: RNG {
 
 extension Collection {
     
+    // Reservoir sampling
+    // https://cs.stackexchange.com/questions/2855/choosing-an-element-from-a-set-satisfying-a-predicate-uniformly-at-random-in-o
     func randomElement<R: RNG>(using rng: inout R, where predicate: (Element) -> Bool) -> Element? {
         var result: Element?
         var count = 0
