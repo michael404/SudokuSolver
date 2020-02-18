@@ -13,11 +13,10 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable {
     init(_ character: Character) {
         if character == "." {
             self = .allTrue
-        } else {
-            guard let value = SudokuType.solvedRepresentationReversed[String(character)] else {
-                fatalError("Tried to initialize cell for \(SudokuType.self) with character \(character)")
-            }
+        } else if let value = SudokuType.solvedRepresentationReversed[String(character)] {
             self.storage = 1 << value
+        } else {
+            fatalError("Tried to initialize cell for \(SudokuType.self) with character \(character)")
         }
     }
     
