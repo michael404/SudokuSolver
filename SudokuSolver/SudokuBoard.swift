@@ -2,7 +2,6 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
     
     typealias Cell = SudokuCell<SudokuType>
     
-    //TODO: Consider if we need a FixedArray here for Sudoku9, and in that case, add an associatedtype to SudokuType
     private var cells: [Cell]
     
     static var empty: SudokuBoard { SudokuBoard(empty: ()) }

@@ -35,8 +35,12 @@ extension SudokuBoard {
     }
     
     static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
-        var solver = try! SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
-        return try! solver.solve(transformation: Shuffle.self, maxSolutions: 1).first!
+        do {
+            var solver = try SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
+            return try solver.solve(transformation: Shuffle.self, maxSolutions: 1).first!
+        } catch {
+            fatalError("Inconsistent state")
+        }
     }
     
     enum NumberOfSolutions { case none, one, multiple }
@@ -109,8 +113,11 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return nil
     }
     
-    private mutating func guessAndEliminate<T: SudokuCellTransformation>(transformation: T.Type, maxSolutions: Int, solutions: inout [Board]) throws
-        where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
+    private mutating func guessAndEliminate<T: SudokuCellTransformation>(
+        transformation: T.Type,
+        maxSolutions: Int,
+        solutions: inout [Board]
+    ) throws where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
         guard let index = self.unsolvedIndexWithMostConstraints() else {
             solutions.append(self.board)
             return
@@ -120,12 +127,15 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 var newSolver = self
                 newSolver.board[index] = guess
                 try newSolver.eliminatePossibilitites(basedOnSolvedIndex: index)
-                // While it would make sense to check for hidden singles only in rows/columns/boxes where a possibility
-                // has just been removed, benchmarking shows that it is more efficient to run this once per guess for the
-                // whole board. In theory this could also be run in a loop until there are no more changes, but that does
-                // not improve performance either.
+                // While it would make sense to check for hidden singles only in rows/columns/boxes where a
+                // possibility has just been removed, benchmarking shows that it is more efficient to run this
+                // once per guess for the whole board. In theory this could also be run in a loop until there
+                // are no more changes, but that does not improve performance either.
                 try newSolver.findAllHiddenSingles()
-                try newSolver.guessAndEliminate(transformation: transformation, maxSolutions: maxSolutions, solutions: &solutions)
+                try newSolver.guessAndEliminate(
+                    transformation: transformation,
+                    maxSolutions: maxSolutions,
+                    solutions: &solutions)
                 if solutions.count >= maxSolutions { return }
             } catch {
                 try self.removeAndApplyConstraints(valueToRemove: guess, indexToRemoveFrom: index)
@@ -143,7 +153,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _findHiddenSingles(for indicies: UnsafeBufferPointer<Int>) throws {
         cellValueLoop: for cellValue in Cell.allTrue {
-            var potentialFoundIndex: Int? = nil
+            var potentialFoundIndex: Int?
             for index in indicies where board[index].contains(cellValue) {
                 // If we have already found one value in this unit, it is not a candiadate for a hidden single
                 guard potentialFoundIndex == nil else { continue cellValueLoop }

@@ -53,7 +53,7 @@ class SudokuCell9Tests: XCTestCase {
         
         // Leave [2, 5, 8]
         for i in [1, 3, 4, 6, 7, 9] {
-            try! _ = cell.remove(SudokuCell9(String(i)))
+            XCTAssertNoThrow(try cell.remove(SudokuCell9(String(i))))
         }
         
         i = cell.makeIterator()

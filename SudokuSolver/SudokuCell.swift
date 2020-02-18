@@ -64,12 +64,10 @@ extension SudokuCell: Sequence {
     
     struct Iterator: IteratorProtocol {
         
-        typealias IteratorStorage = SudokuType.CellIteratorStorage
-
-        private var remaining: IteratorStorage
+        private var remaining: SudokuType.CellIteratorStorage
         
         init(_ cell: SudokuCell<SudokuType>) {
-            self.remaining = IteratorStorage(truncatingIfNeeded: cell.storage)
+            self.remaining = SudokuType.CellIteratorStorage(truncatingIfNeeded: cell.storage)
         }
         
         mutating func next() -> SudokuCell<SudokuType>? {

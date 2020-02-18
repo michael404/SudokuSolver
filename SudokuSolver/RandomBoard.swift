@@ -6,7 +6,6 @@ extension SudokuBoard {
     }
     
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
-        //TODO: check if it is more effective to not generate a full filled board first
         randomFullyFilledBoard(using: rng).randomStartingPositionFromFullyFilledBoard(using: rng)
     }
 
@@ -26,7 +25,7 @@ internal extension SudokuBoard {
             board[index] = .allTrue
             switch board.numberOfSolutions(using: rng) {
             case .none:
-                fatalError("Could not find a valid solution despite starting from a valid board. This should not be possible.")
+                fatalError("Inconsistent state")
             case .one:
                 // Do nothing
                 break
@@ -40,4 +39,3 @@ internal extension SudokuBoard {
     }
     
 }
-

@@ -25,6 +25,8 @@
 		4C23C5AE237F2A1800A31101 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* Constants.swift */; };
 		4C23C5AF237F2A1B00A31101 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11004A1F5DCE5D00F0745D /* Utils.swift */; };
 		4C23C5B0237F2A2900A31101 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* TestData.swift */; };
+		4C28166123FC66EF00C43BB2 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 4C28166023FC66EF00C43BB2 /* .swiftlint.yml */; };
+		4C28166223FC66EF00C43BB2 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 4C28166023FC66EF00C43BB2 /* .swiftlint.yml */; };
 		4C38A13A20699191001A8724 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* Constants.swift */; };
 		4C38A13B20699191001A8724 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C38A13920699191001A8724 /* Constants.swift */; };
 		4C38A142206E70C2001A8724 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD2143A2025EF8100018125 /* TestData.swift */; };
@@ -69,6 +71,7 @@
 		4C1100521F5DDC2800F0745D /* Sudoku9Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sudoku9Tests.swift; sourceTree = "<group>"; };
 		4C1100541F5DDC2800F0745D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C18617C20CE6BA200D478E2 /* SudokuSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolver.swift; sourceTree = "<group>"; };
+		4C28166023FC66EF00C43BB2 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		4C38A13920699191001A8724 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4C3ED0D323E4B0B5006006A8 /* SudokuTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuTypes.swift; sourceTree = "<group>"; };
 		4C3ED0DC23E4B61E006006A8 /* SudokuCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuCell.swift; sourceTree = "<group>"; };
@@ -143,6 +146,7 @@
 			children = (
 				4CC0B0FE1F588A9B00C2576C /* main.swift */,
 				4C76591123E9ED4D00F8765F /* GenerationHelpers.swift */,
+				4C28166023FC66EF00C43BB2 /* .swiftlint.yml */,
 				4CC0B0FD1F588A9B00C2576C /* SudokuSolver */,
 				4C1100511F5DDC2800F0745D /* SudokuTests */,
 				4CB864B0237F2931005DFFB7 /* SudokuPerfTests */,
@@ -185,6 +189,7 @@
 				4C11004C1F5DDC2800F0745D /* Sources */,
 				4C11004D1F5DDC2800F0745D /* Frameworks */,
 				4C11004E1F5DDC2800F0745D /* Resources */,
+				4C28165F23FC65C600C43BB2 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -278,6 +283,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C28166123FC66EF00C43BB2 /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,10 +291,31 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C28166223FC66EF00C43BB2 /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4C28165F23FC65C600C43BB2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4C11004C1F5DDC2800F0745D /* Sources */ = {

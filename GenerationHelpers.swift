@@ -1,6 +1,6 @@
 import Foundation
 
-func countNanoseconds(for function: () -> ()) -> Int {
+func countNanoseconds(for function: () -> Void) -> Int {
     let startTime = Date()
     function()
     let endTime = Date()
@@ -11,7 +11,7 @@ func generateMinimalSudokusAsync<SudokuType: SudokuTypeProtocol>(
     iterations: Int,
     maxClues: Int,
     type: SudokuType.Type,
-    handler: @escaping (SudokuBoard<SudokuType>) -> ()
+    handler: @escaping (SudokuBoard<SudokuType>) -> Void
 ) {
     let serialQueue = DispatchQueue(label: "SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in
@@ -25,7 +25,7 @@ func generateHardToBruteForceSudokusAsync<SudokuType: SudokuTypeProtocol>(
     iterations: Int,
     maxTimeNanoseconds: Int = 25_000_000,
     type: SudokuType.Type,
-    handler: @escaping (_ board: SudokuBoard<SudokuType>, _ nanoseconds: Int) -> ()
+    handler: @escaping (_ board: SudokuBoard<SudokuType>, _ nanoseconds: Int) -> Void
 ) {
     let serialQueue = DispatchQueue(label: "SudokuSolver", qos: .userInitiated)
     DispatchQueue.concurrentPerform(iterations: iterations) { _ in

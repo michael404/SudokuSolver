@@ -12,9 +12,9 @@ extension SudokuTypeProtocol {
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
     static var allCells: Range<Int> { 0..<cells }
-    //TODO: Consider if this needs to be a stored property on the concrete types instead
     static var solvedRepresentationReversed: [String: Int] {
-        assert(solvedRepresentation.count == possibilities, "solvedRepresentation count was not \(possibilities) as expected")
+        assert(solvedRepresentation.count == possibilities,
+               "solvedRepresentation count was not \(possibilities) as expected")
         return Dictionary.init(uniqueKeysWithValues: solvedRepresentation.enumerated().map { ($1, $0) })
     }
 }
@@ -60,9 +60,7 @@ typealias SudokuBoard9 = SudokuBoard<Sudoku9>
 typealias SudokuBoard16 = SudokuBoard<Sudoku16>
 typealias SudokuBoard25 = SudokuBoard<Sudoku25>
 
-
 typealias SudokuCell4 = SudokuCell<Sudoku4>
 typealias SudokuCell9 = SudokuCell<Sudoku9>
 typealias SudokuCell16 = SudokuCell<Sudoku16>
 typealias SudokuCell25 = SudokuCell<Sudoku25>
-

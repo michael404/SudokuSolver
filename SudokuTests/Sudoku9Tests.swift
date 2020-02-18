@@ -13,23 +13,28 @@ class Sudoku9Tests: XCTestCase {
         do {
             XCTAssertTrue(TestData9.hard1.board.isValid)
     
-            let nonValid = SudokuBoard9("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+            let nonValid =
+                SudokuBoard9("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
-            let nonValid = SudokuBoard9(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
+            let nonValid =
+                SudokuBoard9(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
-            let nonValid = SudokuBoard9(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+            let nonValid =
+                SudokuBoard9(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
-            let nonValid = SudokuBoard9("55...............................................................................")
+            let nonValid =
+                SudokuBoard9("55...............................................................................")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
-            let nonValid = SudokuBoard9(".....................................................................9..........9")
+            let nonValid =
+                SudokuBoard9(".....................................................................9..........9")
             XCTAssertFalse(nonValid.isValid)
         }
         

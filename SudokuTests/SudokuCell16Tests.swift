@@ -49,14 +49,17 @@ class SudokuCell16Tests: XCTestCase {
         XCTAssertEqual(i.next(), SudokuCell16("1"))
         XCTAssertEqual(i.next(), SudokuCell16("2"))
         
-        XCTAssertEqual(Array(cell), ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"].map(SudokuCell16.init))
+        XCTAssertEqual(
+            Array(cell),
+            ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"].map(SudokuCell16.init))
 
-        XCTAssertEqual(Array(cell.reversed()),
-                       ["F", "E", "D", "C", "B", "A", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0"].map(SudokuCell16.init))
+        XCTAssertEqual(
+            Array(cell.reversed()),
+            ["F", "E", "D", "C", "B", "A", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0"].map(SudokuCell16.init))
 
         // Leave [0, 5, 8, E]
         for i in ["1", "2", "3", "4", "6", "7", "9", "A", "B", "C", "D", "F"] {
-            try! _ = cell.remove(SudokuCell16(i))
+            XCTAssertNoThrow(try cell.remove(SudokuCell16(i)))
         }
 
         i = cell.makeIterator()
@@ -65,7 +68,6 @@ class SudokuCell16Tests: XCTestCase {
         XCTAssertEqual(i.next(), SudokuCell16("8"))
         XCTAssertEqual(i.next(), SudokuCell16("E"))
         XCTAssertNil(i.next())
-
 
         XCTAssertEqual(Array(cell), ["0", "5", "8", "E"].map(SudokuCell16.init))
 

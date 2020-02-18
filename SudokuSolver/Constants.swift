@@ -21,7 +21,6 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol> {
             Self._indiciesInSameBoxInclusive(as: index).forEach { indicies.insert($0) }
             //Remove self
             indicies.remove(index)
-            //TODO: Consider if sorting is needed for deterministic tests here
             return Array(indicies).sorted()
         }
     
@@ -64,7 +63,9 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol> {
     private static func _indiciesInSameBoxInclusive(as index: Int) -> [Int] {
         let row = index / SudokuType.possibilities
         let column = index % SudokuType.possibilities
-        let startIndexOfBlock = (row / SudokuType.sideOfBox) * SudokuType.possibilities * SudokuType.sideOfBox + (column / SudokuType.sideOfBox) * SudokuType.sideOfBox
+        let startIndexOfBlock =
+            (row / SudokuType.sideOfBox) * SudokuType.possibilities * SudokuType.sideOfBox
+                + (column / SudokuType.sideOfBox) * SudokuType.sideOfBox
         return Self.boxOffsets().map { startIndexOfBlock + $0 }
     }
     

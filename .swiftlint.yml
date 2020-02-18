@@ -1,0 +1,12 @@
+disabled_rules:
+- trailing_whitespace
+
+force_try:
+    severity: warning
+
+line_length:
+    error: 10000
+
+identifier_name:
+    severity: warning
+    min_length: 1
