@@ -38,6 +38,10 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable {
         if self.storage == 0 { throw SudokuSolverError.unsolvable }
         return self != original
     }
+    
+    func combined(with other: Self) -> Self {
+        Self(storage: self.storage | other.storage)
+    }
 }
 
 extension SudokuCell: CustomStringConvertible, CustomDebugStringConvertible {

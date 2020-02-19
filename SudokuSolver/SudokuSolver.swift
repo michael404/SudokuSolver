@@ -118,6 +118,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         maxSolutions: Int,
         solutions: inout [Board]
     ) throws where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
+        
+        //TODO: Should all passes go here?
+        try self.findAllHiddenPairs()
+        
         guard let index = self.unsolvedIndexWithMostConstraints() else {
             solutions.append(self.board)
             return
@@ -132,6 +136,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 // once per guess for the whole board. In theory this could also be run in a loop until there
                 // are no more changes, but that does not improve performance either.
                 try newSolver.findAllHiddenSingles()
+//                try newSolver.findAllHiddenPairs()
                 try newSolver.guessAndEliminate(
                     transformation: transformation,
                     maxSolutions: maxSolutions,
@@ -166,6 +171,56 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             // We have identified a hidden single, and can set the cell to that value
             board[foundIndex] = cellValue
             try eliminatePossibilitites(basedOnSolvedIndex: foundIndex)
+        }
+    }
+    
+    private mutating func findAllHiddenPairs() throws {
+        for unit in SudokuType.allPossibilities {
+            try _findHiddenPairs(for: SudokuType.constants.allIndiciesInRow(unit))
+            try _findHiddenPairs(for: SudokuType.constants.allIndiciesInColumn(unit))
+            try _findHiddenPairs(for: SudokuType.constants.allIndiciesInBox(unit))
+        }
+    }
+
+    private mutating func _findHiddenPairs(for indicies: UnsafeBufferPointer<Int>) throws {
+        
+        value1Loop: for value1 in Cell.allTrue {
+            
+            var (value1Index1, value1Index2): (Int?, Int?)
+            
+            for index in indicies where self.board[index].contains(value1) {
+                guard  board[index].count != 2 else {
+                    continue value1Loop
+                }
+                switch (value1Index1, value1Index2) {
+                case (nil, _):
+                    value1Index1 = index
+                case (_?, nil):
+                    value1Index2 = index
+                case (_?, _?):
+                    // Two matches already found
+                    continue value1Loop
+                }
+            }
+            guard case let (_value1Index1?, _value1Index2?) = (value1Index1, value1Index2) else {
+                continue value1Loop
+            }
+                        
+            value2Loop: for value2 in board[_value1Index1] where value1 != value2 {
+                                
+                if board[_value1Index2].contains(value2) {
+                                        
+                    // Make sure that value2 only exists at the two identified indicies
+                    for index in indicies where index != _value1Index1 && index != _value1Index2 && self.board[index].contains(value2) {
+                        continue value2Loop
+                    }
+                    
+                    let isolatedValues = value1.combined(with: value2)
+                    self.board[_value1Index1] = isolatedValues
+                    self.board[_value1Index2] = isolatedValues
+                    return //TODO: Should we continue loop1 instead?
+                }
+            }
         }
     }
     
