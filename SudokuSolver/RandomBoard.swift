@@ -1,7 +1,7 @@
 extension SudokuBoard {
     
     static func randomStartingBoard() -> SudokuBoard {
-        var rng = Xoroshiro()
+        var rng = WyRand()
         return randomStartingBoard(rng: &rng)
     }
     
@@ -14,7 +14,7 @@ extension SudokuBoard {
 internal extension SudokuBoard {
     
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
-        return randomStartingPositionFromFullyFilledBoard(using: Xoroshiro())
+        return randomStartingPositionFromFullyFilledBoard(using: WyRand())
     }
     
     func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {

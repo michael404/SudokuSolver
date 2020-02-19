@@ -93,7 +93,7 @@ class SudokuSolver9Tests: XCTestCase {
         
         // Custom PRNG
         do {
-            var rng = Xoroshiro()
+            var rng = WyRand()
             let board = SudokuBoard9.randomStartingBoard(rng: &rng)
             XCTAssertEqual(board.numberOfSolutions(), .one)
             XCTAssertTrue(board.isValid)

@@ -4,30 +4,25 @@ enum SudokuSolverError: Error {
 
 typealias RNG = RandomNumberGenerator
 
-// Adapted from https://github.com/mattgallagher/CwlUtils/blob/master/Sources/CwlUtils/CwlRandom.swift
-struct Xoroshiro: RNG {
+// Adapted from https://github.com/lemire/SwiftWyhash
+struct WyRand: RNG {
+        
+    var state: UInt64
     
-    typealias State = (UInt64, UInt64)
-    
-    var state: State
-    
-    /// Initializes the Xoroshiro PRNG with a seed from the `SystemRandomNumberGenerator`
+    /// Initializes the PRNG with a seed from the `SystemRandomNumberGenerator`
     init() {
         var rng = SystemRandomNumberGenerator()
-        self.init(seed: (rng.next(), rng.next()))
+        self.init(seed: rng.next())
     }
-    
-    init(seed: State) {
+
+    public init(seed: UInt64) {
         self.state = seed
     }
-    
-    mutating func next() -> UInt64 {
-        let (l, k0, k1, k2): (UInt64, UInt64, UInt64, UInt64) = (64, 55, 14, 36)
-        let result = state.0 &+ state.1
-        let x = state.0 ^ state.1
-        state.0 = ((state.0 << k0) | (state.0 >> (l - k0))) ^ x ^ (x << k1)
-        state.1 = (x << k2) | (x >> (l - k2))
-        return result
+
+    public mutating func next() -> UInt64 {
+        state &+= 0xa0761d6478bd642f
+        let mul = state.multipliedFullWidth(by: state ^ 0xe7037ed1a0b428db)
+        return mul.high ^ mul.low
     }
 }
 

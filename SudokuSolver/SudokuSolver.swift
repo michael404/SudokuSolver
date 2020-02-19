@@ -1,7 +1,7 @@
 extension SudokuBoard {
     
     func findFirstSolution() -> SudokuBoard? {
-        findFirstSolution(using: Xoroshiro())
+        findFirstSolution(using: WyRand())
     }
     
     func findFirstSolution<R: RNG>(using rng: R) -> SudokuBoard? {
@@ -16,7 +16,7 @@ extension SudokuBoard {
     }
     
     func findAllSolutions() -> [SudokuBoard] {
-        findAllSolutions(using: Xoroshiro())
+        findAllSolutions(using: WyRand())
     }
     
     func findAllSolutions<R: RNG>(using rng: R) -> [SudokuBoard] {
@@ -31,7 +31,7 @@ extension SudokuBoard {
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
-        return randomFullyFilledBoard(using: Xoroshiro())
+        return randomFullyFilledBoard(using: WyRand())
     }
     
     static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
@@ -46,7 +46,7 @@ extension SudokuBoard {
     enum NumberOfSolutions { case none, one, multiple }
     
     func numberOfSolutions() -> NumberOfSolutions {
-        numberOfSolutions(using: Xoroshiro())
+        numberOfSolutions(using: WyRand())
     }
     
     func numberOfSolutions<R: RNG>(using rng: R) -> NumberOfSolutions {

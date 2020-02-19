@@ -27,13 +27,13 @@ class Sudoku9PerfTests: XCTestCase {
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard9.empty
         self.measure {
-            let rng = Xoroshiro(seed: (42, 42))
+            let rng = WyRand(seed: 42)
             for _ in 0..<10 {
                 board = SudokuBoard.randomFullyFilledBoard(using: rng)
             }
         }
         XCTAssertEqual(board,
-                       SudokuBoard("861345297479216538235798416526473189784961352193852764342189675957634821618527943"))
+                       SudokuBoard("725913486981645327634728159849561273276839541513274698397456812158392764462187935"))
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
@@ -42,7 +42,7 @@ class Sudoku9PerfTests: XCTestCase {
     func testPerfRandomStartingBoard() {
         var board = SudokuBoard9.empty
         self.measure {
-            var rng = Xoroshiro(seed: (42, 42))
+            var rng = WyRand(seed: 42)
             for _ in 0..<10 {
                 board = SudokuBoard.randomStartingBoard(rng: &rng)
             }
