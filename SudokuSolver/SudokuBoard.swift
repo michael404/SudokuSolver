@@ -29,10 +29,18 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
 extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
     var startIndex: Int { cells.startIndex }
+    
     var endIndex: Int { cells.endIndex }
-    subscript(position: Int) -> Cell {
-        @inline(__always) get { cells[position] }
-        @inline(__always) set { cells[position] = newValue }
+    
+    subscript(index: Int) -> Cell {
+        @inline(__always) get {
+            assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
+            return self.cells.withUnsafeBufferPointer { $0[index] }
+        }
+        @inline(__always) set {
+            //TODO: Avoid bounds checking in release mode here as well
+            self.cells[index] = newValue
+        }
     }
 
 }
