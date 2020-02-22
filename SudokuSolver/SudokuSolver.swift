@@ -153,19 +153,18 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _findHiddenSingles(for indicies: UnsafeBufferPointer<Int>) throws {
         cellValueLoop: for cellValue in Cell.allTrue {
-            var potentialFoundIndex: Int?
-            for index in indicies where board[index].contains(cellValue) {
-                // If we have already found one value in this unit, it is not a candiadate for a hidden single
-                guard potentialFoundIndex == nil else { continue cellValueLoop }
-                // If we have found a solved value, that is not a candidate for a hidden single
-                guard !board[index].isSolved else { continue cellValueLoop }
-                potentialFoundIndex = index
+            guard let firstIndex = indicies.first(where: { board[$0].contains(cellValue) }) else {
+                // If we cannot find a cell value at all in a unit, then this Sudoku is unsolvable
+                throw SudokuSolverError.unsolvable
             }
-            // If we did not find the value at all, the board is unsolvable
-            guard let foundIndex = potentialFoundIndex else { throw SudokuSolverError.unsolvable }
-            // We have identified a hidden single, and can set the cell to that value
-            board[foundIndex] = cellValue
-            try eliminatePossibilitites(basedOnSolvedIndex: foundIndex)
+            // If the value we found is already in a solved cell, then there is no point of continuing
+            guard !board[firstIndex].isSolved else { continue cellValueLoop }
+            // Force unwrap here is safe because we know that there exists a value already
+            let lastIndex = indicies.last { board[$0].contains(cellValue) }!
+            if firstIndex == lastIndex {
+                board[firstIndex] = cellValue
+                try eliminatePossibilitites(basedOnSolvedIndex: firstIndex)
+            }
         }
     }
     
