@@ -1,3 +1,5 @@
+import Algorithms
+
 extension SudokuBoard {
     
     func findFirstSolution() -> SudokuBoard? {
@@ -74,7 +76,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     init(eliminating board: Board, rng: R) throws {
         self.board = board
         self.rng = rng
-        for (index, cell) in zip(self.board.indices, self.board) where cell.isSolved {
+        for (index, cell) in self.board.indexed() where cell.isSolved {
             try eliminatePossibilitites(basedOnSolvedIndex: index)
         }
     }

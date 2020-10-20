@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,9 @@
 		4C11004B1F5DCE5D00F0745D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11004A1F5DCE5D00F0745D /* Utils.swift */; };
 		4C1100531F5DDC2800F0745D /* Sudoku9Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100521F5DDC2800F0745D /* Sudoku9Tests.swift */; };
 		4C11005B1F5DDCFB00F0745D /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11004A1F5DCE5D00F0745D /* Utils.swift */; };
+		4C15D69D253F52E2000935DB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 4C15D69C253F52E2000935DB /* Algorithms */; };
+		4C15D6A6253F5385000935DB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 4C15D6A5253F5385000935DB /* Algorithms */; };
+		4C15D6A8253F538B000935DB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 4C15D6A7253F538B000935DB /* Algorithms */; };
 		4C18617D20CE6BA200D478E2 /* SudokuSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C18617C20CE6BA200D478E2 /* SudokuSolver.swift */; };
 		4C18617E20CE6BEB00D478E2 /* SudokuSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C18617C20CE6BA200D478E2 /* SudokuSolver.swift */; };
 		4C23C5A7237F2A0600A31101 /* SudokuBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1100401F588ACB00F0745D /* SudokuBoard.swift */; };
@@ -95,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C15D6A6253F5385000935DB /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C15D6A8253F538B000935DB /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C15D69D253F52E2000935DB /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,6 +134,13 @@
 				4C1100541F5DDC2800F0745D /* Info.plist */,
 			);
 			path = SudokuTests;
+			sourceTree = "<group>";
+		};
+		4C15D6A4253F5385000935DB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		4CB864B0237F2931005DFFB7 /* SudokuPerfTests */ = {
@@ -151,6 +164,7 @@
 				4C1100511F5DDC2800F0745D /* SudokuTests */,
 				4CB864B0237F2931005DFFB7 /* SudokuPerfTests */,
 				4CC0B0FC1F588A9B00C2576C /* Products */,
+				4C15D6A4253F5385000935DB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -196,6 +210,9 @@
 			dependencies = (
 			);
 			name = SudokuTests;
+			packageProductDependencies = (
+				4C15D6A5253F5385000935DB /* Algorithms */,
+			);
 			productName = SudokuTests;
 			productReference = 4C1100501F5DDC2800F0745D /* SudokuTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -213,6 +230,9 @@
 			dependencies = (
 			);
 			name = SudokuPerfTests;
+			packageProductDependencies = (
+				4C15D6A7253F538B000935DB /* Algorithms */,
+			);
 			productName = SudokuPerfTests;
 			productReference = 4CB864AF237F2931005DFFB7 /* SudokuPerfTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -230,6 +250,9 @@
 			dependencies = (
 			);
 			name = SudokuSolver;
+			packageProductDependencies = (
+				4C15D69C253F52E2000935DB /* Algorithms */,
+			);
 			productName = SudokuSolver;
 			productReference = 4CC0B0FB1F588A9B00C2576C /* SudokuSolver */;
 			productType = "com.apple.product-type.tool";
@@ -241,7 +264,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1120;
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Michael Holmgren";
 				TargetAttributes = {
 					4C11004F1F5DDC2800F0745D = {
@@ -267,6 +290,9 @@
 				Base,
 			);
 			mainGroup = 4CC0B0F21F588A9B00C2576C;
+			packageReferences = (
+				4C15D69B253F52E2000935DB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+			);
 			productRefGroup = 4CC0B0FC1F588A9B00C2576C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -387,7 +413,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = SudokuTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = singlefile;
@@ -402,10 +432,13 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SudokuTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -419,13 +452,18 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = SudokuPerfTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuPerfTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -437,12 +475,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = SudokuPerfTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = MH.SudokuPerfTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -472,6 +515,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -533,6 +577,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -556,7 +601,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Release;
@@ -568,7 +612,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -580,7 +625,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -625,6 +671,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4C15D69B253F52E2000935DB /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C15D69C253F52E2000935DB /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C15D69B253F52E2000935DB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		4C15D6A5253F5385000935DB /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C15D69B253F52E2000935DB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		4C15D6A7253F538B000935DB /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C15D69B253F52E2000935DB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4CC0B0F31F588A9B00C2576C /* Project object */;
 }
