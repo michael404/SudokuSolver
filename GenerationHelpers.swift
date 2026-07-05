@@ -1,10 +1,10 @@
-import Foundation
+import Dispatch
 
 func countNanoseconds(for function: () -> Void) -> Int {
-    let startTime = Date()
+    let startTime = DispatchTime.now().uptimeNanoseconds
     function()
-    let endTime = Date()
-    return Calendar.current.dateComponents([.nanosecond], from: startTime, to: endTime).nanosecond!
+    let endTime = DispatchTime.now().uptimeNanoseconds
+    return Int(clamping: endTime - startTime)
 }
 
 func generateMinimalSudokusAsync<SudokuType: SudokuTypeProtocol>(
