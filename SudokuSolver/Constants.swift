@@ -44,66 +44,65 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
 
     }
 
-    /// The indicies that need to be checked when changing an index:
-    /// the other indicies in the same row, in the same column, and the
-    /// remaining indicies in the same box.
-    private let indiciesAffectedByIndexTable: ImmortalIndexTable
-    private let indiciesInSameRowExclusiveTable: ImmortalIndexTable
-    private let indiciesInSameColumnExclusiveTable: ImmortalIndexTable
-    private let indiciesInSameBoxExclusiveTable: ImmortalIndexTable
-    private let allIndiciesInRowTable: ImmortalIndexTable
-    private let allIndiciesInColumnTable: ImmortalIndexTable
-    private let allIndiciesInBoxTable: ImmortalIndexTable
+    /// The peer indices that need to be checked after solving a cell:
+    /// the other cells in the same row, column, and box.
+    private let indicesAffectedByIndexTable: ImmortalIndexTable
+    private let indicesInSameRowExclusiveTable: ImmortalIndexTable
+    private let indicesInSameColumnExclusiveTable: ImmortalIndexTable
+    private let indicesInSameBoxExclusiveTable: ImmortalIndexTable
+    private let allIndicesInRowTable: ImmortalIndexTable
+    private let allIndicesInColumnTable: ImmortalIndexTable
+    private let allIndicesInBoxTable: ImmortalIndexTable
 
     init() {
 
-        self.indiciesAffectedByIndexTable = ImmortalIndexTable(SudokuType.allCells.map { index in
-            var indicies = Set<Int>()
-            Self._indiciesInSameRowInclusive(as: index).forEach { indicies.insert($0) }
-            Self._indiciesInSameColumnInclusive(as: index).forEach { indicies.insert($0) }
-            Self._indiciesInSameBoxInclusive(as: index).forEach { indicies.insert($0) }
+        self.indicesAffectedByIndexTable = ImmortalIndexTable(SudokuType.allCells.map { index in
+            var indices = Set<Int>()
+            Self._indicesInSameRowInclusive(as: index).forEach { indices.insert($0) }
+            Self._indicesInSameColumnInclusive(as: index).forEach { indices.insert($0) }
+            Self._indicesInSameBoxInclusive(as: index).forEach { indices.insert($0) }
             // Remove self
-            indicies.remove(index)
-            return Array(indicies).sorted()
+            indices.remove(index)
+            return Array(indices).sorted()
         })
 
-        self.indiciesInSameRowExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
-            Self._indiciesInSameRowInclusive(as: index1).filter { index2 in index1 != index2 }
+        self.indicesInSameRowExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
+            Self._indicesInSameRowInclusive(as: index1).filter { index2 in index1 != index2 }
         })
 
-        self.indiciesInSameColumnExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
-            Self._indiciesInSameColumnInclusive(as: index1).filter { index2 in index1 != index2 }
+        self.indicesInSameColumnExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
+            Self._indicesInSameColumnInclusive(as: index1).filter { index2 in index1 != index2 }
         })
 
-        self.indiciesInSameBoxExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
-            Self._indiciesInSameBoxInclusive(as: index1).filter { index2 in index1 != index2 }
+        self.indicesInSameBoxExclusiveTable = ImmortalIndexTable(SudokuType.allCells.map { index1 in
+            Self._indicesInSameBoxInclusive(as: index1).filter { index2 in index1 != index2 }
         })
 
-        self.allIndiciesInRowTable = ImmortalIndexTable(SudokuType.allPossibilities.map { row in
+        self.allIndicesInRowTable = ImmortalIndexTable(SudokuType.allPossibilities.map { row in
             SudokuType.allPossibilities.map { offset in row * SudokuType.possibilities + offset }
         })
 
-        self.allIndiciesInColumnTable = ImmortalIndexTable(SudokuType.allPossibilities.map { offset in
+        self.allIndicesInColumnTable = ImmortalIndexTable(SudokuType.allPossibilities.map { offset in
             stride(from: 0, to: SudokuType.cells, by: SudokuType.possibilities).map { start in start + offset }
         })
 
         let starts = Self.boxOffsets().map { $0 * SudokuType.sideOfBox }
-        self.allIndiciesInBoxTable = ImmortalIndexTable(starts.map { start in
+        self.allIndicesInBoxTable = ImmortalIndexTable(starts.map { start in
             Self.boxOffsets().map { offset in start + offset }
         })
     }
 
-    private static func _indiciesInSameRowInclusive(as index: Int) -> CountableRange<Int> {
+    private static func _indicesInSameRowInclusive(as index: Int) -> CountableRange<Int> {
         let start = (index / SudokuType.possibilities) * SudokuType.possibilities
         let end = start + SudokuType.possibilities
         return start..<end
     }
 
-    private static func _indiciesInSameColumnInclusive(as index: Int) -> StrideTo<Int> {
+    private static func _indicesInSameColumnInclusive(as index: Int) -> StrideTo<Int> {
         stride(from: index % SudokuType.possibilities, to: SudokuType.cells, by: SudokuType.possibilities)
     }
 
-    private static func _indiciesInSameBoxInclusive(as index: Int) -> [Int] {
+    private static func _indicesInSameBoxInclusive(as index: Int) -> [Int] {
         let row = index / SudokuType.possibilities
         let column = index % SudokuType.possibilities
         let startIndexOfBlock =
@@ -117,32 +116,32 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
         .flatMap { $0..<($0 + SudokuType.sideOfBox) }
     }
 
-    func allIndiciesInRow(_ i: Int) -> UnsafeBufferPointer<Int> {
-        allIndiciesInRowTable[i]
+    func allIndicesInRow(_ i: Int) -> UnsafeBufferPointer<Int> {
+        allIndicesInRowTable[i]
     }
 
-    func allIndiciesInColumn(_ i: Int) -> UnsafeBufferPointer<Int> {
-        allIndiciesInColumnTable[i]
+    func allIndicesInColumn(_ i: Int) -> UnsafeBufferPointer<Int> {
+        allIndicesInColumnTable[i]
     }
 
-    func allIndiciesInBox(_ i: Int) -> UnsafeBufferPointer<Int> {
-        allIndiciesInBoxTable[i]
+    func allIndicesInBox(_ i: Int) -> UnsafeBufferPointer<Int> {
+        allIndicesInBoxTable[i]
     }
 
-    func indiciesAffectedByIndex(_ i: Int) -> UnsafeBufferPointer<Int> {
-        indiciesAffectedByIndexTable[i]
+    func indicesAffectedByIndex(_ i: Int) -> UnsafeBufferPointer<Int> {
+        indicesAffectedByIndexTable[i]
     }
 
-    func indiciesInSameRowExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
-        indiciesInSameRowExclusiveTable[i]
+    func indicesInSameRowExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        indicesInSameRowExclusiveTable[i]
     }
 
-    func indiciesInSameColumnExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
-        indiciesInSameColumnExclusiveTable[i]
+    func indicesInSameColumnExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        indicesInSameColumnExclusiveTable[i]
     }
 
-    func indiciesInSameBoxExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
-        indiciesInSameBoxExclusiveTable[i]
+    func indicesInSameBoxExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+        indicesInSameBoxExclusiveTable[i]
     }
 
 }

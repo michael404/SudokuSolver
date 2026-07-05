@@ -8,13 +8,13 @@ class Sudoku16Tests: XCTestCase {
         XCTAssertEqual(board.description, TestData16.hard1.string)
     }
 
-    func testIsValid() {
+    func testHasUniqueSolution() {
 
-        XCTAssertTrue(TestData16.easy1.board.isValid)
-        XCTAssertTrue(TestData16.medium1.board.isValid)
-        XCTAssertTrue(TestData16.hard1.board.isValid)
-        XCTAssertFalse(TestData16.invalid.isValid)
-        XCTAssertFalse(TestData16.empty.isValid)
+        XCTAssertTrue(TestData16.easy1.board.hasUniqueSolution)
+        XCTAssertTrue(TestData16.medium1.board.hasUniqueSolution)
+        XCTAssertTrue(TestData16.hard1.board.hasUniqueSolution)
+        XCTAssertFalse(TestData16.invalid.hasUniqueSolution)
+        XCTAssertFalse(TestData16.empty.hasUniqueSolution)
 
     }
 

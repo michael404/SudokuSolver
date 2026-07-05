@@ -59,6 +59,9 @@ extension SudokuCell: Sequence {
         private var remaining: SudokuType.CellIteratorStorage
         
         init(_ cell: SudokuCell<SudokuType>) {
+            assert(
+                SudokuType.CellIteratorStorage(truncatingIfNeeded: SudokuType.allTrueCellStorage) > 0,
+                "CellIteratorStorage must hold the full cell mask without setting the sign bit")
             self.remaining = SudokuType.CellIteratorStorage(truncatingIfNeeded: cell.storage)
         }
         

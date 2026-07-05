@@ -12,15 +12,15 @@ class Sudoku16PerfTests: XCTestCase {
             }
         }
         
-        XCTAssertTrue(solution!.isValid)
+        XCTAssertTrue(solution!.hasUniqueSolution)
         XCTAssertTrue(solution!.isFullyFilled)
         XCTAssertEqual(solution!.description, TestData16.hard1.solutionString)
     }
     
-    func testIsValid() {
+    func testHasUniqueSolution() {
         self.measure {
             for _ in 0..<50 {
-                XCTAssertTrue(TestData16.hard1.board.isValid)
+                XCTAssertTrue(TestData16.hard1.board.hasUniqueSolution)
             }
         }
     }

@@ -85,7 +85,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         self.board = board
         self.rng = rng
         for (index, cell) in self.board.indexed() where cell.isSolved {
-            try eliminatePossibilitites(basedOnSolvedIndex: index)
+            try eliminatePossibilities(basedOnSolvedIndex: index)
         }
     }
     
@@ -97,9 +97,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
     
     /// Throws if we are in an impossible situation
-    private mutating func eliminatePossibilitites(basedOnSolvedIndex index: Int) throws {
+    private mutating func eliminatePossibilities(basedOnSolvedIndex index: Int) throws {
         assert(board[index].isSolved)
-        for indexToRemoveFrom in SudokuType.constants.indiciesAffectedByIndex(index) {
+        for indexToRemoveFrom in SudokuType.constants.indicesAffectedByIndex(index) {
             try removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom)
         }
     }
@@ -107,7 +107,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     private mutating func removeAndApplyConstraints(valueToRemove: Cell, indexToRemoveFrom: Int) throws {
         if try board[indexToRemoveFrom].remove(valueToRemove) {
             switch board[indexToRemoveFrom].count {
-            case 1: try eliminatePossibilitites(basedOnSolvedIndex: indexToRemoveFrom)
+            case 1: try eliminatePossibilities(basedOnSolvedIndex: indexToRemoveFrom)
             case 2: try eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             default: break
             }
@@ -136,7 +136,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             do {
                 var newSolver = self
                 newSolver.board[index] = guess
-                try newSolver.eliminatePossibilitites(basedOnSolvedIndex: index)
+                try newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
                 // While it would make sense to check for hidden singles only in rows/columns/boxes where a
                 // possibility has just been removed, benchmarking shows that it is more efficient to run this
                 // once per guess for the whole board. In theory this could also be run in a loop until there
@@ -155,41 +155,41 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     private mutating func findAllHiddenSingles() throws {
         for unit in SudokuType.allPossibilities {
-            try _findHiddenSingles(for: SudokuType.constants.allIndiciesInRow(unit))
-            try _findHiddenSingles(for: SudokuType.constants.allIndiciesInColumn(unit))
-            try _findHiddenSingles(for: SudokuType.constants.allIndiciesInBox(unit))
+            try _findHiddenSingles(for: SudokuType.constants.allIndicesInRow(unit))
+            try _findHiddenSingles(for: SudokuType.constants.allIndicesInColumn(unit))
+            try _findHiddenSingles(for: SudokuType.constants.allIndicesInBox(unit))
         }
     }
 
-    private mutating func _findHiddenSingles(for indicies: UnsafeBufferPointer<Int>) throws {
+    private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<Int>) throws {
         cellValueLoop: for cellValue in Cell.allTrue {
-            guard let firstIndex = indicies.first(where: { board[$0].contains(cellValue) }) else {
+            guard let firstIndex = indices.first(where: { board[$0].contains(cellValue) }) else {
                 // If we cannot find a cell value at all in a unit, then this Sudoku is unsolvable
                 throw SudokuSolverError.unsolvable
             }
             // If the value we found is already in a solved cell, then there is no point of continuing
             guard !board[firstIndex].isSolved else { continue cellValueLoop }
             // Force unwrap here is safe because we know that there exists a value already
-            let lastIndex = indicies.last { board[$0].contains(cellValue) }!
+            let lastIndex = indices.last { board[$0].contains(cellValue) }!
             if firstIndex == lastIndex {
                 board[firstIndex] = cellValue
-                try eliminatePossibilitites(basedOnSolvedIndex: firstIndex)
+                try eliminatePossibilities(basedOnSolvedIndex: firstIndex)
             }
         }
     }
     
     private mutating func eliminateNakedPairs(basedOnChangeOf index: Int) throws {
         let value = board[index]
-        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameRowExclusive(index))
-        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameColumnExclusive(index))
-        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indiciesInSameBoxExclusive(index))
+        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameRowExclusive(index))
+        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameColumnExclusive(index))
+        try _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameBoxExclusive(index))
     }
 
-    private mutating func _eliminateNakedPairs(value: Cell, for indicies: UnsafeBufferPointer<Int>) throws {
+    private mutating func _eliminateNakedPairs(value: Cell, for indices: UnsafeBufferPointer<Int>) throws {
         assert(value.count == 2)
-        guard let cellWithSameTwoValues = indicies.first(where: { board[$0] == value }) else { return }
-        // Found a duplicate. Loop over all indicies, exept the current one and remove from that
-        for indexToRemoveFrom in indicies where indexToRemoveFrom != cellWithSameTwoValues {
+        guard let cellWithSameTwoValues = indices.first(where: { board[$0] == value }) else { return }
+        // Found a duplicate. Loop over all indices, except the current one and remove from that
+        for indexToRemoveFrom in indices where indexToRemoveFrom != cellWithSameTwoValues {
             // If more than two cells only have the same two possibilities, this is unsolvable
             guard value != board[indexToRemoveFrom] else { throw SudokuSolverError.unsolvable }
             try removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom)

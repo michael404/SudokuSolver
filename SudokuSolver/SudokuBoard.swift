@@ -17,10 +17,11 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
         self.cells = try numbers.map { try Cell(String($0)) }
     }
     
-    /// Indicates if this Sudoku is valid
-    /// If it is not solvable, or violates any of the row/box/column
-    /// requirements, or has multiple solutions, it is considered non-valid
-    var isValid: Bool { numberOfSolutions() == .one }
+    /// Indicates whether this Sudoku has exactly one solution.
+    var hasUniqueSolution: Bool { numberOfSolutions() == .one }
+    
+    @available(*, deprecated, renamed: "hasUniqueSolution")
+    var isValid: Bool { hasUniqueSolution }
     
     var isFullyFilled: Bool { self.allSatisfy(\.isSolved) }
     

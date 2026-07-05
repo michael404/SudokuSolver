@@ -59,7 +59,7 @@ enum Sudoku25: SudokuTypeProtocol {
     typealias CellIteratorStorage = Int32
     static let allTrueCellStorage: UInt32 = 0b11111_11111_11111_11111_11111
     static var sideOfBox: Int { 5 }
-    static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Z"
+    static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Y"
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }

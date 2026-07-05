@@ -17,42 +17,42 @@ class Sudoku9Tests: XCTestCase {
         XCTAssertEqual(board.description, TestData9.hard1.string)
     }
     
-    func testIsValid() {
+    func testHasUniqueSolution() {
     
         do {
-            XCTAssertTrue(TestData9.hard1.board.isValid)
+            XCTAssertTrue(TestData9.hard1.board.hasUniqueSolution)
     
             let nonValid =
                 try! SudokuBoard9("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
-            XCTAssertFalse(nonValid.isValid)
+            XCTAssertFalse(nonValid.hasUniqueSolution)
         }
         do {
             let nonValid =
                 try! SudokuBoard9(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
-            XCTAssertFalse(nonValid.isValid)
+            XCTAssertFalse(nonValid.hasUniqueSolution)
         }
         do {
             let nonValid =
                 try! SudokuBoard9(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
-            XCTAssertFalse(nonValid.isValid)
+            XCTAssertFalse(nonValid.hasUniqueSolution)
         }
         do {
             let nonValid =
                 try! SudokuBoard9("55...............................................................................")
-            XCTAssertFalse(nonValid.isValid)
+            XCTAssertFalse(nonValid.hasUniqueSolution)
         }
         do {
             let nonValid =
                 try! SudokuBoard9(".....................................................................9..........9")
-            XCTAssertFalse(nonValid.isValid)
+            XCTAssertFalse(nonValid.hasUniqueSolution)
         }
         
-        XCTAssertFalse(TestData9.empty.isValid)
+        XCTAssertFalse(TestData9.empty.hasUniqueSolution)
         
-        XCTAssertFalse(TestData9.multipleSolutions.isValid)
+        XCTAssertFalse(TestData9.multipleSolutions.hasUniqueSolution)
         
         for puzzel in TestData9.perfTestSuite {
-            XCTAssertTrue(puzzel.board.isValid)
+            XCTAssertTrue(puzzel.board.hasUniqueSolution)
         }
         
     }

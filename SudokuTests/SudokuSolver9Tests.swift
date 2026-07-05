@@ -4,11 +4,11 @@ class SudokuSolver9Tests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
         XCTAssertFalse(TestData9.hard1.board.isFullyFilled)
-        XCTAssertTrue(TestData9.hard1.board.isValid)
+        XCTAssertTrue(TestData9.hard1.board.hasUniqueSolution)
         
         do {
             let solution = TestData9.hard1.board.findFirstSolution()!
-            XCTAssertTrue(solution.isValid)
+            XCTAssertTrue(solution.hasUniqueSolution)
             XCTAssertTrue(solution.isFullyFilled)
             XCTAssertEqual(solution.description, TestData9.hard1.solutionString)
         }
@@ -16,7 +16,7 @@ class SudokuSolver9Tests: XCTestCase {
     }
     
     func testFailingBoard() {
-        XCTAssertFalse(TestData9.invalid.isValid)
+        XCTAssertFalse(TestData9.invalid.hasUniqueSolution)
         XCTAssertNil(TestData9.invalid.findFirstSolution())
     }
     
@@ -75,7 +75,7 @@ class SudokuSolver9Tests: XCTestCase {
         do {
             let board = SudokuBoard9.randomFullyFilledBoard()
             XCTAssertEqual(board.numberOfSolutions(), .one)
-            XCTAssertTrue(board.isValid)
+            XCTAssertTrue(board.hasUniqueSolution)
             XCTAssertTrue(board.isFullyFilled)
         }
     }
@@ -101,7 +101,7 @@ class SudokuSolver9Tests: XCTestCase {
         do {
             let board = SudokuBoard9.randomStartingBoard()
             XCTAssertEqual(board.numberOfSolutions(), .one)
-            XCTAssertTrue(board.isValid)
+            XCTAssertTrue(board.hasUniqueSolution)
             XCTAssertFalse(board.isFullyFilled)
             XCTAssertTrue((17...40).contains(board.clues))
         }
@@ -111,7 +111,7 @@ class SudokuSolver9Tests: XCTestCase {
             var rng = WyRand()
             let board = SudokuBoard9.randomStartingBoard(rng: &rng)
             XCTAssertEqual(board.numberOfSolutions(), .one)
-            XCTAssertTrue(board.isValid)
+            XCTAssertTrue(board.hasUniqueSolution)
             XCTAssertFalse(board.isFullyFilled)
             XCTAssertTrue((17...40).contains(board.clues))
         }

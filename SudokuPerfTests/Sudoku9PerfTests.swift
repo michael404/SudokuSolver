@@ -16,10 +16,10 @@ class Sudoku9PerfTests: XCTestCase {
         }
     }
     
-    func testIsValid() {
+    func testHasUniqueSolution() {
         self.measure {
             for puzzel in TestData9.perfTestSuite {
-                XCTAssertTrue(puzzel.board.isValid)
+                XCTAssertTrue(puzzel.board.hasUniqueSolution)
             }
         }
     }
@@ -41,7 +41,7 @@ class Sudoku9PerfTests: XCTestCase {
             expectedBoard = SudokuBoard.randomFullyFilledBoard(using: &rng)
         }
         XCTAssertEqual(board, expectedBoard)
-        XCTAssertTrue(board.isValid)
+        XCTAssertTrue(board.hasUniqueSolution)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
     }
@@ -55,7 +55,7 @@ class Sudoku9PerfTests: XCTestCase {
             }
         }
         XCTAssertEqual(board.numberOfSolutions(), .one)
-        XCTAssertTrue(board.isValid)
+        XCTAssertTrue(board.hasUniqueSolution)
         XCTAssertFalse(board.isFullyFilled)
         XCTAssertTrue((17...40).contains(board.clues))
     }

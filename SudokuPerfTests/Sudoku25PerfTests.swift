@@ -14,9 +14,9 @@ class Sudoku25PerfTests: XCTestCase {
         XCTAssertEqual(solution!.description, TestData25.puzzel1.solutionString)
     }
     
-    func testIsValid() {
+    func testHasUniqueSolution() {
         self.measure {
-            XCTAssertTrue(TestData25.puzzel1.board.isValid)
+            XCTAssertTrue(TestData25.puzzel1.board.hasUniqueSolution)
         }
     }
 
