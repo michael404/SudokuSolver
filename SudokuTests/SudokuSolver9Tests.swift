@@ -1,5 +1,21 @@
 import XCTest
 
+private struct CountingRNG: RNG {
+    
+    private var rng: WyRand
+    private(set) var nextCount = 0
+    
+    init(seed: UInt64) {
+        self.rng = WyRand(seed: seed)
+    }
+    
+    mutating func next() -> UInt64 {
+        nextCount += 1
+        return rng.next()
+    }
+    
+}
+
 class SudokuSolver9Tests: XCTestCase {
     
     func testSudokuSolverEndToEnd() {
@@ -93,6 +109,17 @@ class SudokuSolver9Tests: XCTestCase {
             _ = SudokuBoard9.randomFullyFilledBoard(using: &rng)
             XCTAssertNotEqual(rng.state, originalState)
         }
+    }
+    
+    func testFindAllSolutionsAdvancesRNGThroughBranches() {
+        var firstRng = CountingRNG(seed: 42)
+        XCTAssertNotNil(TestData9.manySolutions.board.findFirstSolution(using: &firstRng))
+        
+        var allRng = CountingRNG(seed: 42)
+        let allSolutions = TestData9.manySolutions.board.findAllSolutions(using: &allRng)
+        
+        XCTAssertEqual(Set(allSolutions), Set(TestData9.manySolutions.solutions))
+        XCTAssertGreaterThan(allRng.nextCount, firstRng.nextCount)
     }
     
     func testRandomStartingBoard() {

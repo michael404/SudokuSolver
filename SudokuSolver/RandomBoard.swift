@@ -34,7 +34,8 @@ internal extension SudokuBoard {
                 board[index] = cellAtIndex
             }
         }
-        assert(board.numberOfSolutions(using: &rng) == .one)
+        var checkRng = rng
+        assert(board.numberOfSolutions(using: &checkRng) == .one)
         return board
     }
     

@@ -133,8 +133,8 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             return
         }
         for guess in T.transform(board[index], rng: &rng) {
+            var newSolver = self
             do {
-                var newSolver = self
                 newSolver.board[index] = guess
                 try newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
                 // While it would make sense to check for hidden singles only in rows/columns/boxes where a
@@ -146,8 +146,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                     transformation: transformation,
                     maxSolutions: maxSolutions,
                     solutions: &solutions)
+                self.rng = newSolver.rng
                 if solutions.count >= maxSolutions { return }
             } catch {
+                self.rng = newSolver.rng
                 try self.removeAndApplyConstraints(valueToRemove: guess, indexToRemoveFrom: index)
             }
         }
