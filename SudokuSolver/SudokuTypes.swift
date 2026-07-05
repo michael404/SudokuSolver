@@ -4,6 +4,9 @@ protocol SudokuTypeProtocol: Sendable {
     static var allTrueCellStorage: CellStorage { get }
     static var sideOfBox: Int { get }
     static var solvedRepresentation: [String] { get }
+    /// Maps each symbol in `solvedRepresentation` back to its value.
+    /// Stored per conforming type so it is built once, not on every lookup.
+    static var solvedRepresentationReversed: [String: Int] { get }
     static var constants: ConstantsStorage<Self> { get }
 }
 
@@ -12,10 +15,12 @@ extension SudokuTypeProtocol {
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
     static var allCells: Range<Int> { 0..<cells }
-    static var solvedRepresentationReversed: [String: Int] {
+    /// Builds the reverse lookup for `solvedRepresentationReversed`. Each
+    /// conforming type stores the result in a `static let` so this runs once.
+    static func makeSolvedRepresentationReversed() -> [String: Int] {
         assert(solvedRepresentation.count == possibilities,
                "solvedRepresentation count was not \(possibilities) as expected")
-        return Dictionary.init(uniqueKeysWithValues: solvedRepresentation.enumerated().map { ($1, $0) })
+        return Dictionary(uniqueKeysWithValues: solvedRepresentation.enumerated().map { ($1, $0) })
     }
 }
 
@@ -25,6 +30,7 @@ enum Sudoku4: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt8 = 0b1111
     static var sideOfBox: Int { 2 }
     static let solvedRepresentation = (1...4).map(String.init)
+    static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
@@ -34,6 +40,7 @@ enum Sudoku9: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt16 = 0b111111111
     static var sideOfBox: Int { 3 }
     static let solvedRepresentation = (1...9).map(String.init)
+    static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
@@ -43,6 +50,7 @@ enum Sudoku16: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt16 = 0b11111111_11111111
     static var sideOfBox: Int { 4 }
     static let solvedRepresentation = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+    static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
@@ -52,6 +60,7 @@ enum Sudoku25: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt32 = 0b11111_11111_11111_11111_11111
     static var sideOfBox: Int { 5 }
     static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Z"
+    static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
