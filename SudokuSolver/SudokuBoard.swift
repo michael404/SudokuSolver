@@ -38,7 +38,7 @@ extension SudokuBoard: MutableCollection, RandomAccessCollection {
             return self.cells.withUnsafeBufferPointer { $0[index] }
         }
         @inline(__always) set {
-            //TODO: Avoid bounds checking in release mode here as well
+            // TODO: Avoid bounds checking in release mode here as well
             self.cells[index] = newValue
         }
     }
@@ -112,15 +112,11 @@ extension SudokuBoard where SudokuType == Sudoku9 {
         
         for cell in 0..<81 {
             let boxStartIndex = 57 + (6 * cell) + (114 * (cell / 9))
-            for cellValue in 1...5 {
-                if self[cell].contains(SudokuCell9(String(cellValue))) {
-                    result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
-                }
+            for cellValue in 1...5 where self[cell].contains(SudokuCell9(String(cellValue))) {
+                result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
             }
-            for cellValue in 6...9 {
-                if self[cell].contains(SudokuCell9(String(cellValue))) {
-                    result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
-                }
+            for cellValue in 6...9 where self[cell].contains(SudokuCell9(String(cellValue))) {
+                result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
             }
         }
 

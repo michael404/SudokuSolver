@@ -19,7 +19,7 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
             Self._indiciesInSameRowInclusive(as: index).forEach { indicies.insert($0) }
             Self._indiciesInSameColumnInclusive(as: index).forEach { indicies.insert($0) }
             Self._indiciesInSameBoxInclusive(as: index).forEach { indicies.insert($0) }
-            //Remove self
+            // Remove self
             indicies.remove(index)
             return Array(indicies).sorted()
         }
