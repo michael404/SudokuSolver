@@ -34,6 +34,9 @@ extension SudokuBoard: MutableCollection, RandomAccessCollection {
     
     subscript(index: Int) -> Cell {
         @inline(__always) get {
+            // Release builds intentionally skip Array bounds checks on this hot path.
+            // Call sites only use precomputed internal indices; a bad index table would
+            // be undefined behavior here instead of trapping.
             assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
             return self.cells.withUnsafeBufferPointer { $0[index] }
         }
