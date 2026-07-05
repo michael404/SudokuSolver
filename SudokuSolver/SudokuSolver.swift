@@ -115,12 +115,26 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
     
     private mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
-        for possibleValues in 2...SudokuType.possibilities {
-            if let index = board.indices.randomElement(using: &self.rng, where: { board[$0].count == possibleValues }) {
-                return index
+        var result: Board.Index?
+        var bestCount = Int.max
+        var tiedBestCount = 0
+        
+        for index in board.indices {
+            let count = board[index].count
+            guard count > 1 else { continue }
+            
+            if count < bestCount {
+                bestCount = count
+                result = index
+                tiedBestCount = 1
+            } else if count == bestCount {
+                tiedBestCount += 1
+                if Int.random(in: 0..<tiedBestCount, using: &rng) == 0 {
+                    result = index
+                }
             }
         }
-        return nil
+        return result
     }
     
     private mutating func guessAndEliminate<T: SudokuCellTransformation>(
@@ -165,18 +179,22 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<Int>) throws {
         cellValueLoop: for cellValue in Cell.allTrue {
-            guard let firstIndex = indices.first(where: { board[$0].contains(cellValue) }) else {
+            var hiddenSingleIndex: Int?
+            
+            for index in indices {
+                let cell = board[index]
+                guard cell.contains(cellValue) else { continue }
+                guard !cell.isSolved else { continue cellValueLoop }
+                guard hiddenSingleIndex == nil else { continue cellValueLoop }
+                hiddenSingleIndex = index
+            }
+            
+            guard let hiddenSingleIndex else {
                 // If we cannot find a cell value at all in a unit, then this Sudoku is unsolvable
                 throw SudokuSolverError.unsolvable
             }
-            // If the value we found is already in a solved cell, then there is no point of continuing
-            guard !board[firstIndex].isSolved else { continue cellValueLoop }
-            // Force unwrap here is safe because we know that there exists a value already
-            let lastIndex = indices.last { board[$0].contains(cellValue) }!
-            if firstIndex == lastIndex {
-                board[firstIndex] = cellValue
-                try eliminatePossibilities(basedOnSolvedIndex: firstIndex)
-            }
+            board[hiddenSingleIndex] = cellValue
+            try eliminatePossibilities(basedOnSolvedIndex: hiddenSingleIndex)
         }
     }
     
