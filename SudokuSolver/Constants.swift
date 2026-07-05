@@ -1,4 +1,4 @@
-struct ConstantsStorage<SudokuType: SudokuTypeProtocol> {
+struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
     
     /// The 39  indicies that need to be checked when changing an index.
     /// (15 in the same row, 15 in the same column and then 9 remaining in the box)

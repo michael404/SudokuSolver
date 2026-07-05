@@ -1,4 +1,4 @@
-struct Puzzel<SudokuType: SudokuTypeProtocol> {
+struct Puzzel<SudokuType: SudokuTypeProtocol>: Sendable {
     
     let string: String
     let solutionString: String
@@ -202,7 +202,7 @@ enum TestData16 {
 
 enum TestData25 {
     
-    static var puzzel1 = Puzzel<Sudoku25>(
+    static let puzzel1 = Puzzel<Sudoku25>(
         "Q..M.PW.U..I.Y...BVN.A..XG.F.P..Q..R....T...H.CD..W...CHT....K..D.I...M." +
         "...KE.JX..MA..LO.U.W.Q..G.I.....O.D..V...BAL.U...Q...L..SQAEV.W..Y....N." +
         "...XJ.UXW.DS..I.LF..KRQ.JAPHYG...Y....UG.OX..H.V...F....PI......OKT..C.U" +

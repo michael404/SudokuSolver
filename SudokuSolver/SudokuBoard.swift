@@ -1,4 +1,4 @@
-struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable {
+struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
     
     typealias Cell = SudokuCell<SudokuType>
     
