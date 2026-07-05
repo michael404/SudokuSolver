@@ -1,5 +1,8 @@
 struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
 
+    // `@unchecked Sendable` because of the `UnsafePointer` property: the pointed-to
+    // memory is immutable after init and never deallocated, so sharing across
+    // threads is safe.
     /// A table of precalculated index rows, where all rows have the same length,
     /// backed by a single flat buffer that is allocated once and intentionally
     /// never deallocated.
@@ -15,8 +18,6 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
     /// Since the backing memory is deliberately leaked, values of this type must
     /// only be stored in variables that live for the whole program, like the
     /// `constants` static properties on the Sudoku types.
-    // @unchecked because of the UnsafePointer property: the pointed-to memory is
-    // immutable after init and never deallocated, so sharing across threads is safe.
     private struct ImmortalIndexTable: @unchecked Sendable {
 
         private let base: UnsafePointer<Int>
@@ -61,7 +62,7 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
             Self._indiciesInSameRowInclusive(as: index).forEach { indicies.insert($0) }
             Self._indiciesInSameColumnInclusive(as: index).forEach { indicies.insert($0) }
             Self._indiciesInSameBoxInclusive(as: index).forEach { indicies.insert($0) }
-            //Remove self
+            // Remove self
             indicies.remove(index)
             return Array(indicies).sorted()
         })
