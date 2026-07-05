@@ -38,8 +38,8 @@ extension SudokuBoard: MutableCollection, RandomAccessCollection {
             return self.cells.withUnsafeBufferPointer { $0[index] }
         }
         @inline(__always) set {
-            //TODO: Avoid bounds checking in release mode here as well
-            self.cells[index] = newValue
+            assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
+            self.cells.withUnsafeMutableBufferPointer { $0[index] = newValue }
         }
     }
 
