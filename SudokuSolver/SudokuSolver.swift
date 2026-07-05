@@ -3,12 +3,14 @@ import Algorithms
 extension SudokuBoard {
     
     func findFirstSolution() -> SudokuBoard? {
-        findFirstSolution(using: WyRand())
+        var rng = WyRand()
+        return findFirstSolution(using: &rng)
     }
     
-    func findFirstSolution<R: RNG>(using rng: R) -> SudokuBoard? {
+    func findFirstSolution<R: RNG>(using rng: inout R) -> SudokuBoard? {
         do {
             var solver = try SudokuSolver(eliminating: self, rng: rng)
+            defer { rng = solver.rng }
             let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 1)
             guard let solution = solutions.first else {throw SudokuSolverError.unsolvable }
             return solution
@@ -18,12 +20,14 @@ extension SudokuBoard {
     }
     
     func findAllSolutions() -> [SudokuBoard] {
-        findAllSolutions(using: WyRand())
+        var rng = WyRand()
+        return findAllSolutions(using: &rng)
     }
     
-    func findAllSolutions<R: RNG>(using rng: R) -> [SudokuBoard] {
+    func findAllSolutions<R: RNG>(using rng: inout R) -> [SudokuBoard] {
         do {
             var solver = try SudokuSolver(eliminating: self, rng: rng)
+            defer { rng = solver.rng }
             let solutions = try solver.solve(transformation: Normal.self, maxSolutions: Int.max)
             assert(!solutions.isEmpty)
             return solutions
@@ -33,12 +37,14 @@ extension SudokuBoard {
     }
     
     static func randomFullyFilledBoard() -> SudokuBoard {
-        return randomFullyFilledBoard(using: WyRand())
+        var rng = WyRand()
+        return randomFullyFilledBoard(using: &rng)
     }
     
-    static func randomFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
+    static func randomFullyFilledBoard<R: RNG>(using rng: inout R) -> SudokuBoard {
         do {
             var solver = try SudokuSolver(eliminating: SudokuBoard.empty, rng: rng)
+            defer { rng = solver.rng }
             return try solver.solve(transformation: Shuffle.self, maxSolutions: 1).first!
         } catch {
             fatalError("Inconsistent state")
@@ -48,12 +54,14 @@ extension SudokuBoard {
     enum NumberOfSolutions { case none, one, multiple }
     
     func numberOfSolutions() -> NumberOfSolutions {
-        numberOfSolutions(using: WyRand())
+        var rng = WyRand()
+        return numberOfSolutions(using: &rng)
     }
     
-    func numberOfSolutions<R: RNG>(using rng: R) -> NumberOfSolutions {
+    func numberOfSolutions<R: RNG>(using rng: inout R) -> NumberOfSolutions {
         do {
             var solver = try SudokuSolver(eliminating: self, rng: rng)
+            defer { rng = solver.rng }
             let solutions = try solver.solve(transformation: Normal.self, maxSolutions: 2)
             switch solutions.count {
             case 1: return .one

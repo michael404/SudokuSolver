@@ -6,7 +6,7 @@ extension SudokuBoard {
     }
     
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
-        randomFullyFilledBoard(using: rng).randomStartingPositionFromFullyFilledBoard(using: rng)
+        randomFullyFilledBoard(using: &rng).randomStartingPositionFromFullyFilledBoard(using: &rng)
     }
 
 }
@@ -14,16 +14,16 @@ extension SudokuBoard {
 internal extension SudokuBoard {
     
     func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
-        return randomStartingPositionFromFullyFilledBoard(using: WyRand())
+        var rng = WyRand()
+        return randomStartingPositionFromFullyFilledBoard(using: &rng)
     }
     
-    func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: R) -> SudokuBoard {
+    func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: inout R) -> SudokuBoard {
         var board = self
-        var rng = rng
         for index in board.indices.shuffled(using: &rng) {
             let cellAtIndex = board[index]
             board[index] = .allTrue
-            switch board.numberOfSolutions(using: rng) {
+            switch board.numberOfSolutions(using: &rng) {
             case .none:
                 fatalError("Inconsistent state")
             case .one:
@@ -34,7 +34,7 @@ internal extension SudokuBoard {
                 board[index] = cellAtIndex
             }
         }
-        assert(board.numberOfSolutions(using: rng) == .one)
+        assert(board.numberOfSolutions(using: &rng) == .one)
         return board
     }
     

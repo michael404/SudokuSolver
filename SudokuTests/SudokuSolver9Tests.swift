@@ -80,6 +80,21 @@ class SudokuSolver9Tests: XCTestCase {
         }
     }
     
+    func testCustomRNGStateIsAdvanced() {
+        do {
+            var rng = WyRand(seed: 42)
+            let originalState = rng.state
+            XCTAssertNotNil(TestData9.hard1.board.findFirstSolution(using: &rng))
+            XCTAssertNotEqual(rng.state, originalState)
+        }
+        do {
+            var rng = WyRand(seed: 42)
+            let originalState = rng.state
+            _ = SudokuBoard9.randomFullyFilledBoard(using: &rng)
+            XCTAssertNotEqual(rng.state, originalState)
+        }
+    }
+    
     func testRandomStartingBoard() {
         
         // Standard RNG

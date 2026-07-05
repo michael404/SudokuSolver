@@ -27,15 +27,20 @@ class Sudoku9PerfTests: XCTestCase {
     func testPerfRandomFullyFilledBoard() {
         var board = SudokuBoard9.empty
         self.measure {
-            let rng = WyRand(seed: 42)
+            var rng = WyRand(seed: 42)
             for _ in 0..<10 {
-                board = SudokuBoard.randomFullyFilledBoard(using: rng)
+                board = SudokuBoard.randomFullyFilledBoard(using: &rng)
             }
         }
         // The exact board depends on how many random values the solver consumes,
         // so instead of pinning a specific board, check that generation is
         // deterministic for a fixed seed.
-        XCTAssertEqual(board, SudokuBoard.randomFullyFilledBoard(using: WyRand(seed: 42)))
+        var expectedBoard = SudokuBoard9.empty
+        var rng = WyRand(seed: 42)
+        for _ in 0..<10 {
+            expectedBoard = SudokuBoard.randomFullyFilledBoard(using: &rng)
+        }
+        XCTAssertEqual(board, expectedBoard)
         XCTAssertTrue(board.isValid)
         XCTAssertTrue(board.isFullyFilled)
         XCTAssertEqual(board.clues, 81)
