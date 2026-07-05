@@ -2,8 +2,17 @@ import XCTest
 
 class Sudoku9Tests: XCTestCase {
     
+    func testInvalidBoardInputThrows() {
+        XCTAssertThrowsError(try SudokuBoard9("12")) { error in
+            XCTAssertEqual(error as? SudokuParseError, .invalidBoardLength(expected: 81, actual: 2))
+        }
+        XCTAssertThrowsError(try SudokuBoard9(String(repeating: ".", count: 80) + "X")) { error in
+            XCTAssertEqual(error as? SudokuParseError, .invalidCell("X"))
+        }
+    }
+    
     func testInitFromString() {
-        let board = SudokuBoard9(TestData9.hard1.string)
+        let board = try! SudokuBoard9(TestData9.hard1.string)
         XCTAssertEqual(board, TestData9.hard1.board)
         XCTAssertEqual(board.description, TestData9.hard1.string)
     }
@@ -14,27 +23,27 @@ class Sudoku9Tests: XCTestCase {
             XCTAssertTrue(TestData9.hard1.board.isValid)
     
             let nonValid =
-                SudokuBoard9("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+                try! SudokuBoard9("99....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
             let nonValid =
-                SudokuBoard9(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
+                try! SudokuBoard9(".9....5....189..24......7.9..4.82...8...6...3...35.2..5.9......74..255....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
             let nonValid =
-                SudokuBoard9(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
+                try! SudokuBoard9(".9....5...9189..24......7.9..4.82...8...6...3...35.2..5.9......74..251....2....7.")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
             let nonValid =
-                SudokuBoard9("55...............................................................................")
+                try! SudokuBoard9("55...............................................................................")
             XCTAssertFalse(nonValid.isValid)
         }
         do {
             let nonValid =
-                SudokuBoard9(".....................................................................9..........9")
+                try! SudokuBoard9(".....................................................................9..........9")
             XCTAssertFalse(nonValid.isValid)
         }
         

@@ -2,6 +2,11 @@ enum SudokuSolverError: Error {
     case unsolvable
 }
 
+enum SudokuParseError: Error, Equatable {
+    case invalidBoardLength(expected: Int, actual: Int)
+    case invalidCell(String)
+}
+
 typealias RNG = RandomNumberGenerator
 
 // Adapted from https://github.com/lemire/SwiftWyhash

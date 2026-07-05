@@ -32,13 +32,13 @@ class SudokuSolver9Tests: XCTestCase {
     func testFindAllSolutions() {
         do {
             let solutions =
-                SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.")
+                try! SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.")
                     .findAllSolutions()
             let expectedSolutions: Set<SudokuBoard9> = [
-                SudokuBoard9("926738541745192386381564972463875129857921463192346857574219638639487215218653794"),
-                SudokuBoard9("926738541745192386381564972463875129857921463192346857578219634639457218214683795"),
-                SudokuBoard9("926738541745192386381564972463875129857921463192346857578219634639487215214653798"),
-                SudokuBoard9("986732541745169382321584976463875129857921463192346857579218634638497215214653798")
+                try! SudokuBoard9("926738541745192386381564972463875129857921463192346857574219638639487215218653794"),
+                try! SudokuBoard9("926738541745192386381564972463875129857921463192346857578219634639457218214683795"),
+                try! SudokuBoard9("926738541745192386381564972463875129857921463192346857578219634639487215214653798"),
+                try! SudokuBoard9("986732541745169382321584976463875129857921463192346857579218634638497215214653798")
             ]
             XCTAssertEqual(Set(solutions), expectedSolutions)
         }
@@ -62,11 +62,11 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertEqual(TestData9.multipleSolutions.numberOfSolutions(), .multiple)
         XCTAssertEqual(TestData9.invalid.numberOfSolutions(), .none)
         XCTAssertEqual(
-            SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.")
+            try! SudokuBoard9("....3...174..........5.4...4.38.5.2...79...6.......8575...1.6..6..4.721..1...3.9.")
                 .numberOfSolutions(),
             .multiple)
         XCTAssertEqual(
-            SudokuBoard9("63.8..142.........5..4.239...4.8..6.....6..2..6.7..435.5....98.4...9.....2.......")
+            try! SudokuBoard9("63.8..142.........5..4.239...4.8..6.....6..2..6.7..435.5....98.4...9.....2.......")
                 .numberOfSolutions(),
             .multiple)
     }
@@ -122,33 +122,33 @@ class SudokuSolver9Tests: XCTestCase {
         XCTAssertEqual(allTrue.count, 9)
         XCTAssertNil(allTrue.solvedValue)
         for i in 1...9 {
-            XCTAssertTrue(allTrue.contains(SudokuCell9(String(i))))
+            XCTAssertTrue(allTrue.contains(try! SudokuCell9(String(i))))
         }
         
         var someFalse = allTrue
-        XCTAssertTrue(try someFalse.remove(SudokuCell("1")))
-        XCTAssertTrue(try someFalse.remove(SudokuCell("7")))
-        XCTAssertFalse(try someFalse.remove(SudokuCell("7")))
+        XCTAssertTrue(try someFalse.remove(try! SudokuCell("1")))
+        XCTAssertTrue(try someFalse.remove(try! SudokuCell("7")))
+        XCTAssertFalse(try someFalse.remove(try! SudokuCell("7")))
         XCTAssertEqual(someFalse.count, 7)
         XCTAssertFalse(someFalse.isSolved)
         XCTAssertNil(someFalse.solvedValue)
-        XCTAssertFalse(someFalse.contains(SudokuCell("1")))
-        XCTAssertFalse(someFalse.contains(SudokuCell("7")))
-        XCTAssertEqual(Array(someFalse), [2, 3, 4, 5, 6, 8, 9].map(String.init).map(SudokuCell.init))
+        XCTAssertFalse(someFalse.contains(try! SudokuCell("1")))
+        XCTAssertFalse(someFalse.contains(try! SudokuCell("7")))
+        XCTAssertEqual(Array(someFalse), [2, 3, 4, 5, 6, 8, 9].map { try! SudokuCell(String($0)) })
         
         for i in ["2", "3", "4", "5", "6", "8"] {
-            XCTAssertTrue(try someFalse.remove(SudokuCell(String(i))), "Expected true when removing value \(i)")
+            XCTAssertTrue(try someFalse.remove(try! SudokuCell(String(i))), "Expected true when removing value \(i)")
         }
         XCTAssertEqual(someFalse.count, 1)
         XCTAssertTrue(someFalse.isSolved)
-        XCTAssertEqual(someFalse.solvedValue, SudokuCell("9"))
-        XCTAssertEqual(Array(someFalse), [SudokuCell("9")])
+        XCTAssertEqual(someFalse.solvedValue, try! SudokuCell("9"))
+        XCTAssertEqual(Array(someFalse), [try! SudokuCell("9")])
         
-        let oneValue = SudokuCell9("6")
+        let oneValue = try! SudokuCell9("6")
         XCTAssertEqual(oneValue.count, 1)
         XCTAssertTrue(oneValue.isSolved)
-        XCTAssertEqual(oneValue.solvedValue, SudokuCell("6"))
-        XCTAssertEqual(Array(oneValue), [SudokuCell("6")])
+        XCTAssertEqual(oneValue.solvedValue, try! SudokuCell("6"))
+        XCTAssertEqual(Array(oneValue), [try! SudokuCell("6")])
     }
         
 }

@@ -10,13 +10,13 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
         self.storage = storage
     }
     
-    init(_ string: String) {
+    init(_ string: String) throws {
         if string == "." {
             self = .allTrue
         } else if let value = SudokuType.solvedRepresentationReversed[string] {
             self.storage = 1 << value
         } else {
-            fatalError("Tried to initialize cell for \(SudokuType.self) with invalid string \(string)")
+            throw SudokuParseError.invalidCell(string)
         }
     }
     

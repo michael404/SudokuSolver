@@ -3,7 +3,7 @@ import XCTest
 class Sudoku16Tests: XCTestCase {
 
     func testInitFromString() {
-        let board = SudokuBoard16(TestData16.hard1.string)
+        let board = try! SudokuBoard16(TestData16.hard1.string)
         XCTAssertEqual(board, TestData16.hard1.board)
         XCTAssertEqual(board.description, TestData16.hard1.string)
     }

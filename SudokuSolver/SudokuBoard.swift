@@ -10,9 +10,11 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
         self.cells = Array(repeating: Cell.allTrue, count: SudokuType.cells)
     }
     
-    init<S: StringProtocol>(_ numbers: S) {
-        precondition(numbers.count == SudokuType.cells, "Must pass in \(SudokuType.cells) elements")
-        self.cells = numbers.map { Cell(String($0)) }
+    init<S: StringProtocol>(_ numbers: S) throws {
+        guard numbers.count == SudokuType.cells else {
+            throw SudokuParseError.invalidBoardLength(expected: SudokuType.cells, actual: numbers.count)
+        }
+        self.cells = try numbers.map { try Cell(String($0)) }
     }
     
     /// Indicates if this Sudoku is valid
@@ -115,10 +117,10 @@ extension SudokuBoard where SudokuType == Sudoku9 {
         
         for cell in 0..<81 {
             let boxStartIndex = 57 + (6 * cell) + (114 * (cell / 9))
-            for cellValue in 1...5 where self[cell].contains(SudokuCell9(String(cellValue))) {
+            for cellValue in 1...5 where self[cell].contains(try! SudokuCell9(String(cellValue))) {
                 result[boxStartIndex + cellValue - 1] = Character(String(cellValue))
             }
-            for cellValue in 6...9 where self[cell].contains(SudokuCell9(String(cellValue))) {
+            for cellValue in 6...9 where self[cell].contains(try! SudokuCell9(String(cellValue))) {
                 result[boxStartIndex + 57 + cellValue - 6] = Character(String(cellValue))
             }
         }
