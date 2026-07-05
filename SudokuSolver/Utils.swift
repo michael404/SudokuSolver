@@ -32,9 +32,14 @@ extension Collection {
     func randomElement<R: RNG>(using rng: inout R, where predicate: (Element) -> Bool) -> Element? {
         var result: Element?
         var count = 0
-        for element in self where predicate(element) && Int.random(in: 0...count, using: &rng) == 0 {
-            result = element
+        for element in self where predicate(element) {
+            // Replace the current result with probability 1/count, where count is the
+            // number of matching elements seen so far. This gives every matching
+            // element an equal probability of being the final result.
             count += 1
+            if Int.random(in: 0..<count, using: &rng) == 0 {
+                result = element
+            }
         }
         return result
     }
