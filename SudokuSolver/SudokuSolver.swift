@@ -225,7 +225,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return true
     }
 
-    private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<UInt16>) -> Bool {
+    private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<SudokuType.IndexStorage>) -> Bool {
         // One pass over the unit, accumulating which values have been seen at least
         // once, seen more than once, and seen in an already solved cell. A value that
         // has exactly one possible cell, and is not already solved there, is a hidden single.
@@ -367,7 +367,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// instead of contiguous.
     private mutating func _eliminateLockedCandidatesStrided(
         values: SudokuType.CellStorage,
-        for indices: UnsafeBufferPointer<UInt16>,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>,
         exceptSegment segment: Int
     ) -> Bool {
         var values = values
@@ -386,7 +386,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _eliminateLockedCandidates(
         values: SudokuType.CellStorage,
-        for indices: UnsafeBufferPointer<UInt16>,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>,
         exceptSegment segment: Int
     ) -> Bool {
         var values = values
@@ -414,7 +414,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameBoxExclusive(index))
     }
 
-    private mutating func _eliminateNakedPairs(value: Cell, for indices: UnsafeBufferPointer<UInt16>) -> Bool {
+    private mutating func _eliminateNakedPairs(
+        value: Cell,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>
+    ) -> Bool {
         assert(value.count == 2)
         var cellWithSameTwoValues: Int?
         for index in indices where board.cell(at: Int(index)) == value {

@@ -1,6 +1,9 @@
 protocol SudokuTypeProtocol: Sendable {
     associatedtype CellStorage: BinaryInteger & FixedWidthInteger & Sendable
     associatedtype CellIteratorStorage: SignedInteger & FixedWidthInteger & Sendable
+    /// The smallest unsigned integer type that holds any cell index of this board
+    /// size. The precomputed index tables store this type to stay compact.
+    associatedtype IndexStorage: FixedWidthInteger & UnsignedInteger & Sendable
     /// Fixed-size inline storage for all cells of a board, so that copying a board is
     /// a flat memcpy with no heap allocation, reference counting or copy-on-write
     /// checks. Must be at least `cells * CellStorage` bytes. `SudokuBoard` reinterprets
@@ -45,6 +48,7 @@ extension SudokuTypeProtocol {
 enum Sudoku4: SudokuTypeProtocol {
     typealias CellStorage = UInt8
     typealias CellIteratorStorage = Int8
+    typealias IndexStorage = UInt8 // 16 cells
     struct BoardStorage: Hashable, Sendable {
         var cells0 = SIMD16<UInt8>() // 16 bytes ≥ 16 cells × 1 byte
     }
@@ -59,6 +63,7 @@ enum Sudoku4: SudokuTypeProtocol {
 enum Sudoku9: SudokuTypeProtocol {
     typealias CellStorage = UInt16
     typealias CellIteratorStorage = Int16
+    typealias IndexStorage = UInt8 // 81 cells
     struct BoardStorage: Hashable, Sendable {
         var cells0 = SIMD64<UInt16>() // 192 bytes ≥ 81 cells × 2 bytes
         var cells1 = SIMD32<UInt16>()
@@ -74,6 +79,7 @@ enum Sudoku9: SudokuTypeProtocol {
 enum Sudoku16: SudokuTypeProtocol {
     typealias CellStorage = UInt16
     typealias CellIteratorStorage = Int32
+    typealias IndexStorage = UInt8 // 256 cells: indices 0-255 fit exactly
     struct BoardStorage: Hashable, Sendable {
         var cells0 = SIMD64<UInt16>() // 512 bytes = 256 cells × 2 bytes
         var cells1 = SIMD64<UInt16>()
@@ -91,6 +97,7 @@ enum Sudoku16: SudokuTypeProtocol {
 enum Sudoku25: SudokuTypeProtocol {
     typealias CellStorage = UInt32
     typealias CellIteratorStorage = Int32
+    typealias IndexStorage = UInt16 // 625 cells
     struct BoardStorage: Hashable, Sendable {
         var cells0 = SIMD64<UInt32>() // 2560 bytes ≥ 625 cells × 4 bytes
         var cells1 = SIMD64<UInt32>()
