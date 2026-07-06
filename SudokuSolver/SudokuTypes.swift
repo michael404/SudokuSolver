@@ -6,6 +6,11 @@ protocol SudokuTypeProtocol: Sendable {
     /// checks. Must be at least `cells * CellStorage` bytes. `SudokuBoard` reinterprets
     /// the raw bytes as cells and keeps any trailing padding zeroed, so the synthesized
     /// equality of this type matches cell-wise equality.
+    ///
+    /// TODO: Replace the SIMD-backed storage structs with `InlineArray<cells, CellStorage>`
+    /// once the project can target macOS 26. That removes the raw-byte reinterpretation,
+    /// and InlineArray's first-class borrow semantics should let the fast mutating
+    /// accessors on `SudokuBoard` collapse back into the Collection subscript.
     associatedtype BoardStorage: Hashable & Sendable
     static var zeroBoardStorage: BoardStorage { get }
     static var allTrueCellStorage: CellStorage { get }
