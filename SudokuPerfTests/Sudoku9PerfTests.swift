@@ -2,7 +2,7 @@ import XCTest
 
 class Sudoku9PerfTests: XCTestCase {
 
-    private static let solverSeeds: [UInt64] = [9, 10, 11]
+    private static let solverSeeds: [UInt64] = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     
     func testPerfSuite() {
         var solutions = Array(repeating: SudokuBoard9.empty, count: TestData9.perfTestSuite.count)

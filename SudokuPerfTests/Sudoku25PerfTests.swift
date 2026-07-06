@@ -2,7 +2,7 @@ import XCTest
 
 class Sudoku25PerfTests: XCTestCase {
 
-    private static let solverSeeds: [UInt64] = [25]
+    private static let solverSeeds: [UInt64] = [25, 26, 27]
 
     func testSudokuSolverEndToEnd() {
         
