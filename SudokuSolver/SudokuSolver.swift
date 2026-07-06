@@ -155,6 +155,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             if newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
                 && newSolver.findAllHiddenSingles()
                 && newSolver.findAllLockedCandidates()
+                && newSolver.findAllClaimedCandidates()
                 && newSolver.guessAndEliminate(
                     transformation: transformation,
                     maxSolutions: maxSolutions,
@@ -255,6 +256,74 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             }
             return true
         }
+    }
+
+    /// Locked candidates ("claiming"): if every cell in a row (or column) that can
+    /// still hold a value lies within a single box, the value must be placed in that
+    /// box's segment of the line, so it can be eliminated from the box's other cells.
+    /// Returns false if the board turns out to be unsolvable.
+    private mutating func findAllClaimedCandidates() -> Bool {
+        // Statically known per Sudoku type, so specialization folds this branch away.
+        guard SudokuType.usesClaimedCandidates else { return true }
+        let side = SudokuType.sideOfBox
+        return withUnsafeTemporaryAllocation(of: SudokuType.CellStorage.self, capacity: side) { segments in
+            for line in SudokuType.allPossibilities {
+                // Rows: a value confined to one box segment of the row is eliminated
+                // from that box's cells outside the row.
+                var indices = SudokuType.constants.allIndicesInRow(line)
+                for j in 0..<side { segments[j] = 0 }
+                for offset in 0..<SudokuType.possibilities {
+                    let cell = board.cell(at: indices[offset])
+                    if !cell.isSolved { segments[offset / side] |= cell.storage }
+                }
+                for j in 0..<side {
+                    var others: SudokuType.CellStorage = 0
+                    for k in 0..<side where k != j { others |= segments[k] }
+                    guard _eliminateLockedCandidates(
+                        values: segments[j] & ~others,
+                        for: SudokuType.constants.allIndicesInBox((line / side) * side + j),
+                        exceptSegment: line % side) else { return false }
+                }
+                // Columns: same, but the spared line runs strided through the box.
+                indices = SudokuType.constants.allIndicesInColumn(line)
+                for j in 0..<side { segments[j] = 0 }
+                for offset in 0..<SudokuType.possibilities {
+                    let cell = board.cell(at: indices[offset])
+                    if !cell.isSolved { segments[offset / side] |= cell.storage }
+                }
+                for j in 0..<side {
+                    var others: SudokuType.CellStorage = 0
+                    for k in 0..<side where k != j { others |= segments[k] }
+                    guard _eliminateLockedCandidatesStrided(
+                        values: segments[j] & ~others,
+                        for: SudokuType.constants.allIndicesInBox(j * side + line / side),
+                        exceptSegment: line % side) else { return false }
+                }
+            }
+            return true
+        }
+    }
+
+    /// Like `_eliminateLockedCandidates`, but the spared segment is strided through
+    /// the indices (`offset % side == segment`) — a column's cells within a box —
+    /// instead of contiguous.
+    private mutating func _eliminateLockedCandidatesStrided(
+        values: SudokuType.CellStorage,
+        for indices: UnsafeBufferPointer<Int>,
+        exceptSegment segment: Int
+    ) -> Bool {
+        var values = values
+        let side = SudokuType.sideOfBox
+        while values != 0 {
+            let value = Cell(storage: values & ~(values &- 1))
+            values &= values &- 1
+            for offset in 0..<SudokuType.possibilities where offset % side != segment {
+                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indices[offset]) else {
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     private mutating func _eliminateLockedCandidates(

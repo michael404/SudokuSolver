@@ -15,6 +15,11 @@ protocol SudokuTypeProtocol: Sendable {
     static var zeroBoardStorage: BoardStorage { get }
     static var allTrueCellStorage: CellStorage { get }
     static var sideOfBox: Int { get }
+    /// Whether the solver runs the claiming (line-to-box locked candidates) sweep.
+    /// It pays for itself only on boards where backtracking dominates: measured
+    /// 1.4-1.7x on 25×25, but a 10-30% slowdown on 9×9 and 16×16, where the
+    /// puzzles are deduction-dominated and the extra sweep rarely fires.
+    static var usesClaimedCandidates: Bool { get }
     static var solvedRepresentation: [String] { get }
     /// Maps each symbol in `solvedRepresentation` back to its value.
     /// Stored per conforming type so it is built once, not on every lookup.
@@ -23,6 +28,7 @@ protocol SudokuTypeProtocol: Sendable {
 }
 
 extension SudokuTypeProtocol {
+    static var usesClaimedCandidates: Bool { false }
     static var possibilities: Int { sideOfBox * sideOfBox }
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
@@ -100,6 +106,7 @@ enum Sudoku25: SudokuTypeProtocol {
     static var zeroBoardStorage: BoardStorage { BoardStorage() }
     static let allTrueCellStorage: UInt32 = 0b11111_11111_11111_11111_11111
     static var sideOfBox: Int { 5 }
+    static var usesClaimedCandidates: Bool { true }
     static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Y"
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
