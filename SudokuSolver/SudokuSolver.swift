@@ -75,11 +75,11 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     @inline(__always)
     private mutating func markDirty(_ index: Int) {
-        let row = index / SudokuType.possibilities
-        let column = index % SudokuType.possibilities
-        dirtyRows |= 1 &<< row
-        dirtyColumns |= 1 &<< column
-        dirtyBoxes |= 1 &<< ((row / SudokuType.sideOfBox) * SudokuType.sideOfBox + column / SudokuType.sideOfBox)
+        // Row in bits 0-4, column in bits 5-9, box in bits 10-14.
+        let packed = UInt32(SudokuType.constants.packedUnitIDs()[index])
+        dirtyRows |= 1 &<< (packed & 31)
+        dirtyColumns |= 1 &<< ((packed &>> 5) & 31)
+        dirtyBoxes |= 1 &<< ((packed &>> 10) & 31)
     }
 
     init?(eliminating board: Board, rng: R) {
@@ -107,7 +107,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         let valueToRemove = board.cell(at: index)
         assert(valueToRemove.isSolved)
         for indexToRemoveFrom in SudokuType.constants.indicesAffectedByIndex(index) {
-            guard removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom) else {
+            guard removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: Int(indexToRemoveFrom)) else {
                 return false
             }
         }
@@ -225,7 +225,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return true
     }
 
-    private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<Int>) -> Bool {
+    private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<UInt16>) -> Bool {
         // One pass over the unit, accumulating which values have been seen at least
         // once, seen more than once, and seen in an already solved cell. A value that
         // has exactly one possible cell, and is not already solved there, is a hidden single.
@@ -233,7 +233,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         var seenTwice: SudokuType.CellStorage = 0
         var solved: SudokuType.CellStorage = 0
         for index in indices {
-            let cell = board.cell(at: index)
+            let cell = board.cell(at: Int(index))
             seenTwice |= seenOnce & cell.storage
             seenOnce |= cell.storage
             if cell.isSolved { solved |= cell.storage }
@@ -249,12 +249,12 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             // Eliminations triggered by a previous hidden single can have changed the
             // unit, so re-find the cell and re-check that the value is still placeable.
             var found = false
-            for index in indices where board.cell(at: index).contains(value) {
+            for index in indices where board.cell(at: Int(index)).contains(value) {
                 found = true
-                if !board.cell(at: index).isSolved {
-                    board.setCell(at: index, to: value)
-                    markDirty(index)
-                    guard eliminatePossibilities(basedOnSolvedIndex: index) else { return false }
+                if !board.cell(at: Int(index)).isSolved {
+                    board.setCell(at: Int(index), to: value)
+                    markDirty(Int(index))
+                    guard eliminatePossibilities(basedOnSolvedIndex: Int(index)) else { return false }
                 }
                 break
             }
@@ -280,7 +280,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 for i in 0..<2 * side { masks[i] = 0 }
                 let boxIndices = SudokuType.constants.allIndicesInBox(box)
                 for offset in 0..<SudokuType.possibilities {
-                    let cell = board.cell(at: boxIndices[offset])
+                    let cell = board.cell(at: Int(boxIndices[offset]))
                     guard !cell.isSolved else { continue }
                     masks[offset / side] |= cell.storage
                     masks[side + offset % side] |= cell.storage
@@ -326,7 +326,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 let indices = SudokuType.constants.allIndicesInRow(line)
                 for j in 0..<side { segments[j] = 0 }
                 for offset in 0..<SudokuType.possibilities {
-                    let cell = board.cell(at: indices[offset])
+                    let cell = board.cell(at: Int(indices[offset]))
                     if !cell.isSolved { segments[offset / side] |= cell.storage }
                 }
                 for j in 0..<side {
@@ -346,7 +346,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 let indices = SudokuType.constants.allIndicesInColumn(line)
                 for j in 0..<side { segments[j] = 0 }
                 for offset in 0..<SudokuType.possibilities {
-                    let cell = board.cell(at: indices[offset])
+                    let cell = board.cell(at: Int(indices[offset]))
                     if !cell.isSolved { segments[offset / side] |= cell.storage }
                 }
                 for j in 0..<side {
@@ -367,7 +367,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// instead of contiguous.
     private mutating func _eliminateLockedCandidatesStrided(
         values: SudokuType.CellStorage,
-        for indices: UnsafeBufferPointer<Int>,
+        for indices: UnsafeBufferPointer<UInt16>,
         exceptSegment segment: Int
     ) -> Bool {
         var values = values
@@ -376,7 +376,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             let value = Cell(storage: values & ~(values &- 1))
             values &= values &- 1
             for offset in 0..<SudokuType.possibilities where offset % side != segment {
-                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indices[offset]) else {
+                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: Int(indices[offset])) else {
                     return false
                 }
             }
@@ -386,7 +386,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _eliminateLockedCandidates(
         values: SudokuType.CellStorage,
-        for indices: UnsafeBufferPointer<Int>,
+        for indices: UnsafeBufferPointer<UInt16>,
         exceptSegment segment: Int
     ) -> Bool {
         var values = values
@@ -395,7 +395,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             let value = Cell(storage: values & ~(values &- 1))
             values &= values &- 1
             for offset in 0..<SudokuType.possibilities where offset / side != segment {
-                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indices[offset]) else {
+                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: Int(indices[offset])) else {
                     return false
                 }
             }
@@ -414,19 +414,19 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameBoxExclusive(index))
     }
 
-    private mutating func _eliminateNakedPairs(value: Cell, for indices: UnsafeBufferPointer<Int>) -> Bool {
+    private mutating func _eliminateNakedPairs(value: Cell, for indices: UnsafeBufferPointer<UInt16>) -> Bool {
         assert(value.count == 2)
         var cellWithSameTwoValues: Int?
-        for index in indices where board.cell(at: index) == value {
-            cellWithSameTwoValues = index
+        for index in indices where board.cell(at: Int(index)) == value {
+            cellWithSameTwoValues = Int(index)
             break
         }
         guard let cellWithSameTwoValues else { return true }
         // Found a duplicate. Loop over all indices, except the current one and remove from that
-        for indexToRemoveFrom in indices where indexToRemoveFrom != cellWithSameTwoValues {
+        for indexToRemoveFrom in indices where Int(indexToRemoveFrom) != cellWithSameTwoValues {
             // If more than two cells only have the same two possibilities, this is unsolvable
-            guard value != board.cell(at: indexToRemoveFrom) else { return false }
-            guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom) else {
+            guard value != board.cell(at: Int(indexToRemoveFrom)) else { return false }
+            guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: Int(indexToRemoveFrom)) else {
                 return false
             }
         }

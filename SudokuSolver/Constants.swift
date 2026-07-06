@@ -20,7 +20,7 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
     /// `constants` static properties on the Sudoku types.
     private struct ImmortalIndexTable: @unchecked Sendable {
 
-        private let base: UnsafePointer<Int>
+        private let base: UnsafePointer<UInt16>
         private let rowWidth: Int
         private let rowCount: Int
 
@@ -29,15 +29,21 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
             precondition(rowWidth > 0, "Table must not be empty")
             precondition(rows.allSatisfy { $0.count == rowWidth },
                          "All rows in a table must have the same length")
-            let flattened = rows.flatMap { $0 }
-            let storage = UnsafeMutableBufferPointer<Int>.allocate(capacity: flattened.count)
+            // Cell indices always fit in 16 bits. Narrow storage keeps the hot
+            // tables cache-resident: the solver's inner loops are dominated by
+            // walks over these tables.
+            let flattened = rows.flatMap { $0 }.map { value -> UInt16 in
+                precondition(value >= 0 && value <= Int(UInt16.max), "Value \(value) out of UInt16 range")
+                return UInt16(value)
+            }
+            let storage = UnsafeMutableBufferPointer<UInt16>.allocate(capacity: flattened.count)
             _ = storage.initialize(from: flattened)
             self.base = UnsafePointer(storage.baseAddress!)
             self.rowWidth = rowWidth
             self.rowCount = rows.count
         }
 
-        subscript(row: Int) -> UnsafeBufferPointer<Int> {
+        subscript(row: Int) -> UnsafeBufferPointer<UInt16> {
             assert((0..<rowCount).contains(row), "Row \(row) out of bounds")
             return UnsafeBufferPointer(start: base + row * rowWidth, count: rowWidth)
         }
@@ -53,6 +59,10 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
     private let allIndicesInRowTable: ImmortalIndexTable
     private let allIndicesInColumnTable: ImmortalIndexTable
     private let allIndicesInBoxTable: ImmortalIndexTable
+    /// For each cell index: its row, column and box packed into one value
+    /// (row in bits 0-4, column in bits 5-9, box in bits 10-14), for cheap
+    /// dirty-unit marking in the solver.
+    private let packedUnitIDsTable: ImmortalIndexTable
 
     init() {
 
@@ -90,6 +100,13 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
         self.allIndicesInBoxTable = ImmortalIndexTable(starts.map { start in
             Self.boxOffsets().map { offset in start + offset }
         })
+
+        self.packedUnitIDsTable = ImmortalIndexTable([SudokuType.allCells.map { index in
+            let row = index / SudokuType.possibilities
+            let column = index % SudokuType.possibilities
+            let box = (row / SudokuType.sideOfBox) * SudokuType.sideOfBox + column / SudokuType.sideOfBox
+            return row | (column << 5) | (box << 10)
+        }])
     }
 
     private static func _indicesInSameRowInclusive(as index: Int) -> CountableRange<Int> {
@@ -116,32 +133,36 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
         .flatMap { $0..<($0 + SudokuType.sideOfBox) }
     }
 
-    func allIndicesInRow(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func allIndicesInRow(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         allIndicesInRowTable[i]
     }
 
-    func allIndicesInColumn(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func allIndicesInColumn(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         allIndicesInColumnTable[i]
     }
 
-    func allIndicesInBox(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func allIndicesInBox(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         allIndicesInBoxTable[i]
     }
 
-    func indicesAffectedByIndex(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func indicesAffectedByIndex(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         indicesAffectedByIndexTable[i]
     }
 
-    func indicesInSameRowExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func indicesInSameRowExclusive(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         indicesInSameRowExclusiveTable[i]
     }
 
-    func indicesInSameColumnExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func indicesInSameColumnExclusive(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         indicesInSameColumnExclusiveTable[i]
     }
 
-    func indicesInSameBoxExclusive(_ i: Int) -> UnsafeBufferPointer<Int> {
+    func indicesInSameBoxExclusive(_ i: Int) -> UnsafeBufferPointer<UInt16> {
         indicesInSameBoxExclusiveTable[i]
+    }
+
+    func packedUnitIDs() -> UnsafeBufferPointer<UInt16> {
+        packedUnitIDsTable[0]
     }
 
 }

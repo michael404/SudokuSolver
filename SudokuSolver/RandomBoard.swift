@@ -29,7 +29,7 @@ internal extension SudokuBoard {
             let cellAtIndex = board.cell(at: index)
             var alternatives = SudokuType.allTrueCellStorage & ~cellAtIndex.storage
             for peer in SudokuType.constants.indicesAffectedByIndex(index) {
-                let peerCell = board.cell(at: peer)
+                let peerCell = board.cell(at: Int(peer))
                 if peerCell.isSolved { alternatives &= ~peerCell.storage }
             }
             if alternatives != 0 {
