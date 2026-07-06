@@ -21,18 +21,27 @@ internal extension SudokuBoard {
     func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: inout R) -> SudokuBoard {
         var board = self
         for index in board.indices.shuffled(using: &rng) {
+            // The board so far has a unique solution, so clearing this cell keeps the
+            // solution unique iff no *other* value in this cell admits a solution.
+            // Checking that directly is much cheaper than proving uniqueness from
+            // scratch, which has to re-derive the known solution and then exhaust
+            // the rest of the search space.
             let cellAtIndex = board.cell(at: index)
-            board[index] = .allTrue
-            switch board.numberOfSolutions(using: &rng) {
-            case .none:
-                fatalError("Inconsistent state")
-            case .one:
-                // Do nothing
-                break
-            case .multiple:
-                // Too many solutions. Add back last cell set to nil and move on with next index
-                board[index] = cellAtIndex
+            var alternatives = SudokuType.allTrueCellStorage & ~cellAtIndex.storage
+            for peer in SudokuType.constants.indicesAffectedByIndex(index) {
+                let peerCell = board.cell(at: peer)
+                if peerCell.isSolved { alternatives &= ~peerCell.storage }
             }
+            if alternatives != 0 {
+                var testBoard = board
+                testBoard[index] = Cell(storage: alternatives)
+                guard testBoard.findFirstSolution(using: &rng) == nil else {
+                    // Some other value also completes the board, so this clue is
+                    // load-bearing. Keep it and move on to the next index.
+                    continue
+                }
+            }
+            board[index] = .allTrue
         }
         var checkRng = rng
         assert(board.numberOfSolutions(using: &checkRng) == .one)
