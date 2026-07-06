@@ -56,11 +56,6 @@
                BlueprintName = "SudokuPerfTests"
                ReferencedContainer = "container:SudokuSolver.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "Sudoku25PerfTests">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

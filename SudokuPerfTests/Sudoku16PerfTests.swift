@@ -1,14 +1,19 @@
 import XCTest
 
 class Sudoku16PerfTests: XCTestCase {
+
+    private static let solverSeeds: [UInt64] = [16, 17, 18]
     
     func testSudokuSolverEndToEnd() {
         
         var solution: SudokuBoard16?
         
         self.measure {
-            for _ in 0..<50 {
-                solution = TestData16.hard1.board.findFirstSolution()
+            for seed in Self.solverSeeds {
+                var rng = WyRand(seed: seed)
+                for _ in 0..<50 {
+                    solution = TestData16.hard1.board.findFirstSolution(using: &rng)
+                }
             }
         }
         
@@ -18,11 +23,18 @@ class Sudoku16PerfTests: XCTestCase {
     }
     
     func testHasUniqueSolution() {
+        var hasUniqueSolution = false
         self.measure {
-            for _ in 0..<50 {
-                XCTAssertTrue(TestData16.hard1.board.hasUniqueSolution)
+            var result = true
+            for seed in Self.solverSeeds {
+                var rng = WyRand(seed: seed)
+                for _ in 0..<50 {
+                    result = result && TestData16.hard1.board.numberOfSolutions(using: &rng) == .one
+                }
             }
+            hasUniqueSolution = result
         }
+        XCTAssertTrue(hasUniqueSolution)
     }
     
 }

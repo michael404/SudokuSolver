@@ -1,14 +1,17 @@
 import XCTest
 
 class Sudoku9PerfTests: XCTestCase {
+
+    private static let solverSeeds: [UInt64] = [9, 10, 11]
     
     func testPerfSuite() {
-        var solutions = [SudokuBoard9]()
-        solutions.reserveCapacity(TestData9.perfTestSuite.count * 10)
+        var solutions = Array(repeating: SudokuBoard9.empty, count: TestData9.perfTestSuite.count)
         self.measure {
-            for puzzel in TestData9.perfTestSuite {
-                let solvedBoard = puzzel.board.findFirstSolution()!
-                solutions.append(solvedBoard)
+            for seed in Self.solverSeeds {
+                var rng = WyRand(seed: seed)
+                for (index, puzzel) in TestData9.perfTestSuite.enumerated() {
+                    solutions[index] = puzzel.board.findFirstSolution(using: &rng)!
+                }
             }
         }
         for (solvedBoard, puzzel) in zip(solutions, TestData9.perfTestSuite) {
@@ -17,11 +20,18 @@ class Sudoku9PerfTests: XCTestCase {
     }
     
     func testHasUniqueSolution() {
+        var hasUniqueSolutions = false
         self.measure {
-            for puzzel in TestData9.perfTestSuite {
-                XCTAssertTrue(puzzel.board.hasUniqueSolution)
+            var result = true
+            for seed in Self.solverSeeds {
+                var rng = WyRand(seed: seed)
+                for puzzel in TestData9.perfTestSuite {
+                    result = result && puzzel.board.numberOfSolutions(using: &rng) == .one
+                }
             }
+            hasUniqueSolutions = result
         }
+        XCTAssertTrue(hasUniqueSolutions)
     }
     
     func testPerfRandomFullyFilledBoard() {
