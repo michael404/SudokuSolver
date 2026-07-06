@@ -104,26 +104,29 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
     
     private mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
-        var result: Board.Index?
-        var bestCount = Int.max
-        var tiedBestCount = 0
+        // Collect all cells tied for the fewest possibilities and pick one uniformly
+        // with a single RNG draw, instead of reservoir sampling with one draw per tie.
+        withUnsafeTemporaryAllocation(of: Board.Index.self, capacity: SudokuType.cells) { tied in
+            var bestCount = Int.max
+            var tiedCount = 0
 
-        for index in board.indices {
-            let count = board[index].count
-            guard count > 1 else { continue }
+            for index in board.indices {
+                let count = board[index].count
+                guard count > 1 else { continue }
 
-            if count < bestCount {
-                bestCount = count
-                result = index
-                tiedBestCount = 1
-            } else if count == bestCount {
-                tiedBestCount += 1
-                if Int.random(in: 0..<tiedBestCount, using: &rng) == 0 {
-                    result = index
+                if count < bestCount {
+                    bestCount = count
+                    tied[0] = index
+                    tiedCount = 1
+                } else if count == bestCount {
+                    tied[tiedCount] = index
+                    tiedCount += 1
                 }
             }
+
+            guard tiedCount > 1 else { return tiedCount == 1 ? tied[0] : nil }
+            return tied[Int.random(in: 0..<tiedCount, using: &rng)]
         }
-        return result
     }
     
     private mutating func guessAndEliminate<T: SudokuCellTransformation>(
