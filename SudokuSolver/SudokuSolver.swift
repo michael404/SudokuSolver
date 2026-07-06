@@ -107,11 +107,11 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         var result: Board.Index?
         var bestCount = Int.max
         var tiedBestCount = 0
-        
+
         for index in board.indices {
             let count = board[index].count
             guard count > 1 else { continue }
-            
+
             if count < bestCount {
                 bestCount = count
                 result = index
@@ -168,23 +168,38 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
 
     private mutating func _findHiddenSingles(for indices: UnsafeBufferPointer<Int>) -> Bool {
-        cellValueLoop: for cellValue in Cell.allTrue {
-            var hiddenSingleIndex: Int?
-            
-            for index in indices {
-                let cell = board[index]
-                guard cell.contains(cellValue) else { continue }
-                guard !cell.isSolved else { continue cellValueLoop }
-                guard hiddenSingleIndex == nil else { continue cellValueLoop }
-                hiddenSingleIndex = index
+        // One pass over the unit, accumulating which values have been seen at least
+        // once, seen more than once, and seen in an already solved cell. A value that
+        // has exactly one possible cell, and is not already solved there, is a hidden single.
+        var seenOnce: SudokuType.CellStorage = 0
+        var seenTwice: SudokuType.CellStorage = 0
+        var solved: SudokuType.CellStorage = 0
+        for index in indices {
+            let cell = board[index]
+            seenTwice |= seenOnce & cell.storage
+            seenOnce |= cell.storage
+            if cell.isSolved { solved |= cell.storage }
+        }
+
+        // If we cannot find a cell value at all in a unit, then this Sudoku is unsolvable
+        guard seenOnce == SudokuType.allTrueCellStorage else { return false }
+
+        var singles = seenOnce & ~seenTwice & ~solved
+        while singles != 0 {
+            let value = Cell(storage: singles & ~(singles &- 1))
+            singles &= singles &- 1
+            // Eliminations triggered by a previous hidden single can have changed the
+            // unit, so re-find the cell and re-check that the value is still placeable.
+            var found = false
+            for index in indices where board[index].contains(value) {
+                found = true
+                if !board[index].isSolved {
+                    board[index] = value
+                    guard eliminatePossibilities(basedOnSolvedIndex: index) else { return false }
+                }
+                break
             }
-            
-            guard let hiddenSingleIndex else {
-                // If we cannot find a cell value at all in a unit, then this Sudoku is unsolvable
-                return false
-            }
-            board[hiddenSingleIndex] = cellValue
-            guard eliminatePossibilities(basedOnSolvedIndex: hiddenSingleIndex) else { return false }
+            guard found else { return false }
         }
         return true
     }
