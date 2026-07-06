@@ -82,9 +82,12 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     /// Returns false if we are in an impossible situation.
     private mutating func eliminatePossibilities(basedOnSolvedIndex index: Int) -> Bool {
-        assert(board.cell(at: index).isSolved)
+        // The solved cell can never change during the cascade below: eliminations only
+        // remove possibilities, and removing the last one fails the whole branch. So
+        // the value can be read once up front.
+        let valueToRemove = board.cell(at: index)
+        assert(valueToRemove.isSolved)
         for indexToRemoveFrom in SudokuType.constants.indicesAffectedByIndex(index) {
-            let valueToRemove = board.cell(at: index)
             guard removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom) else {
                 return false
             }

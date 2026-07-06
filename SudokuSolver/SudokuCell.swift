@@ -23,7 +23,12 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
     /// The number of possible values for this cell
     var count: Int { storage.nonzeroBitCount }
     
-    var isSolved: Bool { storage.nonzeroBitCount == 1 }
+    var isSolved: Bool {
+        // Exactly-one-bit check without a popcount. Cells always have at least one
+        // possibility (removing the last one is rejected), so zero storage cannot occur.
+        assert(storage != 0)
+        return storage & (storage &- 1) == 0
+    }
     
     var solvedValue: Self? { isSolved ? self : nil }
     
