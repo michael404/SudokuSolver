@@ -74,7 +74,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
     
     mutating func solve<T: SudokuCellTransformation>(transformation: T.Type, maxSolutions: Int) -> [Board]
-        where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
+        where T.SudokuType == SudokuType {
         var solutions: [Board] = []
         _ = guessAndEliminate(transformation: transformation, maxSolutions: maxSolutions, solutions: &solutions)
         return solutions
@@ -139,12 +139,13 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         transformation: T.Type,
         maxSolutions: Int,
         solutions: inout [Board]
-    ) -> Bool where T.SudokuType == SudokuType, T.CellSequence.Element == Cell {
+    ) -> Bool where T.SudokuType == SudokuType {
         guard let index = self.unsolvedIndexWithMostConstraints() else {
             solutions.append(self.board)
             return true
         }
-        for guess in T.transform(board.cell(at: index), rng: &rng) {
+        var remainingGuesses = board.cell(at: index)
+        while let guess = T.next(from: &remainingGuesses, rng: &rng) {
             var newSolver = self
             newSolver.board.setCell(at: index, to: guess)
             // While it would make sense to check for hidden singles only in rows/columns/boxes where a
