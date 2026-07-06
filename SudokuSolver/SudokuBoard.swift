@@ -1,20 +1,32 @@
 struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
-    
+
     typealias Cell = SudokuCell<SudokuType>
-    
-    private var cells: [Cell]
-    
+
+    /// Inline storage for all cells, reinterpreted as `Cell` values by the subscript.
+    /// Copying a board is a flat memcpy with no heap allocation or copy-on-write
+    /// checks. Any trailing padding stays zero (all writes go through the subscript),
+    /// so the synthesized equality and hashing match cell-wise equality.
+    private var storage: SudokuType.BoardStorage
+
     static var empty: SudokuBoard { SudokuBoard(empty: ()) }
-    
+
     private init(empty: ()) {
-        self.cells = Array(repeating: Cell.allTrue, count: SudokuType.cells)
+        assert(MemoryLayout<SudokuType.BoardStorage>.size >= SudokuType.cells * MemoryLayout<Cell>.stride,
+               "BoardStorage is too small to hold \(SudokuType.cells) cells")
+        self.storage = SudokuType.zeroBoardStorage
+        for index in SudokuType.allCells {
+            self[index] = .allTrue
+        }
     }
-    
+
     init<S: StringProtocol>(_ numbers: S) throws {
         guard numbers.count == SudokuType.cells else {
             throw SudokuParseError.invalidBoardLength(expected: SudokuType.cells, actual: numbers.count)
         }
-        self.cells = try numbers.map { try Cell(String($0)) }
+        self = .empty
+        for (index, character) in numbers.enumerated() {
+            self[index] = try Cell(String(character))
+        }
     }
     
     /// Indicates whether this Sudoku has exactly one solution.
@@ -30,22 +42,46 @@ struct SudokuBoard<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
 }
 
 extension SudokuBoard: MutableCollection, RandomAccessCollection {
-    
-    var startIndex: Int { cells.startIndex }
-    
-    var endIndex: Int { cells.endIndex }
-    
+
+    var startIndex: Int { 0 }
+
+    var endIndex: Int { SudokuType.cells }
+
     subscript(index: Int) -> Cell {
-        @inline(__always) get {
-            // Release builds intentionally skip Array bounds checks on this hot path.
-            // Call sites only use precomputed internal indices; a bad index table would
-            // be undefined behavior here instead of trapping.
+        get {
+            // This nonmutating read makes the compiler copy the whole inline storage
+            // defensively, so it is only for cold paths (printing, counting clues,
+            // tests). Hot loops must use `cell(at:)` instead.
             assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
-            return self.cells.withUnsafeBufferPointer { $0[index] }
+            return withUnsafeBytes(of: storage) {
+                $0.loadUnaligned(fromByteOffset: index * MemoryLayout<Cell>.stride, as: Cell.self)
+            }
         }
         @inline(__always) set {
-            // TODO: Avoid bounds checking in release mode here as well
-            self.cells[index] = newValue
+            setCell(at: index, to: newValue)
+        }
+    }
+
+    /// Reads a cell through an exclusive borrow of the inline storage, which compiles
+    /// to a direct load. The nonmutating subscript getter copies the whole storage
+    /// defensively, so hot paths must use this accessor instead. Skips bounds checks
+    /// in release builds: call sites only use precomputed internal indices; a bad
+    /// index table would be undefined behavior here instead of trapping.
+    @inline(__always)
+    mutating func cell(at index: Int) -> Cell {
+        assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
+        return withUnsafeMutableBytes(of: &storage) {
+            $0.loadUnaligned(fromByteOffset: index * MemoryLayout<Cell>.stride, as: Cell.self)
+        }
+    }
+
+    /// Writes a cell through an exclusive borrow of the inline storage. See `cell(at:)`
+    /// for the bounds-checking caveat.
+    @inline(__always)
+    mutating func setCell(at index: Int, to newValue: Cell) {
+        assert(SudokuType.allCells.contains(index), "Index \(index) out of bounds")
+        withUnsafeMutableBytes(of: &storage) {
+            $0.storeBytes(of: newValue, toByteOffset: index * MemoryLayout<Cell>.stride, as: Cell.self)
         }
     }
 

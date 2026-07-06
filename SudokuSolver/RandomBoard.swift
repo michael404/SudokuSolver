@@ -21,7 +21,7 @@ internal extension SudokuBoard {
     func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: inout R) -> SudokuBoard {
         var board = self
         for index in board.indices.shuffled(using: &rng) {
-            let cellAtIndex = board[index]
+            let cellAtIndex = board.cell(at: index)
             board[index] = .allTrue
             switch board.numberOfSolutions(using: &rng) {
             case .none:

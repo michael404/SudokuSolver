@@ -1,5 +1,3 @@
-import Algorithms
-
 extension SudokuBoard {
     
     func findFirstSolution() -> SudokuBoard? {
@@ -68,7 +66,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     init?(eliminating board: Board, rng: R) {
         self.board = board
         self.rng = rng
-        for (index, cell) in self.board.indexed() where cell.isSolved {
+        // Iterates the unmodified `board` parameter so that only the originally
+        // solved cells trigger elimination, as cascades solve more cells as we go.
+        for index in SudokuType.allCells where board[index].isSolved {
             guard eliminatePossibilities(basedOnSolvedIndex: index) else { return nil }
         }
     }
@@ -82,19 +82,22 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     
     /// Returns false if we are in an impossible situation.
     private mutating func eliminatePossibilities(basedOnSolvedIndex index: Int) -> Bool {
-        assert(board[index].isSolved)
+        assert(board.cell(at: index).isSolved)
         for indexToRemoveFrom in SudokuType.constants.indicesAffectedByIndex(index) {
-            guard removeAndApplyConstraints(valueToRemove: board[index], indexToRemoveFrom: indexToRemoveFrom) else {
+            let valueToRemove = board.cell(at: index)
+            guard removeAndApplyConstraints(valueToRemove: valueToRemove, indexToRemoveFrom: indexToRemoveFrom) else {
                 return false
             }
         }
         return true
     }
-    
+
     private mutating func removeAndApplyConstraints(valueToRemove: Cell, indexToRemoveFrom: Int) -> Bool {
-        guard let didRemove = board[indexToRemoveFrom].removeIfPossible(valueToRemove) else { return false }
+        var cell = board.cell(at: indexToRemoveFrom)
+        guard let didRemove = cell.removeIfPossible(valueToRemove) else { return false }
         if didRemove {
-            switch board[indexToRemoveFrom].count {
+            board.setCell(at: indexToRemoveFrom, to: cell)
+            switch cell.count {
             case 1: return eliminatePossibilities(basedOnSolvedIndex: indexToRemoveFrom)
             case 2: return eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             default: break
@@ -111,7 +114,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             var tiedCount = 0
 
             for index in board.indices {
-                let count = board[index].count
+                let count = board.cell(at: index).count
                 guard count > 1 else { continue }
 
                 if count < bestCount {
@@ -138,9 +141,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             solutions.append(self.board)
             return true
         }
-        for guess in T.transform(board[index], rng: &rng) {
+        for guess in T.transform(board.cell(at: index), rng: &rng) {
             var newSolver = self
-            newSolver.board[index] = guess
+            newSolver.board.setCell(at: index, to: guess)
             // While it would make sense to check for hidden singles only in rows/columns/boxes where a
             // possibility has just been removed, benchmarking shows that it is more efficient to run this
             // once per guess for the whole board. In theory this could also be run in a loop until there
@@ -178,7 +181,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         var seenTwice: SudokuType.CellStorage = 0
         var solved: SudokuType.CellStorage = 0
         for index in indices {
-            let cell = board[index]
+            let cell = board.cell(at: index)
             seenTwice |= seenOnce & cell.storage
             seenOnce |= cell.storage
             if cell.isSolved { solved |= cell.storage }
@@ -194,10 +197,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             // Eliminations triggered by a previous hidden single can have changed the
             // unit, so re-find the cell and re-check that the value is still placeable.
             var found = false
-            for index in indices where board[index].contains(value) {
+            for index in indices where board.cell(at: index).contains(value) {
                 found = true
-                if !board[index].isSolved {
-                    board[index] = value
+                if !board.cell(at: index).isSolved {
+                    board.setCell(at: index, to: value)
                     guard eliminatePossibilities(basedOnSolvedIndex: index) else { return false }
                 }
                 break
@@ -208,7 +211,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     }
     
     private mutating func eliminateNakedPairs(basedOnChangeOf index: Int) -> Bool {
-        let value = board[index]
+        let value = board.cell(at: index)
         guard _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameRowExclusive(index)) else {
             return false
         }
@@ -220,11 +223,16 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private mutating func _eliminateNakedPairs(value: Cell, for indices: UnsafeBufferPointer<Int>) -> Bool {
         assert(value.count == 2)
-        guard let cellWithSameTwoValues = indices.first(where: { board[$0] == value }) else { return true }
+        var cellWithSameTwoValues: Int?
+        for index in indices where board.cell(at: index) == value {
+            cellWithSameTwoValues = index
+            break
+        }
+        guard let cellWithSameTwoValues else { return true }
         // Found a duplicate. Loop over all indices, except the current one and remove from that
         for indexToRemoveFrom in indices where indexToRemoveFrom != cellWithSameTwoValues {
             // If more than two cells only have the same two possibilities, this is unsolvable
-            guard value != board[indexToRemoveFrom] else { return false }
+            guard value != board.cell(at: indexToRemoveFrom) else { return false }
             guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indexToRemoveFrom) else {
                 return false
             }
