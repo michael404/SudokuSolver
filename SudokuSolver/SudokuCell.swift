@@ -1,7 +1,7 @@
 struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
 
     typealias Storage = SudokuType.CellStorage
-    
+
     static var allTrue: Self { Self(storage: SudokuType.allTrueCellStorage) }
     
     var storage: Storage
@@ -9,7 +9,7 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
     init(storage: Storage) {
         self.storage = storage
     }
-    
+
     init(_ string: String) throws {
         if string == "." {
             self = .allTrue
@@ -33,10 +33,17 @@ struct SudokuCell<SudokuType: SudokuTypeProtocol>: Hashable, Sendable {
     /// Throws if the last value was removed
     /// This method supports removing multiple values at a time
     mutating func remove(_ value: Self) throws -> Bool {
-        let original = self
-        self.storage &= ~value.storage
-        if self.storage == 0 { throw SudokuSolverError.unsolvable }
-        return self != original
+        guard let result = removeIfPossible(value) else { throw SudokuSolverError.unsolvable }
+        return result
+    }
+
+    /// Returns nil if the last value would be removed.
+    mutating func removeIfPossible(_ value: Self) -> Bool? {
+        let original = self.storage
+        let newStorage = original & ~value.storage
+        guard newStorage != 0 else { return nil }
+        self.storage = newStorage
+        return newStorage != original
     }
 }
 
