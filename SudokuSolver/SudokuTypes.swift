@@ -154,12 +154,74 @@ enum Sudoku25: SudokuTypeProtocol {
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
 }
 
+enum Sudoku36: SudokuTypeProtocol {
+    typealias CellStorage = UInt64
+    typealias CellIteratorStorage = Int64
+    typealias IndexStorage = UInt16 // 1296 cells
+    struct BoardStorage: Hashable, Sendable {
+        var cells0 = SIMD64<UInt64>() // 21 × 512 bytes ≥ 1296 cells × 8 bytes
+        var cells1 = SIMD64<UInt64>()
+        var cells2 = SIMD64<UInt64>()
+        var cells3 = SIMD64<UInt64>()
+        var cells4 = SIMD64<UInt64>()
+        var cells5 = SIMD64<UInt64>()
+        var cells6 = SIMD64<UInt64>()
+        var cells7 = SIMD64<UInt64>()
+        var cells8 = SIMD64<UInt64>()
+        var cells9 = SIMD64<UInt64>()
+        var cells10 = SIMD64<UInt64>()
+        var cells11 = SIMD64<UInt64>()
+        var cells12 = SIMD64<UInt64>()
+        var cells13 = SIMD64<UInt64>()
+        var cells14 = SIMD64<UInt64>()
+        var cells15 = SIMD64<UInt64>()
+        var cells16 = SIMD64<UInt64>()
+        var cells17 = SIMD64<UInt64>()
+        var cells18 = SIMD64<UInt64>()
+        var cells19 = SIMD64<UInt64>()
+        var cells20 = SIMD64<UInt64>()
+    }
+    static var zeroBoardStorage: BoardStorage { BoardStorage() }
+    struct CountsStorage: Sendable {
+        var counts0 = SIMD64<UInt8>() // 21 × 64 bytes ≥ 1296 cells
+        var counts1 = SIMD64<UInt8>()
+        var counts2 = SIMD64<UInt8>()
+        var counts3 = SIMD64<UInt8>()
+        var counts4 = SIMD64<UInt8>()
+        var counts5 = SIMD64<UInt8>()
+        var counts6 = SIMD64<UInt8>()
+        var counts7 = SIMD64<UInt8>()
+        var counts8 = SIMD64<UInt8>()
+        var counts9 = SIMD64<UInt8>()
+        var counts10 = SIMD64<UInt8>()
+        var counts11 = SIMD64<UInt8>()
+        var counts12 = SIMD64<UInt8>()
+        var counts13 = SIMD64<UInt8>()
+        var counts14 = SIMD64<UInt8>()
+        var counts15 = SIMD64<UInt8>()
+        var counts16 = SIMD64<UInt8>()
+        var counts17 = SIMD64<UInt8>()
+        var counts18 = SIMD64<UInt8>()
+        var counts19 = SIMD64<UInt8>()
+        var counts20 = SIMD64<UInt8>()
+    }
+    static var zeroCountsStorage: CountsStorage { CountsStorage() }
+    static let allTrueCellStorage: UInt64 = (1 << 36) - 1
+    static var sideOfBox: Int { 6 }
+    static var usesClaimedCandidates: Bool { true }
+    static let solvedRepresentation = (0...9).map(String.init) + (65...90).map { String(UnicodeScalar($0)) } // 0-9, A-Z
+    static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
+    static let constants: ConstantsStorage<Self> = ConstantsStorage()
+}
+
 typealias SudokuBoard4 = SudokuBoard<Sudoku4>
 typealias SudokuBoard9 = SudokuBoard<Sudoku9>
 typealias SudokuBoard16 = SudokuBoard<Sudoku16>
 typealias SudokuBoard25 = SudokuBoard<Sudoku25>
+typealias SudokuBoard36 = SudokuBoard<Sudoku36>
 
 typealias SudokuCell4 = SudokuCell<Sudoku4>
 typealias SudokuCell9 = SudokuCell<Sudoku9>
 typealias SudokuCell16 = SudokuCell<Sudoku16>
 typealias SudokuCell25 = SudokuCell<Sudoku25>
+typealias SudokuCell36 = SudokuCell<Sudoku36>

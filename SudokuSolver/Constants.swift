@@ -64,10 +64,10 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
     private let allIndicesInColumnTable: IndexTable
     private let allIndicesInBoxTable: IndexTable
     /// For each cell index: its row, column and box packed into one value
-    /// (row in bits 0-4, column in bits 5-9, box in bits 10-14), for cheap
-    /// dirty-unit marking in the solver. Needs 15 bits, so it is not stored
+    /// (row in bits 0-5, column in bits 6-11, box in bits 12-17), for cheap
+    /// dirty-unit marking in the solver. Needs 18 bits, so it is not stored
     /// as `IndexStorage`.
-    private let packedUnitIDsTable: ImmortalIndexTable<UInt16>
+    private let packedUnitIDsTable: ImmortalIndexTable<UInt32>
 
     init() {
 
@@ -110,7 +110,7 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
             let row = index / SudokuType.possibilities
             let column = index % SudokuType.possibilities
             let box = (row / SudokuType.sideOfBox) * SudokuType.sideOfBox + column / SudokuType.sideOfBox
-            return row | (column << 5) | (box << 10)
+            return row | (column << 6) | (box << 12)
         }])
     }
 
@@ -166,7 +166,7 @@ struct ConstantsStorage<SudokuType: SudokuTypeProtocol>: Sendable {
         indicesInSameBoxExclusiveTable[i]
     }
 
-    func packedUnitIDs() -> UnsafeBufferPointer<UInt16> {
+    func packedUnitIDs() -> UnsafeBufferPointer<UInt32> {
         packedUnitIDsTable[0]
     }
 

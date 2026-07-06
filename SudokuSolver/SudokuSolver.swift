@@ -71,7 +71,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     private var dirtyColumns = Self.allUnitsDirty
     private var dirtyBoxes = Self.allUnitsDirty
 
-    private static var allUnitsDirty: UInt32 { (1 << SudokuType.possibilities) - 1 }
+    private static var allUnitsDirty: UInt64 { (1 << SudokuType.possibilities) - 1 }
 
     /// One byte per cell mirroring `board.cell(at:).count`, updated wherever a cell
     /// changes, so that the guess-cell selection scan reads dense bytes instead of
@@ -87,11 +87,11 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     @inline(__always)
     private mutating func markDirty(_ index: Int) {
-        // Row in bits 0-4, column in bits 5-9, box in bits 10-14.
-        let packed = UInt32(SudokuType.constants.packedUnitIDs()[index])
-        dirtyRows |= 1 &<< (packed & 31)
-        dirtyColumns |= 1 &<< ((packed &>> 5) & 31)
-        dirtyBoxes |= 1 &<< ((packed &>> 10) & 31)
+        // Row in bits 0-5, column in bits 6-11, box in bits 12-17.
+        let packed = UInt64(SudokuType.constants.packedUnitIDs()[index])
+        dirtyRows |= 1 &<< (packed & 63)
+        dirtyColumns |= 1 &<< ((packed &>> 6) & 63)
+        dirtyBoxes |= 1 &<< ((packed &>> 12) & 63)
     }
 
     init?(eliminating board: Board, rng: R) {
@@ -222,7 +222,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return findAllClaimedCandidates(dirtyRows: rows, dirtyColumns: columns)
     }
 
-    private mutating func findAllHiddenSingles(dirtyRows: UInt32, dirtyColumns: UInt32, dirtyBoxes: UInt32) -> Bool {
+    private mutating func findAllHiddenSingles(dirtyRows: UInt64, dirtyColumns: UInt64, dirtyBoxes: UInt64) -> Bool {
         var rows = dirtyRows
         while rows != 0 {
             guard _findHiddenSingles(for: SudokuType.constants.allIndicesInRow(rows.trailingZeroBitCount)) else {
@@ -291,7 +291,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// value must be placed inside the box's segment of that row (column), so it can
     /// be eliminated from the rest of the row (column).
     /// Returns false if the board turns out to be unsolvable.
-    private mutating func findAllLockedCandidates(dirtyBoxes: UInt32) -> Bool {
+    private mutating func findAllLockedCandidates(dirtyBoxes: UInt64) -> Bool {
         let side = SudokuType.sideOfBox
         // masks[0..<side] accumulate candidates of unsolved cells per box-row,
         // masks[side..<2*side] per box-column.
@@ -335,7 +335,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// still hold a value lies within a single box, the value must be placed in that
     /// box's segment of the line, so it can be eliminated from the box's other cells.
     /// Returns false if the board turns out to be unsolvable.
-    private mutating func findAllClaimedCandidates(dirtyRows: UInt32, dirtyColumns: UInt32) -> Bool {
+    private mutating func findAllClaimedCandidates(dirtyRows: UInt64, dirtyColumns: UInt64) -> Bool {
         // Statically known per Sudoku type, so specialization folds this branch away.
         guard SudokuType.usesClaimedCandidates else { return true }
         let side = SudokuType.sideOfBox
