@@ -154,6 +154,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             // are no more changes, but that does not improve performance either.
             if newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
                 && newSolver.findAllHiddenSingles()
+                && newSolver.findAllLockedCandidates()
                 && newSolver.guessAndEliminate(
                     transformation: transformation,
                     maxSolutions: maxSolutions,
@@ -214,6 +215,67 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return true
     }
     
+    /// Locked candidates ("pointing"): if every cell in a box that can still hold a
+    /// value lies in a single row (or column) of that box, then in any solution the
+    /// value must be placed inside the box's segment of that row (column), so it can
+    /// be eliminated from the rest of the row (column).
+    /// Returns false if the board turns out to be unsolvable.
+    private mutating func findAllLockedCandidates() -> Bool {
+        let side = SudokuType.sideOfBox
+        // masks[0..<side] accumulate candidates of unsolved cells per box-row,
+        // masks[side..<2*side] per box-column.
+        return withUnsafeTemporaryAllocation(of: SudokuType.CellStorage.self, capacity: 2 * side) { masks in
+            for box in SudokuType.allPossibilities {
+                for i in 0..<2 * side { masks[i] = 0 }
+                let boxIndices = SudokuType.constants.allIndicesInBox(box)
+                for offset in 0..<SudokuType.possibilities {
+                    let cell = board.cell(at: boxIndices[offset])
+                    guard !cell.isSolved else { continue }
+                    masks[offset / side] |= cell.storage
+                    masks[side + offset % side] |= cell.storage
+                }
+                for i in 0..<side {
+                    var otherRows: SudokuType.CellStorage = 0
+                    var otherColumns: SudokuType.CellStorage = 0
+                    for j in 0..<side where j != i {
+                        otherRows |= masks[j]
+                        otherColumns |= masks[side + j]
+                    }
+                    let row = (box / side) * side + i
+                    guard _eliminateLockedCandidates(
+                        values: masks[i] & ~otherRows,
+                        for: SudokuType.constants.allIndicesInRow(row),
+                        exceptSegment: box % side) else { return false }
+                    let column = (box % side) * side + i
+                    guard _eliminateLockedCandidates(
+                        values: masks[side + i] & ~otherColumns,
+                        for: SudokuType.constants.allIndicesInColumn(column),
+                        exceptSegment: box / side) else { return false }
+                }
+            }
+            return true
+        }
+    }
+
+    private mutating func _eliminateLockedCandidates(
+        values: SudokuType.CellStorage,
+        for indices: UnsafeBufferPointer<Int>,
+        exceptSegment segment: Int
+    ) -> Bool {
+        var values = values
+        let side = SudokuType.sideOfBox
+        while values != 0 {
+            let value = Cell(storage: values & ~(values &- 1))
+            values &= values &- 1
+            for offset in 0..<SudokuType.possibilities where offset / side != segment {
+                guard removeAndApplyConstraints(valueToRemove: value, indexToRemoveFrom: indices[offset]) else {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
     private mutating func eliminateNakedPairs(basedOnChangeOf index: Int) -> Bool {
         let value = board.cell(at: index)
         guard _eliminateNakedPairs(value: value, for: SudokuType.constants.indicesInSameRowExclusive(index)) else {
