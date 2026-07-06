@@ -73,6 +73,18 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
 
     private static var allUnitsDirty: UInt32 { (1 << SudokuType.possibilities) - 1 }
 
+    /// One byte per cell mirroring `board.cell(at:).count`, updated wherever a cell
+    /// changes, so that the guess-cell selection scan reads dense bytes instead of
+    /// loading and popcounting every cell.
+    private var candidateCounts = SudokuType.zeroCountsStorage
+
+    @inline(__always)
+    private mutating func setCount(at index: Int, to newCount: UInt8) {
+        withUnsafeMutableBytes(of: &candidateCounts) {
+            $0.storeBytes(of: newCount, toByteOffset: index, as: UInt8.self)
+        }
+    }
+
     @inline(__always)
     private mutating func markDirty(_ index: Int) {
         // Row in bits 0-4, column in bits 5-9, box in bits 10-14.
@@ -85,6 +97,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     init?(eliminating board: Board, rng: R) {
         self.board = board
         self.rng = rng
+        for index in SudokuType.allCells {
+            setCount(at: index, to: UInt8(board[index].count))
+        }
         // Iterates the unmodified `board` parameter so that only the originally
         // solved cells trigger elimination, as cascades solve more cells as we go.
         for index in SudokuType.allCells where board[index].isSolved {
@@ -120,7 +135,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         if didRemove {
             board.setCell(at: indexToRemoveFrom, to: cell)
             markDirty(indexToRemoveFrom)
-            switch cell.count {
+            let newCount = cell.count
+            setCount(at: indexToRemoveFrom, to: UInt8(newCount))
+            switch newCount {
             case 1: return eliminatePossibilities(basedOnSolvedIndex: indexToRemoveFrom)
             case 2: return eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
             default: break
@@ -132,21 +149,25 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     private mutating func unsolvedIndexWithMostConstraints() -> Board.Index? {
         // Collect all cells tied for the fewest possibilities and pick one uniformly
         // with a single RNG draw, instead of reservoir sampling with one draw per tie.
+        // Reads the incrementally maintained count mirror instead of popcounting cells.
         withUnsafeTemporaryAllocation(of: Board.Index.self, capacity: SudokuType.cells) { tied in
-            var bestCount = Int.max
+            var bestCount = UInt8.max
             var tiedCount = 0
 
-            for index in board.indices {
-                let count = board.cell(at: index).count
-                guard count > 1 else { continue }
+            withUnsafeMutableBytes(of: &candidateCounts) { counts in
+                for index in 0..<SudokuType.cells {
+                    let count = counts.loadUnaligned(fromByteOffset: index, as: UInt8.self)
+                    assert(count == UInt8(board.cell(at: index).count), "Count mirror out of sync at \(index)")
+                    guard count > 1 else { continue }
 
-                if count < bestCount {
-                    bestCount = count
-                    tied[0] = index
-                    tiedCount = 1
-                } else if count == bestCount {
-                    tied[tiedCount] = index
-                    tiedCount += 1
+                    if count < bestCount {
+                        bestCount = count
+                        tied[0] = index
+                        tiedCount = 1
+                    } else if count == bestCount {
+                        tied[tiedCount] = index
+                        tiedCount += 1
+                    }
                 }
             }
 
@@ -169,6 +190,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
             var newSolver = self
             newSolver.board.setCell(at: index, to: guess)
             newSolver.markDirty(index)
+            newSolver.setCount(at: index, to: 1)
             if newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
                 && newSolver.runDeductionSweeps()
                 && newSolver.guessAndEliminate(
@@ -254,6 +276,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 if !board.cell(at: Int(index)).isSolved {
                     board.setCell(at: Int(index), to: value)
                     markDirty(Int(index))
+                    setCount(at: Int(index), to: 1)
                     guard eliminatePossibilities(basedOnSolvedIndex: Int(index)) else { return false }
                 }
                 break

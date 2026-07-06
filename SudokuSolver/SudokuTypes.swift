@@ -16,6 +16,12 @@ protocol SudokuTypeProtocol: Sendable {
     /// accessors on `SudokuBoard` collapse back into the Collection subscript.
     associatedtype BoardStorage: Hashable & Sendable
     static var zeroBoardStorage: BoardStorage { get }
+    /// Fixed-size inline storage holding one byte per cell. The solver keeps a
+    /// mirror of each cell's candidate count in this, updated incrementally where
+    /// counts change, so the guess-cell selection scan reads dense bytes instead
+    /// of loading and popcounting every cell.
+    associatedtype CountsStorage: Sendable
+    static var zeroCountsStorage: CountsStorage { get }
     static var allTrueCellStorage: CellStorage { get }
     static var sideOfBox: Int { get }
     /// Whether the solver runs the claiming (line-to-box locked candidates) sweep.
@@ -53,6 +59,10 @@ enum Sudoku4: SudokuTypeProtocol {
         var cells0 = SIMD16<UInt8>() // 16 bytes ≥ 16 cells × 1 byte
     }
     static var zeroBoardStorage: BoardStorage { BoardStorage() }
+    struct CountsStorage: Sendable {
+        var counts0 = SIMD16<UInt8>() // 16 bytes ≥ 16 cells
+    }
+    static var zeroCountsStorage: CountsStorage { CountsStorage() }
     static let allTrueCellStorage: UInt8 = 0b1111
     static var sideOfBox: Int { 2 }
     static let solvedRepresentation = (1...4).map(String.init)
@@ -69,6 +79,11 @@ enum Sudoku9: SudokuTypeProtocol {
         var cells1 = SIMD32<UInt16>()
     }
     static var zeroBoardStorage: BoardStorage { BoardStorage() }
+    struct CountsStorage: Sendable {
+        var counts0 = SIMD64<UInt8>() // 96 bytes ≥ 81 cells
+        var counts1 = SIMD32<UInt8>()
+    }
+    static var zeroCountsStorage: CountsStorage { CountsStorage() }
     static let allTrueCellStorage: UInt16 = 0b111111111
     static var sideOfBox: Int { 3 }
     static let solvedRepresentation = (1...9).map(String.init)
@@ -87,6 +102,13 @@ enum Sudoku16: SudokuTypeProtocol {
         var cells3 = SIMD64<UInt16>()
     }
     static var zeroBoardStorage: BoardStorage { BoardStorage() }
+    struct CountsStorage: Sendable {
+        var counts0 = SIMD64<UInt8>() // 256 bytes = 256 cells
+        var counts1 = SIMD64<UInt8>()
+        var counts2 = SIMD64<UInt8>()
+        var counts3 = SIMD64<UInt8>()
+    }
+    static var zeroCountsStorage: CountsStorage { CountsStorage() }
     static let allTrueCellStorage: UInt16 = 0b11111111_11111111
     static var sideOfBox: Int { 4 }
     static let solvedRepresentation = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
@@ -111,6 +133,19 @@ enum Sudoku25: SudokuTypeProtocol {
         var cells9 = SIMD64<UInt32>()
     }
     static var zeroBoardStorage: BoardStorage { BoardStorage() }
+    struct CountsStorage: Sendable {
+        var counts0 = SIMD64<UInt8>() // 640 bytes ≥ 625 cells
+        var counts1 = SIMD64<UInt8>()
+        var counts2 = SIMD64<UInt8>()
+        var counts3 = SIMD64<UInt8>()
+        var counts4 = SIMD64<UInt8>()
+        var counts5 = SIMD64<UInt8>()
+        var counts6 = SIMD64<UInt8>()
+        var counts7 = SIMD64<UInt8>()
+        var counts8 = SIMD64<UInt8>()
+        var counts9 = SIMD64<UInt8>()
+    }
+    static var zeroCountsStorage: CountsStorage { CountsStorage() }
     static let allTrueCellStorage: UInt32 = 0b11111_11111_11111_11111_11111
     static var sideOfBox: Int { 5 }
     static var usesClaimedCandidates: Bool { true }
