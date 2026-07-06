@@ -62,7 +62,26 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     typealias Cell = SudokuCell<SudokuType>
     var board: Board
     var rng: R
-    
+
+    // Units whose cells lost candidates since the last deduction sweep. The sweeps
+    // only revisit dirty units: a unit whose cells are unchanged since it was last
+    // swept cannot yield new deductions. Starts all-dirty so the first sweep after
+    // init covers the whole board.
+    private var dirtyRows = Self.allUnitsDirty
+    private var dirtyColumns = Self.allUnitsDirty
+    private var dirtyBoxes = Self.allUnitsDirty
+
+    private static var allUnitsDirty: UInt32 { (1 << SudokuType.possibilities) - 1 }
+
+    @inline(__always)
+    private mutating func markDirty(_ index: Int) {
+        let row = index / SudokuType.possibilities
+        let column = index % SudokuType.possibilities
+        dirtyRows |= 1 &<< row
+        dirtyColumns |= 1 &<< column
+        dirtyBoxes |= 1 &<< ((row / SudokuType.sideOfBox) * SudokuType.sideOfBox + column / SudokuType.sideOfBox)
+    }
+
     init?(eliminating board: Board, rng: R) {
         self.board = board
         self.rng = rng
@@ -100,6 +119,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         guard let didRemove = cell.removeIfPossible(valueToRemove) else { return false }
         if didRemove {
             board.setCell(at: indexToRemoveFrom, to: cell)
+            markDirty(indexToRemoveFrom)
             switch cell.count {
             case 1: return eliminatePossibilities(basedOnSolvedIndex: indexToRemoveFrom)
             case 2: return eliminateNakedPairs(basedOnChangeOf: indexToRemoveFrom)
@@ -148,14 +168,9 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         while let guess = T.next(from: &remainingGuesses, rng: &rng) {
             var newSolver = self
             newSolver.board.setCell(at: index, to: guess)
-            // While it would make sense to check for hidden singles only in rows/columns/boxes where a
-            // possibility has just been removed, benchmarking shows that it is more efficient to run this
-            // once per guess for the whole board. In theory this could also be run in a loop until there
-            // are no more changes, but that does not improve performance either.
+            newSolver.markDirty(index)
             if newSolver.eliminatePossibilities(basedOnSolvedIndex: index)
-                && newSolver.findAllHiddenSingles()
-                && newSolver.findAllLockedCandidates()
-                && newSolver.findAllClaimedCandidates()
+                && newSolver.runDeductionSweeps()
                 && newSolver.guessAndEliminate(
                     transformation: transformation,
                     maxSolutions: maxSolutions,
@@ -170,11 +185,42 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return true
     }
     
-    private mutating func findAllHiddenSingles() -> Bool {
-        for unit in SudokuType.allPossibilities {
-            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInRow(unit)) else { return false }
-            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInColumn(unit)) else { return false }
-            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInBox(unit)) else { return false }
+    /// Runs the deduction sweeps over the units that changed since the last sweep.
+    /// The dirty masks are snapshotted and cleared up front; eliminations made during
+    /// these sweeps re-mark their units, which the next guess's sweeps pick up.
+    private mutating func runDeductionSweeps() -> Bool {
+        let rows = dirtyRows
+        let columns = dirtyColumns
+        let boxes = dirtyBoxes
+        dirtyRows = 0
+        dirtyColumns = 0
+        dirtyBoxes = 0
+        guard findAllHiddenSingles(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes) else { return false }
+        guard findAllLockedCandidates(dirtyBoxes: boxes) else { return false }
+        return findAllClaimedCandidates(dirtyRows: rows, dirtyColumns: columns)
+    }
+
+    private mutating func findAllHiddenSingles(dirtyRows: UInt32, dirtyColumns: UInt32, dirtyBoxes: UInt32) -> Bool {
+        var rows = dirtyRows
+        while rows != 0 {
+            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInRow(rows.trailingZeroBitCount)) else {
+                return false
+            }
+            rows &= rows &- 1
+        }
+        var columns = dirtyColumns
+        while columns != 0 {
+            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInColumn(columns.trailingZeroBitCount)) else {
+                return false
+            }
+            columns &= columns &- 1
+        }
+        var boxes = dirtyBoxes
+        while boxes != 0 {
+            guard _findHiddenSingles(for: SudokuType.constants.allIndicesInBox(boxes.trailingZeroBitCount)) else {
+                return false
+            }
+            boxes &= boxes &- 1
         }
         return true
     }
@@ -207,6 +253,7 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                 found = true
                 if !board.cell(at: index).isSolved {
                     board.setCell(at: index, to: value)
+                    markDirty(index)
                     guard eliminatePossibilities(basedOnSolvedIndex: index) else { return false }
                 }
                 break
@@ -221,12 +268,15 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// value must be placed inside the box's segment of that row (column), so it can
     /// be eliminated from the rest of the row (column).
     /// Returns false if the board turns out to be unsolvable.
-    private mutating func findAllLockedCandidates() -> Bool {
+    private mutating func findAllLockedCandidates(dirtyBoxes: UInt32) -> Bool {
         let side = SudokuType.sideOfBox
         // masks[0..<side] accumulate candidates of unsolved cells per box-row,
         // masks[side..<2*side] per box-column.
         return withUnsafeTemporaryAllocation(of: SudokuType.CellStorage.self, capacity: 2 * side) { masks in
-            for box in SudokuType.allPossibilities {
+            var boxes = dirtyBoxes
+            while boxes != 0 {
+                let box = boxes.trailingZeroBitCount
+                boxes &= boxes &- 1
                 for i in 0..<2 * side { masks[i] = 0 }
                 let boxIndices = SudokuType.constants.allIndicesInBox(box)
                 for offset in 0..<SudokuType.possibilities {
@@ -262,15 +312,18 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     /// still hold a value lies within a single box, the value must be placed in that
     /// box's segment of the line, so it can be eliminated from the box's other cells.
     /// Returns false if the board turns out to be unsolvable.
-    private mutating func findAllClaimedCandidates() -> Bool {
+    private mutating func findAllClaimedCandidates(dirtyRows: UInt32, dirtyColumns: UInt32) -> Bool {
         // Statically known per Sudoku type, so specialization folds this branch away.
         guard SudokuType.usesClaimedCandidates else { return true }
         let side = SudokuType.sideOfBox
         return withUnsafeTemporaryAllocation(of: SudokuType.CellStorage.self, capacity: side) { segments in
-            for line in SudokuType.allPossibilities {
-                // Rows: a value confined to one box segment of the row is eliminated
-                // from that box's cells outside the row.
-                var indices = SudokuType.constants.allIndicesInRow(line)
+            // Rows: a value confined to one box segment of the row is eliminated
+            // from that box's cells outside the row.
+            var rows = dirtyRows
+            while rows != 0 {
+                let line = rows.trailingZeroBitCount
+                rows &= rows &- 1
+                let indices = SudokuType.constants.allIndicesInRow(line)
                 for j in 0..<side { segments[j] = 0 }
                 for offset in 0..<SudokuType.possibilities {
                     let cell = board.cell(at: indices[offset])
@@ -284,8 +337,13 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                         for: SudokuType.constants.allIndicesInBox((line / side) * side + j),
                         exceptSegment: line % side) else { return false }
                 }
-                // Columns: same, but the spared line runs strided through the box.
-                indices = SudokuType.constants.allIndicesInColumn(line)
+            }
+            // Columns: same, but the spared line runs strided through the box.
+            var columns = dirtyColumns
+            while columns != 0 {
+                let line = columns.trailingZeroBitCount
+                columns &= columns &- 1
+                let indices = SudokuType.constants.allIndicesInColumn(line)
                 for j in 0..<side { segments[j] = 0 }
                 for offset in 0..<SudokuType.possibilities {
                     let cell = board.cell(at: indices[offset])
