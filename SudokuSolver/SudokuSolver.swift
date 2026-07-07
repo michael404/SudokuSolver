@@ -693,10 +693,11 @@ extension SudokuSolver {
             capacity: SudokuType.possibilities
         ) { candidates in
             var candidateCount = 0
+            let maxSubsetSize = SudokuType.usesNakedQuads ? 4 : 3
             for offset in 0..<SudokuType.possibilities {
                 let cell = board.cell(at: Int(indices[offset]))
                 let count = cell.storage.nonzeroBitCount
-                if count == 2 || count == 3 {
+                if count >= 2 && count <= maxSubsetSize {
                     candidates[candidateCount] = (offset, cell.storage)
                     candidateCount += 1
                 }
@@ -723,8 +724,56 @@ extension SudokuSolver {
                     }
                 }
             }
-            return true
+            guard SudokuType.usesNakedQuads else { return true }
+            return _findNakedQuads(candidates: candidates, count: candidateCount, for: indices)
         }
+    }
+
+    /// Naked quadruples over the candidate cells the triples sweep collected:
+    /// four cells jointly holding only four values exclude those values from the
+    /// unit's other cells.
+    private mutating func _findNakedQuads(
+        candidates: UnsafeMutableBufferPointer<(offset: Int, storage: SudokuType.CellStorage)>,
+        count: Int,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>
+    ) -> Bool {
+        guard count >= 4 else { return true }
+        for i in 0..<(count - 3) {
+            for j in (i + 1)..<(count - 2) {
+                let unionIJ = candidates[i].storage | candidates[j].storage
+                guard unionIJ.nonzeroBitCount <= 4 else { continue }
+                for k in (j + 1)..<(count - 1) {
+                    let unionIJK = unionIJ | candidates[k].storage
+                    guard unionIJK.nonzeroBitCount <= 4 else { continue }
+                    for l in (k + 1)..<count {
+                        let union = unionIJK | candidates[l].storage
+                        guard union.nonzeroBitCount == 4 else { continue }
+                        var memberOffsets = 1 as UInt64 &<< candidates[i].offset
+                        memberOffsets |= 1 &<< candidates[j].offset
+                        memberOffsets |= 1 &<< candidates[k].offset
+                        memberOffsets |= 1 &<< candidates[l].offset
+                        guard _eliminateNakedQuad(
+                            values: Cell(storage: union),
+                            memberOffsets: memberOffsets,
+                            for: indices) else { return false }
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    private mutating func _eliminateNakedQuad(
+        values: Cell,
+        memberOffsets: UInt64,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>
+    ) -> Bool {
+        for offset in 0..<SudokuType.possibilities where memberOffsets & (1 &<< offset) == 0 {
+            guard removeAndApplyConstraints(valueToRemove: values, indexToRemoveFrom: Int(indices[offset])) else {
+                return false
+            }
+        }
+        return true
     }
 
 }

@@ -41,6 +41,9 @@ protocol SudokuTypeProtocol: Sendable {
     /// jointly confined to three cells of a unit). Reuses the pairs sweep's
     /// position masks, so it can only be enabled where `usesHiddenPairs` is.
     static var usesHiddenTriples: Bool { get }
+    /// Whether the naked-triples sweep also looks for naked quadruples (four cells
+    /// of a unit jointly holding only four candidate values).
+    static var usesNakedQuads: Bool { get }
     static var solvedRepresentation: [String] { get }
     /// Maps each symbol in `solvedRepresentation` back to its value.
     /// Stored per conforming type so it is built once, not on every lookup.
@@ -53,6 +56,7 @@ extension SudokuTypeProtocol {
     static var usesHiddenPairs: Bool { false }
     static var usesNakedTriples: Bool { false }
     static var usesHiddenTriples: Bool { false }
+    static var usesNakedQuads: Bool { false }
     static var possibilities: Int { sideOfBox * sideOfBox }
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
@@ -166,6 +170,7 @@ enum Sudoku25: SudokuTypeProtocol {
     static var usesClaimedCandidates: Bool { true }
     static var usesHiddenPairs: Bool { false } // measured: -29% uniqueness, -3x end-to-end
     static var usesNakedTriples: Bool { true }
+    static var usesNakedQuads: Bool { false } // measured: neutral at best
     static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Y"
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
@@ -228,6 +233,7 @@ enum Sudoku36: SudokuTypeProtocol {
     static var usesClaimedCandidates: Bool { true }
     static var usesHiddenPairs: Bool { true }
     static var usesNakedTriples: Bool { true }
+    static var usesNakedQuads: Bool { true }
     static var usesHiddenTriples: Bool { true }
     static let solvedRepresentation = (0...9).map(String.init) + (65...90).map { String(UnicodeScalar($0)) } // 0-9, A-Z
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
