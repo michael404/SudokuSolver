@@ -357,21 +357,17 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                     masks[offset / side] |= cell.storage
                     masks[side + offset % side] |= cell.storage
                 }
+                let uniqueRows = valuesInOnlyOneSegment(masks, start: 0, count: side)
+                let uniqueColumns = valuesInOnlyOneSegment(masks, start: side, count: side)
                 for i in 0..<side {
-                    var otherRows: SudokuType.CellStorage = 0
-                    var otherColumns: SudokuType.CellStorage = 0
-                    for j in 0..<side where j != i {
-                        otherRows |= masks[j]
-                        otherColumns |= masks[side + j]
-                    }
                     let row = (box / side) * side + i
                     guard _eliminateLockedCandidates(
-                        values: masks[i] & ~otherRows,
+                        values: masks[i] & uniqueRows,
                         for: SudokuType.constants.allIndicesInRow(row),
                         exceptSegment: box % side) else { return false }
                     let column = (box % side) * side + i
                     guard _eliminateLockedCandidates(
-                        values: masks[side + i] & ~otherColumns,
+                        values: masks[side + i] & uniqueColumns,
                         for: SudokuType.constants.allIndicesInColumn(column),
                         exceptSegment: box / side) else { return false }
                 }
@@ -401,11 +397,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                     let cell = board.cell(at: Int(indices[offset]))
                     if !cell.isSolved { segments[offset / side] |= cell.storage }
                 }
+                let uniqueSegments = valuesInOnlyOneSegment(segments, start: 0, count: side)
                 for j in 0..<side {
-                    var others: SudokuType.CellStorage = 0
-                    for k in 0..<side where k != j { others |= segments[k] }
                     guard _eliminateLockedCandidates(
-                        values: segments[j] & ~others,
+                        values: segments[j] & uniqueSegments,
                         for: SudokuType.constants.allIndicesInBox((line / side) * side + j),
                         exceptSegment: line % side) else { return false }
                 }
@@ -421,11 +416,10 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                     let cell = board.cell(at: Int(indices[offset]))
                     if !cell.isSolved { segments[offset / side] |= cell.storage }
                 }
+                let uniqueSegments = valuesInOnlyOneSegment(segments, start: 0, count: side)
                 for j in 0..<side {
-                    var others: SudokuType.CellStorage = 0
-                    for k in 0..<side where k != j { others |= segments[k] }
                     guard _eliminateLockedCandidatesStrided(
-                        values: segments[j] & ~others,
+                        values: segments[j] & uniqueSegments,
                         for: SudokuType.constants.allIndicesInBox(j * side + line / side),
                         exceptSegment: line % side) else { return false }
                 }
@@ -508,4 +502,19 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         return true
     }
     
+}
+
+@inline(__always)
+private func valuesInOnlyOneSegment<Storage: FixedWidthInteger>(
+    _ segments: UnsafeMutableBufferPointer<Storage>,
+    start: Int,
+    count: Int
+) -> Storage {
+    var seenOnce: Storage = 0
+    var seenTwice: Storage = 0
+    for index in start..<start + count {
+        seenTwice |= seenOnce & segments[index]
+        seenOnce |= segments[index]
+    }
+    return seenOnce & ~seenTwice
 }
