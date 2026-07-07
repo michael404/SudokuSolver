@@ -71,4 +71,17 @@ class Sudoku16PerfTests: XCTestCase {
         XCTAssertTrue((70...120).contains(board.clues))
     }
 
+    func testPerfRandomStartingBoardParallel() {
+        var board = SudokuBoard16.empty
+        self.measure {
+            var rng = WyRand(seed: 42)
+            for _ in 0..<5 {
+                board = SudokuBoard16.randomFullyFilledBoard(using: &rng).minimizingCluesParallel(using: &rng)
+            }
+        }
+        XCTAssertEqual(board.numberOfSolutions(), .one)
+        XCTAssertFalse(board.isFullyFilled)
+        XCTAssertTrue((70...120).contains(board.clues))
+    }
+
 }

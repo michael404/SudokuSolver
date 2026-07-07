@@ -91,6 +91,50 @@ class RandomBoardTests: XCTestCase {
         }
     }
 
+    // MARK: - Parallel minimizer
+
+    func testParallelMinimizerProperties() {
+        var rng = WyRand(seed: 7)
+        let filled = SudokuBoard9.randomFullyFilledBoard(using: &rng)
+        let minimized = filled.minimizingCluesParallel(using: &rng)
+
+        XCTAssertFalse(minimized.isFullyFilled)
+        for index in minimized.indices where minimized[index].isSolved {
+            XCTAssertEqual(minimized[index], filled[index], "Clue at \(index) changed value")
+        }
+        XCTAssertEqual(minimized.findAllSolutions(), [filled])
+
+        // The screen-then-confirm split preserves 1-minimality with an unlimited budget.
+        var board = minimized
+        for index in board.indices where board[index].isSolved {
+            let clue = board[index]
+            board[index] = .allTrue
+            XCTAssertEqual(board.numberOfSolutions(), .multiple, "Clue at \(index) was removable")
+            board[index] = clue
+        }
+    }
+
+    func testParallelMinimizerIsDeterministic() {
+        var rng1 = WyRand(seed: 8)
+        var rng2 = WyRand(seed: 8)
+        let filled1 = SudokuBoard16.randomFullyFilledBoard(using: &rng1)
+        let filled2 = SudokuBoard16.randomFullyFilledBoard(using: &rng2)
+        XCTAssertEqual(filled1, filled2)
+        XCTAssertEqual(
+            filled1.minimizingCluesParallel(using: &rng1),
+            filled2.minimizingCluesParallel(using: &rng2))
+    }
+
+    func testParallelMinimizerWithNodeLimit() {
+        var rng = WyRand(seed: 9)
+        let filled = SudokuBoard9.randomFullyFilledBoard(using: &rng)
+        let limited = filled.minimizingCluesParallel(using: &rng, nodeLimit: 0)
+        XCTAssertEqual(limited.findAllSolutions(), [filled])
+        for index in limited.indices where limited[index].isSolved {
+            XCTAssertEqual(limited[index], filled[index], "Clue at \(index) changed value")
+        }
+    }
+
     // MARK: - Node-limited search
 
     func testNodeLimitedSearch() {
