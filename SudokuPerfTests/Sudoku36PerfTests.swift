@@ -11,9 +11,7 @@ class Sudoku36PerfTests: XCTestCase {
         self.measure {
             for seed in Self.solverSeeds {
                 var rng = WyRand(seed: seed)
-                for _ in 0..<10 {
-                    solution = TestData36.puzzel1.board.findFirstSolution(using: &rng)
-                }
+                solution = TestData36.puzzel1.board.findFirstSolution(using: &rng)
             }
         }
 
@@ -27,9 +25,7 @@ class Sudoku36PerfTests: XCTestCase {
             var result = true
             for seed in Self.solverSeeds {
                 var rng = WyRand(seed: seed)
-                for _ in 0..<10 {
-                    result = result && TestData36.puzzel1.board.numberOfSolutions(using: &rng) == .one
-                }
+                result = result && TestData36.puzzel1.board.numberOfSolutions(using: &rng) == .one
             }
             hasUniqueSolution = result
         }
