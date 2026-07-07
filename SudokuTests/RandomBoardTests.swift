@@ -9,7 +9,7 @@ class RandomBoardTests: XCTestCase {
     func testMinimizerProperties() {
         var rng = WyRand(seed: 1)
         let filled = SudokuBoard9.randomFullyFilledBoard(using: &rng)
-        let minimized = filled.randomStartingPositionFromFullyFilledBoard(using: &rng)
+        let minimized = filled.minimizingClues(using: &rng)
 
         XCTAssertFalse(minimized.isFullyFilled)
 
@@ -38,7 +38,7 @@ class RandomBoardTests: XCTestCase {
         var rng = WyRand(seed: 2)
         let minimized = SudokuBoard9.randomStartingBoard(rng: &rng)
         // A 1-minimal board has no removable clue, regardless of removal order.
-        let again = minimized.randomStartingPositionFromFullyFilledBoard(using: &rng)
+        let again = minimized.minimizingClues(using: &rng)
         XCTAssertEqual(again, minimized)
     }
 
@@ -75,7 +75,7 @@ class RandomBoardTests: XCTestCase {
     func testMinimizerProperties16() {
         var rng = WyRand(seed: 18)
         let filled = SudokuBoard16.randomFullyFilledBoard(using: &rng)
-        let minimized = filled.randomStartingPositionFromFullyFilledBoard(using: &rng)
+        let minimized = filled.minimizingClues(using: &rng)
 
         for index in minimized.indices where minimized[index].isSolved {
             XCTAssertEqual(minimized[index], filled[index], "Clue at \(index) changed value")

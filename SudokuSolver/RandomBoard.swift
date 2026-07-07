@@ -1,24 +1,30 @@
 extension SudokuBoard {
-    
+
     static func randomStartingBoard() -> SudokuBoard {
         var rng = WyRand()
         return randomStartingBoard(rng: &rng)
     }
-    
+
     static func randomStartingBoard<R: RNG>(rng: inout R) -> SudokuBoard {
-        randomFullyFilledBoard(using: &rng).randomStartingPositionFromFullyFilledBoard(using: &rng)
+        randomFullyFilledBoard(using: &rng).minimizingClues(using: &rng)
     }
 
 }
 
 internal extension SudokuBoard {
-    
-    func randomStartingPositionFromFullyFilledBoard() -> SudokuBoard {
-        var rng = WyRand()
-        return randomStartingPositionFromFullyFilledBoard(using: &rng)
-    }
-    
-    func randomStartingPositionFromFullyFilledBoard<R: RNG>(using rng: inout R) -> SudokuBoard {
+
+    /// Returns a copy of this board with every removable clue cleared, visiting
+    /// cells in a random order. A clue is only removed when doing so provably keeps
+    /// the solution unique, so the result has exactly the same single solution as
+    /// this board, its clues are a subset of this board's clues, and no single
+    /// remaining clue can be removed without losing uniqueness (1-minimality).
+    ///
+    /// This board must have exactly one solution when called; a fully filled board
+    /// trivially qualifies.
+    func minimizingClues<R: RNG>(using rng: inout R) -> SudokuBoard {
+        assert({ var checkRng = rng
+                 return numberOfSolutions(using: &checkRng) == .one }(),
+               "minimizingClues requires a board with exactly one solution")
         var board = self
         for index in board.indices.shuffled(using: &rng) {
             // The board so far has a unique solution, so clearing this cell keeps the
@@ -43,9 +49,7 @@ internal extension SudokuBoard {
             }
             board[index] = .allTrue
         }
-        var checkRng = rng
-        assert(board.numberOfSolutions(using: &checkRng) == .one)
         return board
     }
-    
+
 }
