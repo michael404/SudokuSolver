@@ -268,7 +268,8 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         dirtyBoxes = 0
         guard findAllHiddenSingles(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes) else { return false }
         guard findAllLockedCandidates(dirtyBoxes: boxes) else { return false }
-        return findAllClaimedCandidates(dirtyRows: rows, dirtyColumns: columns)
+        guard findAllClaimedCandidates(dirtyRows: rows, dirtyColumns: columns) else { return false }
+        return findAllHiddenPairs(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes)
     }
 
     private mutating func findAllHiddenSingles(dirtyRows: UInt64, dirtyColumns: UInt64, dirtyBoxes: UInt64) -> Bool {
@@ -517,4 +518,76 @@ private func valuesInOnlyOneSegment<Storage: FixedWidthInteger>(
         seenOnce |= segments[index]
     }
     return seenOnce & ~seenTwice
+}
+
+// MARK: - Hidden pairs
+
+extension SudokuSolver {
+
+    /// Hidden pairs: when two values can only be placed in the same two cells of a
+    /// unit, those cells must hold exactly those two values, so their other
+    /// candidates can be removed. Sweeps only units whose cells changed since the
+    /// last sweep. Returns false if the board turns out to be unsolvable.
+    private mutating func findAllHiddenPairs(dirtyRows: UInt64, dirtyColumns: UInt64, dirtyBoxes: UInt64) -> Bool {
+        // Statically known per Sudoku type, so specialization folds this branch away.
+        guard SudokuType.usesHiddenPairs else { return true }
+        var rows = dirtyRows
+        while rows != 0 {
+            guard _findHiddenPairs(for: SudokuType.constants.allIndicesInRow(rows.trailingZeroBitCount)) else {
+                return false
+            }
+            rows &= rows &- 1
+        }
+        var columns = dirtyColumns
+        while columns != 0 {
+            guard _findHiddenPairs(for: SudokuType.constants.allIndicesInColumn(columns.trailingZeroBitCount)) else {
+                return false
+            }
+            columns &= columns &- 1
+        }
+        var boxes = dirtyBoxes
+        while boxes != 0 {
+            guard _findHiddenPairs(for: SudokuType.constants.allIndicesInBox(boxes.trailingZeroBitCount)) else {
+                return false
+            }
+            boxes &= boxes &- 1
+        }
+        return true
+    }
+
+    private mutating func _findHiddenPairs(for indices: UnsafeBufferPointer<SudokuType.IndexStorage>) -> Bool {
+        // For every value, the set of unit offsets (as a bitmask) where it can
+        // still be placed in an unsolved cell.
+        withUnsafeTemporaryAllocation(of: UInt64.self, capacity: SudokuType.possibilities) { positions in
+            for value in SudokuType.allPossibilities { positions[value] = 0 }
+            for offset in 0..<SudokuType.possibilities {
+                let cell = board.cell(at: Int(indices[offset]))
+                guard !cell.isSolved else { continue }
+                var values = cell.storage
+                while values != 0 {
+                    positions[values.trailingZeroBitCount] |= 1 &<< UInt64(offset)
+                    values &= values &- 1
+                }
+            }
+            // Two values with identical two-cell position sets form a hidden pair.
+            // Eliminations during this loop only shrink true position sets below
+            // the snapshot, which keeps the pair deduction sound.
+            for value1 in SudokuType.allPossibilities where positions[value1].nonzeroBitCount == 2 {
+                for value2 in (value1 + 1)..<SudokuType.possibilities where positions[value2] == positions[value1] {
+                    let pairStorage = (SudokuType.CellStorage(1) &<< value1) | (SudokuType.CellStorage(1) &<< value2)
+                    let othersMask = Cell(storage: SudokuType.allTrueCellStorage & ~pairStorage)
+                    var offsets = positions[value1]
+                    while offsets != 0 {
+                        let index = Int(indices[offsets.trailingZeroBitCount])
+                        offsets &= offsets &- 1
+                        guard removeAndApplyConstraints(valueToRemove: othersMask, indexToRemoveFrom: index) else {
+                            return false
+                        }
+                    }
+                }
+            }
+            return true
+        }
+    }
+
 }

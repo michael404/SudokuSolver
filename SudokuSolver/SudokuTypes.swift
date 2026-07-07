@@ -29,6 +29,10 @@ protocol SudokuTypeProtocol: Sendable {
     /// 1.4-1.7x on 25×25, but a 10-30% slowdown on 9×9 and 16×16, where the
     /// puzzles are deduction-dominated and the extra sweep rarely fires.
     static var usesClaimedCandidates: Bool { get }
+    /// Whether the solver runs the hidden-pairs sweep (two values confined to the
+    /// same two cells of a unit restrict those cells to exactly those values).
+    /// Like claiming, only worth its per-guess cost on search-dominated boards.
+    static var usesHiddenPairs: Bool { get }
     static var solvedRepresentation: [String] { get }
     /// Maps each symbol in `solvedRepresentation` back to its value.
     /// Stored per conforming type so it is built once, not on every lookup.
@@ -38,6 +42,7 @@ protocol SudokuTypeProtocol: Sendable {
 
 extension SudokuTypeProtocol {
     static var usesClaimedCandidates: Bool { false }
+    static var usesHiddenPairs: Bool { false }
     static var possibilities: Int { sideOfBox * sideOfBox }
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
@@ -149,6 +154,7 @@ enum Sudoku25: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt32 = 0b11111_11111_11111_11111_11111
     static var sideOfBox: Int { 5 }
     static var usesClaimedCandidates: Bool { true }
+    static var usesHiddenPairs: Bool { false } // measured: -29% uniqueness, -3x end-to-end
     static let solvedRepresentation = (65...89).map { String(UnicodeScalar($0)) } // "A"..."Y"
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
@@ -209,6 +215,7 @@ enum Sudoku36: SudokuTypeProtocol {
     static let allTrueCellStorage: UInt64 = (1 << 36) - 1
     static var sideOfBox: Int { 6 }
     static var usesClaimedCandidates: Bool { true }
+    static var usesHiddenPairs: Bool { true }
     static let solvedRepresentation = (0...9).map(String.init) + (65...90).map { String(UnicodeScalar($0)) } // 0-9, A-Z
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
