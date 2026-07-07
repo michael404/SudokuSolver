@@ -36,5 +36,39 @@ class Sudoku16PerfTests: XCTestCase {
         }
         XCTAssertTrue(hasUniqueSolution)
     }
-    
+
+    func testPerfRandomFullyFilledBoard() {
+        var board = SudokuBoard16.empty
+        self.measure {
+            var rng = WyRand(seed: 42)
+            for _ in 0..<50 {
+                board = SudokuBoard.randomFullyFilledBoard(using: &rng)
+            }
+        }
+        // Generation is deterministic for a fixed seed; the exact board depends on
+        // how many random values the solver consumes, so compare against a rerun.
+        var expectedBoard = SudokuBoard16.empty
+        var rng = WyRand(seed: 42)
+        for _ in 0..<50 {
+            expectedBoard = SudokuBoard.randomFullyFilledBoard(using: &rng)
+        }
+        XCTAssertEqual(board, expectedBoard)
+        XCTAssertTrue(board.hasUniqueSolution)
+        XCTAssertTrue(board.isFullyFilled)
+        XCTAssertEqual(board.clues, 256)
+    }
+
+    func testPerfRandomStartingBoard() {
+        var board = SudokuBoard16.empty
+        self.measure {
+            var rng = WyRand(seed: 42)
+            for _ in 0..<5 {
+                board = SudokuBoard.randomStartingBoard(rng: &rng)
+            }
+        }
+        XCTAssertEqual(board.numberOfSolutions(), .one)
+        XCTAssertFalse(board.isFullyFilled)
+        XCTAssertTrue((70...120).contains(board.clues))
+    }
+
 }

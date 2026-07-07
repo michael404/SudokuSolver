@@ -38,7 +38,7 @@ class Sudoku9PerfTests: XCTestCase {
         var board = SudokuBoard9.empty
         self.measure {
             var rng = WyRand(seed: 42)
-            for _ in 0..<10 {
+            for _ in 0..<50 {
                 board = SudokuBoard.randomFullyFilledBoard(using: &rng)
             }
         }
@@ -47,7 +47,7 @@ class Sudoku9PerfTests: XCTestCase {
         // deterministic for a fixed seed.
         var expectedBoard = SudokuBoard9.empty
         var rng = WyRand(seed: 42)
-        for _ in 0..<10 {
+        for _ in 0..<50 {
             expectedBoard = SudokuBoard.randomFullyFilledBoard(using: &rng)
         }
         XCTAssertEqual(board, expectedBoard)
@@ -60,7 +60,7 @@ class Sudoku9PerfTests: XCTestCase {
         var board = SudokuBoard9.empty
         self.measure {
             var rng = WyRand(seed: 42)
-            for _ in 0..<10 {
+            for _ in 0..<50 {
                 board = SudokuBoard.randomStartingBoard(rng: &rng)
             }
         }
