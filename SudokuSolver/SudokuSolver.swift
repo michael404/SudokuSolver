@@ -587,8 +587,66 @@ extension SudokuSolver {
                     }
                 }
             }
+            return _findHiddenTriples(positions: positions, for: indices)
+        }
+    }
+
+    /// Hidden triples: three values jointly confined to the same three cells of a
+    /// unit restrict those cells to exactly those values. Runs on the position
+    /// masks the pairs sweep already built. Statically disabled per Sudoku type
+    /// unless `usesHiddenTriples` is set.
+    private mutating func _findHiddenTriples(
+        positions: UnsafeMutableBufferPointer<UInt64>,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>
+    ) -> Bool {
+        guard SudokuType.usesHiddenTriples else { return true }
+        // Only values placeable in two or three cells can participate.
+        return withUnsafeTemporaryAllocation(of: Int.self, capacity: SudokuType.possibilities) { candidates in
+            var candidateCount = 0
+            for value in SudokuType.allPossibilities {
+                let cellCount = positions[value].nonzeroBitCount
+                if cellCount == 2 || cellCount == 3 {
+                    candidates[candidateCount] = value
+                    candidateCount += 1
+                }
+            }
+            guard candidateCount >= 3 else { return true }
+            for a in 0..<(candidateCount - 2) {
+                for b in (a + 1)..<(candidateCount - 1) {
+                    let pairCells = positions[candidates[a]] | positions[candidates[b]]
+                    guard pairCells.nonzeroBitCount <= 3 else { continue }
+                    for c in (b + 1)..<candidateCount {
+                        let cells = pairCells | positions[candidates[c]]
+                        guard cells.nonzeroBitCount == 3 else { continue }
+                        guard _restrictHiddenTriple(
+                            values: (candidates[a], candidates[b], candidates[c]),
+                            cells: cells,
+                            for: indices) else { return false }
+                    }
+                }
+            }
             return true
         }
+    }
+
+    private mutating func _restrictHiddenTriple(
+        values: (Int, Int, Int),
+        cells: UInt64,
+        for indices: UnsafeBufferPointer<SudokuType.IndexStorage>
+    ) -> Bool {
+        let tripleStorage = (SudokuType.CellStorage(1) &<< values.0)
+            | (SudokuType.CellStorage(1) &<< values.1)
+            | (SudokuType.CellStorage(1) &<< values.2)
+        let othersMask = Cell(storage: SudokuType.allTrueCellStorage & ~tripleStorage)
+        var offsets = cells
+        while offsets != 0 {
+            let index = Int(indices[offsets.trailingZeroBitCount])
+            offsets &= offsets &- 1
+            guard removeAndApplyConstraints(valueToRemove: othersMask, indexToRemoveFrom: index) else {
+                return false
+            }
+        }
+        return true
     }
 
 }

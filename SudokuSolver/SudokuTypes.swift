@@ -37,6 +37,10 @@ protocol SudokuTypeProtocol: Sendable {
     /// whose combined candidates are exactly three values exclude those values
     /// from the unit's other cells).
     static var usesNakedTriples: Bool { get }
+    /// Whether the hidden-pairs sweep also looks for hidden triples (three values
+    /// jointly confined to three cells of a unit). Reuses the pairs sweep's
+    /// position masks, so it can only be enabled where `usesHiddenPairs` is.
+    static var usesHiddenTriples: Bool { get }
     static var solvedRepresentation: [String] { get }
     /// Maps each symbol in `solvedRepresentation` back to its value.
     /// Stored per conforming type so it is built once, not on every lookup.
@@ -48,6 +52,7 @@ extension SudokuTypeProtocol {
     static var usesClaimedCandidates: Bool { false }
     static var usesHiddenPairs: Bool { false }
     static var usesNakedTriples: Bool { false }
+    static var usesHiddenTriples: Bool { false }
     static var possibilities: Int { sideOfBox * sideOfBox }
     static var allPossibilities: Range<Int> { 0..<possibilities }
     static var cells: Int { possibilities * possibilities }
@@ -223,6 +228,7 @@ enum Sudoku36: SudokuTypeProtocol {
     static var usesClaimedCandidates: Bool { true }
     static var usesHiddenPairs: Bool { true }
     static var usesNakedTriples: Bool { true }
+    static var usesHiddenTriples: Bool { true }
     static let solvedRepresentation = (0...9).map(String.init) + (65...90).map { String(UnicodeScalar($0)) } // 0-9, A-Z
     static let solvedRepresentationReversed = makeSolvedRepresentationReversed()
     static let constants: ConstantsStorage<Self> = ConstantsStorage()
