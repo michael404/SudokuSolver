@@ -37,22 +37,51 @@ extension SudokuBoard {
         return solver.solve(transformation: Shuffle.self, maxSolutions: 1).first!
     }
     
-    enum NumberOfSolutions { case none, one, multiple }
-    
+    enum NumberOfSolutions {
+        case none, one, multiple
+        /// The node limit was reached before the search could decide.
+        case unknown
+    }
+
     func numberOfSolutions() -> NumberOfSolutions {
         var rng = WyRand()
         return numberOfSolutions(using: &rng)
     }
-    
-    func numberOfSolutions<R: RNG>(using rng: inout R) -> NumberOfSolutions {
+
+    /// Counts solutions up to two. A `nodeLimit` bounds the search: each guess the
+    /// solver makes consumes one node, and when the budget runs out before the
+    /// count is decided the result is `.unknown`. The default limit never aborts.
+    func numberOfSolutions<R: RNG>(using rng: inout R, nodeLimit: Int = .max) -> NumberOfSolutions {
         guard var solver = SudokuSolver(eliminating: self, rng: rng) else { return .none }
         defer { rng = solver.rng }
+        solver.nodesRemaining = nodeLimit
         let solutions = solver.solve(transformation: Normal.self, maxSolutions: 2)
+        guard !solver.searchAborted else { return .unknown }
         switch solutions.count {
         case 0: return .none
         case 1: return .one
         default: return .multiple
         }
+    }
+
+    /// The outcome of a node-limited search for a single solution.
+    enum SearchResult: Equatable {
+        case solution(SudokuBoard)
+        case unsolvable
+        /// The node limit was reached before the search completed.
+        case indeterminate
+    }
+
+    /// Like `findFirstSolution(using:)`, but each guess the solver makes consumes
+    /// one node from `nodeLimit`, and running out of budget yields `.indeterminate`
+    /// instead of searching indefinitely.
+    func findFirstSolution<R: RNG>(using rng: inout R, nodeLimit: Int) -> SearchResult {
+        guard var solver = SudokuSolver(eliminating: self, rng: rng) else { return .unsolvable }
+        defer { rng = solver.rng }
+        solver.nodesRemaining = nodeLimit
+        let solutions = solver.solve(transformation: Normal.self, maxSolutions: 1)
+        if let solution = solutions.first { return .solution(solution) }
+        return solver.searchAborted ? .indeterminate : .unsolvable
     }
 }
 
@@ -62,6 +91,15 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
     typealias Cell = SudokuCell<SudokuType>
     var board: Board
     var rng: R
+
+    /// Remaining guess budget for `solve`: each guess consumes one node, and when
+    /// the budget runs out the search stops with `searchAborted` set. The default
+    /// is effectively unlimited.
+    var nodesRemaining = Int.max
+    /// True when `solve` stopped because `nodesRemaining` ran out. Solutions found
+    /// before the abort are returned, but prove nothing about the unexplored rest
+    /// of the search space.
+    private(set) var searchAborted = false
 
     // Units whose cells lost candidates since the last deduction sweep. The sweeps
     // only revisit dirty units: a unit whose cells are unchanged since it was last
@@ -187,6 +225,11 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         }
         var remainingGuesses = board.cell(at: index)
         while let guess = T.next(from: &remainingGuesses, rng: &rng) {
+            guard nodesRemaining > 0 else {
+                searchAborted = true
+                return true
+            }
+            nodesRemaining -= 1
             var newSolver = self
             newSolver.board.setCell(at: index, to: guess)
             newSolver.markDirty(index)
@@ -198,9 +241,15 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
                     maxSolutions: maxSolutions,
                     solutions: &solutions) {
                 self.rng = newSolver.rng
+                self.nodesRemaining = newSolver.nodesRemaining
+                self.searchAborted = newSolver.searchAborted
+                if searchAborted { return true }
                 if solutions.count >= maxSolutions { return true }
             } else {
+                // A false return means the branch was proven unsolvable; aborted
+                // descendants always return true, so no flag to copy back here.
                 self.rng = newSolver.rng
+                self.nodesRemaining = newSolver.nodesRemaining
                 guard removeAndApplyConstraints(valueToRemove: guess, indexToRemoveFrom: index) else { return false }
             }
         }

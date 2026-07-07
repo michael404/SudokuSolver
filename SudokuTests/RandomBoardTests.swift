@@ -91,6 +91,47 @@ class RandomBoardTests: XCTestCase {
         }
     }
 
+    // MARK: - Node-limited search
+
+    func testNodeLimitedSearch() {
+        // hard1 cannot be completed by init-time propagation alone, so a zero
+        // guess budget cannot decide it either way.
+        var rng = WyRand(seed: 5)
+        XCTAssertEqual(TestData9.hard1.board.numberOfSolutions(using: &rng, nodeLimit: 0), .unknown)
+        XCTAssertEqual(TestData9.hard1.board.findFirstSolution(using: &rng, nodeLimit: 0), .indeterminate)
+
+        // With an unlimited budget the same calls decide as before.
+        XCTAssertEqual(TestData9.hard1.board.numberOfSolutions(using: &rng), .one)
+        XCTAssertEqual(
+            TestData9.hard1.board.findFirstSolution(using: &rng, nodeLimit: .max),
+            .solution(TestData9.hard1.solution))
+
+        // Boards decidable without guessing are unaffected by a zero budget.
+        XCTAssertEqual(TestData9.filled.numberOfSolutions(using: &rng, nodeLimit: 0), .one)
+        XCTAssertEqual(TestData9.filled.findFirstSolution(using: &rng, nodeLimit: 0), .solution(TestData9.filled))
+        XCTAssertEqual(TestData9.invalid.findFirstSolution(using: &rng, nodeLimit: 0), .unsolvable)
+    }
+
+    func testMinimizerWithNodeLimit() {
+        var rng = WyRand(seed: 6)
+        let filled = SudokuBoard9.randomFullyFilledBoard(using: &rng)
+        let limited = filled.minimizingClues(using: &rng, nodeLimit: 0)
+
+        // A budget-limited minimization keeps every clue whose check could not
+        // complete, but still only removes clues and preserves the unique solution.
+        XCTAssertEqual(limited.findAllSolutions(), [filled])
+        for index in limited.indices where limited[index].isSolved {
+            XCTAssertEqual(limited[index], filled[index], "Clue at \(index) changed value")
+        }
+
+        // Unbounded minimization of the same board removes at least as many clues.
+        var rng2 = WyRand(seed: 6)
+        let sameFilled = SudokuBoard9.randomFullyFilledBoard(using: &rng2)
+        XCTAssertEqual(sameFilled, filled)
+        let unbounded = sameFilled.minimizingClues(using: &rng2)
+        XCTAssertLessThanOrEqual(unbounded.clues, limited.clues)
+    }
+
     // MARK: - 4x4
 
     func testRandomStartingBoard4() {

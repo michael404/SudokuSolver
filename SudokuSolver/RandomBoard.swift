@@ -16,12 +16,17 @@ internal extension SudokuBoard {
     /// Returns a copy of this board with every removable clue cleared, visiting
     /// cells in a random order. A clue is only removed when doing so provably keeps
     /// the solution unique, so the result has exactly the same single solution as
-    /// this board, its clues are a subset of this board's clues, and no single
-    /// remaining clue can be removed without losing uniqueness (1-minimality).
+    /// this board and its clues are a subset of this board's clues.
+    ///
+    /// With the default unlimited `nodeLimit` the result is also 1-minimal: no
+    /// single remaining clue can be removed without losing uniqueness. A finite
+    /// `nodeLimit` bounds each removal check and conservatively keeps any clue
+    /// whose check runs out of budget, which keeps large-board minimization from
+    /// searching indefinitely at the cost of possibly retaining removable clues.
     ///
     /// This board must have exactly one solution when called; a fully filled board
     /// trivially qualifies.
-    func minimizingClues<R: RNG>(using rng: inout R) -> SudokuBoard {
+    func minimizingClues<R: RNG>(using rng: inout R, nodeLimit: Int = .max) -> SudokuBoard {
         assert({ var checkRng = rng
                  return numberOfSolutions(using: &checkRng) == .one }(),
                "minimizingClues requires a board with exactly one solution")
@@ -41,9 +46,9 @@ internal extension SudokuBoard {
             if alternatives != 0 {
                 var testBoard = board
                 testBoard[index] = Cell(storage: alternatives)
-                guard testBoard.findFirstSolution(using: &rng) == nil else {
-                    // Some other value also completes the board, so this clue is
-                    // load-bearing. Keep it and move on to the next index.
+                // Keep the clue unless the check proves no alternative solution
+                // exists; an indeterminate, budget-limited check keeps it too.
+                guard testBoard.findFirstSolution(using: &rng, nodeLimit: nodeLimit) == .unsolvable else {
                     continue
                 }
             }
