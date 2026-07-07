@@ -269,7 +269,8 @@ struct SudokuSolver<SudokuType: SudokuTypeProtocol, R: RNG> {
         guard findAllHiddenSingles(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes) else { return false }
         guard findAllLockedCandidates(dirtyBoxes: boxes) else { return false }
         guard findAllClaimedCandidates(dirtyRows: rows, dirtyColumns: columns) else { return false }
-        return findAllHiddenPairs(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes)
+        guard findAllHiddenPairs(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes) else { return false }
+        return findAllNakedTriples(dirtyRows: rows, dirtyColumns: columns, dirtyBoxes: boxes)
     }
 
     private mutating func findAllHiddenSingles(dirtyRows: UInt64, dirtyColumns: UInt64, dirtyBoxes: UInt64) -> Bool {
@@ -582,6 +583,84 @@ extension SudokuSolver {
                         offsets &= offsets &- 1
                         guard removeAndApplyConstraints(valueToRemove: othersMask, indexToRemoveFrom: index) else {
                             return false
+                        }
+                    }
+                }
+            }
+            return true
+        }
+    }
+
+}
+
+// MARK: - Naked triples
+
+extension SudokuSolver {
+
+    /// Naked triples: when three cells of a unit together hold only three distinct
+    /// candidate values, those values must occupy exactly those cells, so they can
+    /// be removed from the unit's other cells. Sweeps only units whose cells
+    /// changed since the last sweep. Returns false if the board is unsolvable.
+    private mutating func findAllNakedTriples(dirtyRows: UInt64, dirtyColumns: UInt64, dirtyBoxes: UInt64) -> Bool {
+        // Statically known per Sudoku type, so specialization folds this branch away.
+        guard SudokuType.usesNakedTriples else { return true }
+        var rows = dirtyRows
+        while rows != 0 {
+            guard _findNakedTriples(for: SudokuType.constants.allIndicesInRow(rows.trailingZeroBitCount)) else {
+                return false
+            }
+            rows &= rows &- 1
+        }
+        var columns = dirtyColumns
+        while columns != 0 {
+            guard _findNakedTriples(for: SudokuType.constants.allIndicesInColumn(columns.trailingZeroBitCount)) else {
+                return false
+            }
+            columns &= columns &- 1
+        }
+        var boxes = dirtyBoxes
+        while boxes != 0 {
+            guard _findNakedTriples(for: SudokuType.constants.allIndicesInBox(boxes.trailingZeroBitCount)) else {
+                return false
+            }
+            boxes &= boxes &- 1
+        }
+        return true
+    }
+
+    private mutating func _findNakedTriples(for indices: UnsafeBufferPointer<SudokuType.IndexStorage>) -> Bool {
+        // Only cells with two or three candidates can participate in a triple.
+        withUnsafeTemporaryAllocation(
+            of: (offset: Int, storage: SudokuType.CellStorage).self,
+            capacity: SudokuType.possibilities
+        ) { candidates in
+            var candidateCount = 0
+            for offset in 0..<SudokuType.possibilities {
+                let cell = board.cell(at: Int(indices[offset]))
+                let count = cell.storage.nonzeroBitCount
+                if count == 2 || count == 3 {
+                    candidates[candidateCount] = (offset, cell.storage)
+                    candidateCount += 1
+                }
+            }
+            guard candidateCount >= 3 else { return true }
+            for i in 0..<(candidateCount - 2) {
+                for j in (i + 1)..<(candidateCount - 1) {
+                    let pairUnion = candidates[i].storage | candidates[j].storage
+                    guard pairUnion.nonzeroBitCount <= 3 else { continue }
+                    for k in (j + 1)..<candidateCount {
+                        let union = pairUnion | candidates[k].storage
+                        guard union.nonzeroBitCount == 3 else { continue }
+                        // Eliminations from earlier triples only shrink candidate
+                        // sets below this snapshot, which keeps the deduction sound.
+                        let tripleValues = Cell(storage: union)
+                        for offset in 0..<SudokuType.possibilities
+                        where offset != candidates[i].offset
+                            && offset != candidates[j].offset
+                            && offset != candidates[k].offset {
+                            guard removeAndApplyConstraints(
+                                valueToRemove: tripleValues,
+                                indexToRemoveFrom: Int(indices[offset])) else { return false }
                         }
                     }
                 }
