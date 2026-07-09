@@ -1,0 +1,8 @@
+# Scratch experiments for the minimal-puzzle hunts (CP-SAT scripts, checkpoints,
+# logs, comparison output). Deliberately untracked; results get committed as
+# TestData fixtures instead.
+sudoku25_*
+sudoku36_*
+compare_*/
+__pycache__/
+.DS_Store
