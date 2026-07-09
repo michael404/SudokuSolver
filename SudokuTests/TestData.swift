@@ -222,6 +222,14 @@ enum TestData25 {
         "FEXUHTONWLVCRKPBSYVSOTYWPBDLEGIAXJFQKMCURHNXFIGKOVNRCPBQSWEHYTULJMDAEMHP" +
         "UJLACGKVBDIOTXNYWRQFSCGKDARNHWSXQLJTVPFMIYBOEUINQYSXODMBWRFHPCAEUGTKJVLR" +
         "LBOTVIPFYSNAUEHKJWQGDCXMJWXFVEUTKQYMCGOBRLDSHNPAI")
+
+    /// The fewest-clue 25x25 specimen so far: 235 clues. Starting from puzzel1,
+    /// CP-SAT-backed iterated local search reached this board at iteration 255;
+    /// every accepted removal preserved uniqueness through the removability
+    /// check. Clues are a subset of puzzel1's solution.
+    static let minimal1 = Puzzel<Sudoku25>(
+        "..RM.P..U..I.Y.K.BV..A...G.F.P...N.R..X.TE..H.CD..W.S.CHT....K....I.Y......K..J.......LO.....Q.S..I.......DX.V...BALMU...Q...LT..Q.EV.W..Y....NF..OXJ.UXW.DS....LF...R..JAPHYG...Y.B..U..OX..H.V.......C........OKT....U.GB.....V..N..TX......I...M.WQ.S...Q...U.WP....N.Y.....SA.FTBP.LQ..V.G.....U..D....O.V..G.C......Q..O.................D.OEK.....J.Y.W..O.RE.ALY.......B...JI..H...NW...Q.MD......OXIFGT.H..ERY....J.KL..ND...W........I.F..U.T..W..C.K...Y....Y.PB..E..A.J.......H..FIG.OV..CPB..........MDA.MH..J.A.G.......X.Y.RQ.S..KDA.NHW.....TV...I...E.IN...XO..BWR...C.E.G.KJ.L..BO....F.S.A.E..JWQG..XM...FV..T....C.....DS..PA.",
+        solution: puzzel1.solutionString)
     
 }
 
