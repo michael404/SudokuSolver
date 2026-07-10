@@ -239,6 +239,48 @@ enum TestData25 {
     static let minimal2 = Puzzel<Sudoku25>(
         "..RM.P.....I.YGK.BV..A...G.F.P...N...VX.TE...OC...W.S.CH.....K....I.Y......K..J.......L......Q.S..IP......DX.V...BALMU.......LT..Q.E.......R..NF.UOXJ.UXW.D.....LF...R..JAPHY....Y.B.Q.G.OX..H...E.....C.....N..OKT......G.L....V.....T...........M.W..S...Q...UJWP......Y.....SA.FTBP.LQ....G.....U..D....O.V..G........Q..O.................DFOEK.....JVY.W..O..E.AL...W....B...JI..H...NW..JQ....V..S..X.FGT.H..ER.......KL..NDI..W..Q.......F....T.NWL...K...Y....Y.PB.LE.IA.J.......H..FIG.OV..CPB..........MDA.MH..J.A.......OTX.Y..Q.S..KD.RNHW.....TV...I...E.IN...X.....RF.PC...G.KJ.L..BO...PF.S.A.EH.JW.G..XM...FV.UT...MC.....D...P..",
         solution: puzzel1.solutionString)
+
+    /// A 222-clue 25x25 specimen found by the unavoidable-set filtered iterated
+    /// local search from minimal2. Removals accepted by the search preserve the
+    /// same uniqueness invariant as minimal2, while last-hit unavoidable-set
+    /// removals were rejected without invoking CP-SAT.
+    static let minimal3 = Puzzel<Sudoku25>(
+        "..RM.P.....I.YGK.BV..A...G.F.P...N....X.TE...OC...W.S.CH.....K....I.Y......K.." +
+        "J.......L......Q.S..IP......DX.V...BALMU.......LT..Q.E.....Y.R..NF..OXJ..XW..." +
+        "....LFN..R..JAPHY....Y.BDQ.G.OX..H.........C........OKT......G.L....V.....T..." +
+        "........M.W..SB..Q...UJWP......Y.....S..FTBP.LQ....GY....U..D....O.V..G......." +
+        ".Q..O..................FOEK.....JVYLW..O..E.AL...W....B...JI..H...NW..JQ....V." +
+        "....X.FGT.H..E.........L..ND.B.W..QA.D....F....T.NW..CRK...Y....Y.PB.LE.IA.J.." +
+        ".....H..FIG.OV..CPB.......U...DA.MH..J.A.......OTX....Q.S..KD.RNHW.....TV...I." +
+        "..E.IN...X...B.RF.PC...G.KJ.LR..O...PF.S.A.EH.JW.G..XM...FV..T...MC.O...D...P." +
+        ".",
+        solution: puzzel1.solutionString)
+
+    /// A 219-clue 25x25 specimen from a completed grid selected for a low
+    /// pairwise-disjoint two-digit unavoidable-set bound: exact packing optimum
+    /// 21 over all minimal two-digit sets. The unavoidable-set filtered ILS
+    /// reached this board at iteration 4893 after bootstrapping from the full
+    /// solution; accepted removals preserved uniqueness by CP-SAT check.
+    static let lowPairUnavoidable1 = Puzzel<Sudoku25>(
+        "....L.....N.HG.W.CE....J.Y.PMK...GOIR...F.SL....N..E....A....F..SJY......Q.QVB" +
+        "...RX.I....OA.....E.M...IC.T..N......H..D.......D..EX..JW...........SI....N..." +
+        ".O.F.M..A.UHY..WQGXA...B....T....Y..X.CP.....L..TAUVYH.O.....RG....BEP.QR.KM.." +
+        ".....C...........F.W...P..BXJL......KU....S.HMO.I......E.VG...XD.............." +
+        "NUM..B.FTA......DG..CK....AT.N...I...P...KV..F.Y.....PX..QR.W.H..A.....B...I.." +
+        "GEDM.LJUY.SH...LC.....W...QOKVM..R..X.V....D.PHS......A.T........NS.P......L.." +
+        "J.WC...TIJ....E....QR......XK....JYQH.P.FU.....S..X...N..V.S....N....B..T....." +
+        "...WC.LN...R..ME..........G.J.UX.....I....TVB...D.PEO.......D.L.W.RK..G...C..." +
+        "B",
+        solution:
+        "FRDSLYKUQBNPHGXWICEMOVTJAYTPMKVWJGOIRAEQFBSLUDHXNCWEHUXDALMPTFCBSJYVONGIRQKQVB" +
+        "JNCRXHIDYLWOATKPGSEFMUGOICATFSNEUKMVJHRQDXBLPWYHDCOEXNBJWFLVQGKMPATYSIURJKNISP" +
+        "LOCFRMTDAEUHYBVWQGXAWVGBIEQRTJSUHYNDXFCPOLKMMLFXTAUVYHKOPIWQSRGJNDCBEPYQRUKMDS" +
+        "GXBENCIOLVWJFHATIFOWYGQPTDBXJLRCAESHKUMVNBSTHMOJIANYWKPEUVGRLQXDCFXCEPJRVHWLQG" +
+        "NUMDKBIFTAYSOLQRDGUXCKSHVFATMNYWOIBJEPNAUKVMBFEYCIOSDPXJTQRGWLHRNAFOQHWBXVTICK" +
+        "GEDMPLJUYSSHGYPLCTUAEDWJFXQOKVMNBRIUXWVQJIYDKPHSMLRCNBAETOFGEMKBDNSGPROAXYULFT" +
+        "JIWCVHQTIJLCFOEVMGNQRBYHWUSXKAPDDJYQHBPKFULCGOISWMXEARNTVVGSEIHYNOQAJBXPTLUCRF" +
+        "MKDWCBLNWSTRXVMEDFHOPAQKUYGIJKUXARWGMICSQYTVBJFNDHPEOLOPMTFEDALJWURKNVGIHYCQSX" +
+        "B")
     
 }
 
